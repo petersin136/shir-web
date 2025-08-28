@@ -167,8 +167,8 @@ export default function ManagePage() {
 
     setLoading(true);
     try {
-      const url = await uploadImage(file, 'hero-image');
-      setSettings(prev => ({ ...prev, hero_image_url: url }));
+      const uploadedUrl = await uploadImage(file, 'hero-image');
+      setSettings(prev => ({ ...prev, hero_image_url: uploadedUrl }));
       setMessage("히어로 이미지가 성공적으로 업로드되었습니다!");
     } catch {
       setMessage("히어로 이미지 업로드에 실패했습니다.");
