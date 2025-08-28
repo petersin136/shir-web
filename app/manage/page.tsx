@@ -44,7 +44,7 @@ export default function ManagePage() {
 
   const checkConnection = async () => {
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("settings")
         .select("count", { count: "exact", head: true });
       
@@ -151,9 +151,9 @@ export default function ManagePage() {
 
     setLoading(true);
     try {
-      const url = await uploadImage(file, 'shir-logo');
+      await uploadImage(file, 'shir-logo');
       setMessage("로고가 성공적으로 업로드되었습니다!");
-    } catch (error) {
+    } catch {
       setMessage("로고 업로드에 실패했습니다.");
     } finally {
       setLoading(false);
@@ -170,7 +170,7 @@ export default function ManagePage() {
       const url = await uploadImage(file, 'hero-image');
       setSettings(prev => ({ ...prev, hero_image_url: url }));
       setMessage("히어로 이미지가 성공적으로 업로드되었습니다!");
-    } catch (error) {
+    } catch {
       setMessage("히어로 이미지 업로드에 실패했습니다.");
     } finally {
       setLoading(false);
