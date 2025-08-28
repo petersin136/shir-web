@@ -76,12 +76,29 @@ export default async function HomePage() {
 
           {/* 영어 성경구절 - 큰 크기 */}
           <p className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed mb-3 sm:mb-6 max-w-4xl mx-auto">
-            &ldquo;that ye present your bodies a living sacrifice holy acceptable unto God, which is your reasonable service&rdquo;
+            {/* PC 버전 */}
+            <span className="hidden sm:inline">
+              &ldquo;that ye present your bodies a living sacrifice holy acceptable unto God<br />
+              which is your reasonable service&rdquo;
+            </span>
+            {/* 모바일 버전 */}
+            <span className="sm:hidden">
+              &ldquo;that ye present your bodies a living sacrifice<br />
+              holy acceptable unto God which is your reasonable service&rdquo;
+            </span>
           </p>
 
           {/* 한국어 성경구절 - 같은 크기 */}
           <p className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed mb-2 sm:mb-4 max-w-4xl mx-auto">
-            &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라 이는 너희가 드릴 영적 예배니라&rdquo;
+            {/* PC 버전 - 기존 그대로 */}
+            <span className="hidden sm:inline">
+              &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라 이는 너희가 드릴 영적 예배니라&rdquo;
+            </span>
+            {/* 모바일 버전 */}
+            <span className="sm:hidden">
+              &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라<br />
+              이는 너희가 드릴 영적 예배니라&rdquo;
+            </span>
           </p>
 
           {/* 성경 출처 */}
