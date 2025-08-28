@@ -14,16 +14,16 @@ const links = [
 
 export default function MainNav() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-transparent">
-      <nav className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
+      <nav className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* 왼쪽: 로고 자리 */}
         <Link href="/" className="flex items-center gap-3">
           <img 
             src="/logo-shir.svg" 
             alt="SHIR Logo" 
-            className="h-8 w-8"
+            className="h-6 w-6 object-contain"
           />
-          <span className="text-lg tracking-widest uppercase font-semibold">
+          <span className="text-base tracking-widest uppercase font-semibold text-gray-900">
             SHIR
           </span>
         </Link>
@@ -33,7 +33,7 @@ export default function MainNav() {
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="text-sm sm:text-base uppercase tracking-[0.2em] text-white/90 hover:text-white transition-colors font-medium"
+                className="text-xs sm:text-sm uppercase tracking-[0.2em] text-gray-700 hover:text-gray-900 transition-colors font-medium"
               >
                 {l.label}
               </Link>
