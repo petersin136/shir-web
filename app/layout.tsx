@@ -3,6 +3,8 @@ import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import MainNav from "@/components/MainNav";
+import Footer from "@/components/Footer";
+import { Splash } from "@/components/Splash";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -28,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.className} antialiased bg-black text-white`}>
-
+        <Splash />
         <MainNav />   {/* ✅ 네비게이션 추가 */}
         <ThemeProvider
           attribute="class"
@@ -36,8 +38,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="pt-16 sm:pt-20">{children}</div>
-
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-1 pt-14 sm:pt-20">{children}</div>
+            <Footer />
+          </div>
         </ThemeProvider>
       </body>
     </html>
