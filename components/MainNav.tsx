@@ -14,12 +14,12 @@ const links = [
 
 export default function MainNav() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/70 backdrop-blur-md border-b border-white/20">
       <nav className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* 왼쪽: 로고 자리 */}
         <Link href="/" className="flex items-center gap-3">
           <img 
-            src="/logo-shir.svg" 
+            src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/shir-logo.png" 
             alt="SHIR Logo" 
             className="h-6 w-6 object-contain"
           />
