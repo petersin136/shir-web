@@ -4,8 +4,6 @@ import { createClient } from "@supabase/supabase-js";
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-
-// 익명 키로도 Insert가 가능하도록 RLS 정책을 만들 예정
 const supabase = createClient(url, anon);
 
 export async function POST(req: Request) {
