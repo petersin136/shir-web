@@ -2,6 +2,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 
 const links = [
   { href: "/", label: "HOME" },
@@ -19,10 +20,12 @@ export default function MainNav() {
         {/* 왼쪽: 로고 자리 */}
         <Link href="/" className="flex items-center gap-4">
           <div className="bg-white rounded-lg p-2 flex items-center justify-center">
-            <img 
+            <Image 
               src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/shir-logo.png" 
               alt="SHIR Logo" 
-              className="h-8 w-8 object-contain"
+              width={32}
+              height={32}
+              className="object-contain"
             />
           </div>
           <span className="text-xl tracking-wide uppercase font-bold text-white">

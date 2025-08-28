@@ -38,8 +38,9 @@ export default function ContactPage() {
       if (!res.ok) throw new Error(data?.error || "서버 오류");
       setOk("메시지가 전송되었습니다. 감사합니다!");
       form.reset();
-    } catch (e: any) {
-      setErr(e.message || "전송에 실패했습니다.");
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "전송에 실패했습니다.";
+      setErr(errorMessage);
     } finally {
       setLoading(false);
     }

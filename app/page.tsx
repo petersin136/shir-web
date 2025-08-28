@@ -1,5 +1,6 @@
 // app/page.tsx
 import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
 
 type SettingsRow = {
   hero_title: string | null;
@@ -44,10 +45,11 @@ export default async function HomePage() {
 
         {/* 블러 이미지 레이어 (선택) */}
         {s.hero_image_url && (
-          <img
+          <Image
             src={s.hero_image_url}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            className="object-cover"
             style={{ filter: s.blur_px ? `blur(${s.blur_px}px)` : undefined }}
           />
         )}
@@ -74,14 +76,14 @@ export default async function HomePage() {
 
           {/* 영어 성경구절 - 큰 크기 */}
           <p className="text-lg md:text-xl lg:text-2xl leading-relaxed mb-6 max-w-4xl mx-auto">
-            "that ye present your bodies a living sacrifice holy<br />
-            acceptable unto God, which is your reasonable service"
+            &ldquo;that ye present your bodies a living sacrifice holy<br />
+            acceptable unto God, which is your reasonable service&rdquo;
           </p>
 
           {/* 한국어 성경구절 - 같은 크기 */}
           <p className="text-lg md:text-xl lg:text-2xl leading-relaxed mb-4 max-w-4xl mx-auto">
-            "너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라<br />
-            이는 너희가 드릴 영적 예배니라"
+            &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라<br />
+            이는 너희가 드릴 영적 예배니라&rdquo;
           </p>
 
           {/* 성경 출처 */}
