@@ -2,7 +2,7 @@
 export default function AboutPage() {
     return (
       <main className="mx-auto max-w-4xl px-6 py-16">
-        <h1 className="text-3xl sm:text-5xl tracking-widest uppercase mb-8">
+        <h1 className="text-3xl sm:text-5xl tracking-wide uppercase mb-8">
           About Us
         </h1>
   
@@ -12,7 +12,7 @@ export default function AboutPage() {
         </p>
   
         <section className="space-y-3">
-          <h2 className="text-lg sm:text-2xl tracking-wide">Vision & Mission</h2>
+          <h2 className="text-lg sm:text-2xl tracking-normal">Vision & Mission</h2>
           <p className="text-sm sm:text-base text-white/80">
             우리는 신령과 진정으로 드리는 예배를 통해 세대와 민족을 변화시키고자 합니다.
           </p>
