@@ -1,6 +1,7 @@
 // app/media/page.tsx
 import VideoCard from "../../components/VideoCard";
 import ImageCard from "../../components/ImageCard";
+import { BackgroundVideo } from "@/components/BackgroundVideo";
 
 export default function MediaPage() {
   // ✍️ 여기 배열만 추후 관리자에서 Supabase로 대체할 예정
@@ -17,17 +18,19 @@ export default function MediaPage() {
   ];
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
+    <>
+      <BackgroundVideo overlayOpacity={0.85} />
+      <main className="relative mx-auto max-w-6xl px-6 py-16">
       {/* 타이틀 */}
-      <h1 className="text-3xl sm:text-5xl tracking-widest uppercase mb-10">
+      <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-12">
         Media
       </h1>
 
       {/* 동영상 섹션 */}
       <section className="mb-16">
-        <div className="flex items-end justify-between mb-4">
-          <h2 className="text-lg sm:text-2xl uppercase tracking-[0.2em]">Videos</h2>
-          <p className="text-xs sm:text-sm text-white/60">
+        <div className="flex items-end justify-between mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wide">Videos</h2>
+          <p className="text-sm sm:text-base text-white/70 font-medium">
             YouTube/Vimeo 링크를 붙여넣으면 자동 임베드됩니다.
           </p>
         </div>
@@ -40,9 +43,9 @@ export default function MediaPage() {
 
       {/* 사진 섹션 */}
       <section>
-        <div className="flex items-end justify-between mb-4">
-          <h2 className="text-lg sm:text-2xl uppercase tracking-[0.2em]">Photos</h2>
-          <p className="text-xs sm:text-sm text-white/60">
+        <div className="flex items-end justify-between mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-wide">Photos</h2>
+          <p className="text-sm sm:text-base text-white/70 font-medium">
             /public/placeholder 폴더의 샘플 이미지를 사용 중입니다.
           </p>
         </div>
@@ -52,6 +55,7 @@ export default function MediaPage() {
           ))}
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

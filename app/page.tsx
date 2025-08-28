@@ -1,6 +1,8 @@
 // app/page.tsx
 import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
+import { BackgroundVideo } from "@/components/BackgroundVideo";
+import { MetanoiaRegisterButton } from "@/components/MetanoiaRegisterButton";
 
 type SettingsRow = {
   hero_title: string | null;
@@ -29,40 +31,11 @@ export default async function HomePage() {
   const s = (data || {}) as SettingsRow;
 
   return (
-    <main className="relative">
-      {/* HERO 섹션 */}
-      <section className="relative h-[80vh] text-white flex items-center justify-center">
-        {/* 배경 비디오 (URL이 있으면 재생) */}
-        {s.hero_video_url && (
-          <video
-            className="absolute inset-0 w-full h-full object-cover"
-            src={s.hero_video_url}
-            autoPlay
-            muted
-            loop
-            playsInline
-            style={{ opacity: s.video_opacity || 1 }}
-          />
-        )}
-
-        {/* 블러 이미지 레이어 (선택) */}
-        {s.hero_image_url && (
-          <Image
-            src={s.hero_image_url}
-            alt=""
-            fill
-            className="object-cover"
-            style={{ filter: s.blur_px ? `blur(${s.blur_px}px)` : undefined }}
-          />
-        )}
-
-        {/* 어둡게 오버레이 */}
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundColor: `rgba(0,0,0,${s.overlay_opacity ?? 0.5})`,
-          }}
-        />
+    <>
+      <BackgroundVideo overlayOpacity={s.overlay_opacity ?? 0.5} />
+      <main className="relative">
+        {/* HERO 섹션 */}
+        <section className="relative h-[80vh] text-white flex items-center justify-center">
 
         {/* 가운데 텍스트 */}
         <div className="relative z-10 text-center px-3 sm:px-6">
@@ -118,15 +91,11 @@ export default async function HomePage() {
             >
               About Us
             </a>
-            <a
-              href="/metanoia-2026"
-              className="border px-4 py-2 text-sm sm:text-base rounded hover:bg-white hover:text-black transition"
-            >
-              Metanoia 2026
-            </a>
+            <MetanoiaRegisterButton />
           </div>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

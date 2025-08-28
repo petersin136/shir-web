@@ -1,5 +1,6 @@
 // app/events/page.tsx
 import EventCard from "../../components/EventCard";
+import { BackgroundVideo } from "@/components/BackgroundVideo";
 
 export default function EventsPage() {
   // ✍️ 추후 Supabase에서 불러올 예정. 지금은 더미 데이터.
@@ -29,8 +30,10 @@ export default function EventsPage() {
   ];
 
   return (
-    <main className="mx-auto max-w-6xl px-6 py-16">
-      <h1 className="text-3xl sm:text-5xl tracking-widest uppercase mb-10">
+    <>
+      <BackgroundVideo overlayOpacity={0.85} />
+      <main className="relative mx-auto max-w-6xl px-6 py-16">
+      <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-12">
         Events
       </h1>
 
@@ -39,6 +42,7 @@ export default function EventsPage() {
           <EventCard key={`${e.title}-${e.date}`} {...e} />
         ))}
       </div>
-    </main>
+      </main>
+    </>
   );
 }
