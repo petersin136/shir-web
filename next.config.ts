@@ -11,6 +11,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  eslint: {
+    ignoreDuringBuilds: false,
+  },
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  // Vercel에서만 standalone 출력 사용
+  ...(process.env.VERCEL && { output: 'standalone' }),
 };
 
 export default nextConfig;
