@@ -1,6 +1,5 @@
 // app/page.tsx
 import { createClient } from "@supabase/supabase-js";
-import Image from "next/image";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { MetanoiaRegisterButton } from "@/components/MetanoiaRegisterButton";
 
