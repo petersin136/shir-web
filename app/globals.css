@@ -64,6 +64,18 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif !important;
+  }
+  
+  /* 한글 강제 표시 */
+  * {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif !important;
+  }
+  
+  p, div, span, h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', sans-serif !important;
+    -webkit-font-feature-settings: "kern";
+    font-feature-settings: "kern";
   }
 }
 

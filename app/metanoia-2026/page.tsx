@@ -170,7 +170,7 @@ export default function MetanoiaPage() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 pt-12">
+        <div id="register-section" className="border-t border-white/20 pt-12 scroll-mt-20">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
             집회 신청
           </h2>

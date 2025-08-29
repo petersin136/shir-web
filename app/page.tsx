@@ -1,6 +1,6 @@
-
 // app/page.tsx
 import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { MetanoiaRegisterButton } from "@/components/MetanoiaRegisterButton";
 
@@ -47,47 +47,31 @@ export default async function HomePage() {
             SPIRIT & TRUTH WORSHIP
           </h2>
 
-          {/* 성경구절 - 관리자에서 수정 가능하지만 안전하게 렌더링 */}
-          {s.hero_subtitle && s.hero_subtitle.trim() ? (
-            <div className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed mb-6 sm:mb-12 max-w-4xl mx-auto">
-              {s.hero_subtitle.replace(/\\n/g, ' ').replace(/\n/g, ' ')}
-            </div>
-          ) : (
-            <>
-              {/* 기본 영어 성경구절 */}
-              <p className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed mb-3 sm:mb-6 max-w-4xl mx-auto">
-                <span className="hidden sm:inline">
-                  &ldquo;that ye present your bodies a living sacrifice holy acceptable unto God<br />
-                  which is your reasonable service&rdquo;
-                </span>
-                <span className="sm:hidden">
-                  &ldquo;that ye present your bodies a living sacrifice<br />
-                  holy acceptable unto God which is your reasonable service&rdquo;
-                </span>
-              </p>
+          {/* 성경구절 - 한글 우선 표시 */}
+          <div className="space-y-4 sm:space-y-6 mb-6 sm:mb-12">
+            {/* 영어 성경구절 */}
+            <p className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed max-w-4xl mx-auto">
+              &ldquo;that ye present your bodies a living sacrifice<br className="sm:hidden" />
+              <span className="hidden sm:inline"> </span>holy acceptable unto God,<br />
+              which is your reasonable service&rdquo;
+            </p>
 
-              {/* 기본 한국어 성경구절 */}
-              <p className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed mb-2 sm:mb-4 max-w-4xl mx-auto">
-                <span className="hidden sm:inline">
-                  &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라 이는 너희가 드릴 영적 예배니라&rdquo;
-                </span>
-                <span className="sm:hidden">
-                  &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라<br />
-                  이는 너희가 드릴 영적 예배니라&rdquo;
-                </span>
-              </p>
+            {/* 한국어 성경구절 */}
+            <p className="text-xs sm:text-lg md:text-xl lg:text-2xl leading-snug sm:leading-relaxed max-w-4xl mx-auto font-medium">
+              &ldquo;너희 몸을 하나님이 기뻐하시는 거룩한 산 제물로 드리라<br />
+              이는 너희가 드릴 영적 예배니라&rdquo;
+            </p>
 
-              {/* 기본 성경 출처 */}
-              <p className="text-sm sm:text-base md:text-lg font-medium mb-6 sm:mb-12">
-                Romans 12:1
-              </p>
-            </>
-          )}
+            {/* 성경 출처 */}
+            <p className="text-sm sm:text-base md:text-lg font-medium">
+              Romans 12:1 (로마서 12:1)
+            </p>
+          </div>
 
-          <div className="mt-4 sm:mt-8 flex flex-col sm:flex-row gap-2 sm:gap-4 justify-center">
+          <div className="mt-4 sm:mt-8 flex flex-col gap-3 items-center justify-center max-w-md mx-auto">
             <a
               href="/about"
-              className="border px-4 py-2 text-sm sm:text-base rounded hover:bg-white hover:text-black transition"
+              className="w-full border px-6 py-3 text-sm sm:text-base rounded-lg hover:bg-white hover:text-black transition text-center"
             >
               About Us
             </a>
