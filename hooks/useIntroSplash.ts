@@ -14,10 +14,10 @@ export function useIntroSplash() {
     // prefers-reduced-motion 체크
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     
-    // 세션스토리지 체크 (테스트를 위해 임시 비활성화)
-    // const hasShownSplash = sessionStorage.getItem(SPLASH_SESSION_KEY);
+    // 세션스토리지 체크
+    const hasShownSplash = sessionStorage.getItem(SPLASH_SESSION_KEY);
     
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || hasShownSplash) {
       setShowSplash(false); // 즉시 숨김
       return;
     }
@@ -53,7 +53,7 @@ export function useIntroSplash() {
 
   const endSplash = () => {
     setShowSplash(false);
-    // sessionStorage.setItem(SPLASH_SESSION_KEY, 'true'); // 테스트를 위해 임시 비활성화
+    sessionStorage.setItem(SPLASH_SESSION_KEY, 'true');
   };
 
   return {

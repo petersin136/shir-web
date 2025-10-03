@@ -2,6 +2,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { MetanoiaRegisterButton } from "@/components/MetanoiaRegisterButton";
+import { Splash } from "@/components/Splash";
 
 type SettingsRow = {
   hero_title: string | null;
@@ -31,6 +32,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <Splash />
       <BackgroundVideo overlayOpacity={s.overlay_opacity ?? 0.5} />
       <main className="relative">
         {/* HERO 섹션 */}

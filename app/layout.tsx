@@ -3,7 +3,6 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import MainNav from "@/components/MainNav";
 import Footer from "@/components/Footer";
-import { Splash } from "@/components/Splash";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -27,7 +26,6 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body className={`antialiased bg-black text-white`} style={{fontFamily: '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif'}}>
-        <Splash />
         <MainNav />   {/* ✅ 네비게이션 추가 */}
         <ThemeProvider
           attribute="class"
