@@ -1,4 +1,4 @@
-// app/page.tsx
+// app/page.tsx - Home page component
 import { createClient } from "@supabase/supabase-js";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { Splash } from "@/components/Splash";
