@@ -1,4 +1,4 @@
-// app/page.tsx - Home page component
+// app/page.tsx - Home page component - Updated for Vercel deployment
 import { createClient } from "@supabase/supabase-js";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import { Splash } from "@/components/Splash";
