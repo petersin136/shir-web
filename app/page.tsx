@@ -16,17 +16,21 @@ type SettingsRow = {
 
 export default async function HomePage() {
   // Supabase 클라이언트(서버 컴포넌트에서도 사용 가능)
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Missing Supabase environment variables, using default settings');
+  }
+  
+  const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
 
   // settings 테이블의 첫 행만 읽기
-  const { data } = await supabase
+  const { data } = supabase ? await supabase
     .from("settings")
     .select("*")
     .limit(1)
-    .single();
+    .single() : { data: null };
 
   const s = (data || {}) as SettingsRow;
 

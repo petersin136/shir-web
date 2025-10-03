@@ -28,10 +28,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   // Vercel 최적화
-  ...(process.env.VERCEL && { 
-    output: 'standalone',
-    poweredByHeader: false,
-  }),
+  output: 'standalone',
+  poweredByHeader: false,
 };
 
 export default nextConfig;
