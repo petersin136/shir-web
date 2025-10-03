@@ -6,19 +6,32 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "ewaqnqzivdceurhjxgpf.supabase.co", // ← 본인 호스트로 교체!
+        hostname: "ewaqnqzivdceurhjxgpf.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
     ],
+    // 이미지 최적화 설정
+    formats: ['image/webp', 'image/avif'],
+    minimumCacheTTL: 60,
   },
+  // 성능 최적화
+  experimental: {
+    optimizePackageImports: ['framer-motion'],
+  },
+  // 압축 활성화
+  compress: true,
+  // 빌드 최적화
   eslint: {
     ignoreDuringBuilds: false,
   },
   typescript: {
     ignoreBuildErrors: false,
   },
-  // Vercel에서만 standalone 출력 사용
-  ...(process.env.VERCEL && { output: 'standalone' }),
+  // Vercel 최적화
+  ...(process.env.VERCEL && { 
+    output: 'standalone',
+    poweredByHeader: false,
+  }),
 };
 
 export default nextConfig;

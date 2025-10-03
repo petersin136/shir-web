@@ -7,11 +7,13 @@ import { useState } from "react";
 
 const links = [
   { href: "/", label: "HOME", shortLabel: "HOME" },
-  { href: "/about", label: "ABOUT US", shortLabel: "ABOUT" },
-  { href: "/metanoia-2026", label: "METANOIA 2026", shortLabel: "META" },
-  { href: "/media", label: "MEDIA", shortLabel: "MEDIA" },
-  { href: "/events", label: "EVENTS", shortLabel: "EVENT" },
-  { href: "/contact", label: "CONTACT", shortLabel: "CONTACT" },
+  { href: "/about", label: "소개", shortLabel: "소개" },
+  { href: "/metanoia-2026", label: "METANOIA 컨퍼런스", shortLabel: "META" },
+  { href: "/oneness", label: "ONENESS Worship", shortLabel: "ONENESS" },
+  { href: "/media", label: "미디어", shortLabel: "미디어" },
+  { href: "/events", label: "사역", shortLabel: "사역" },
+  { href: "/contact", label: "초청사역", shortLabel: "초청" },
+  { href: "/inquiry", label: "문의하기", shortLabel: "문의" },
 ];
 
 export default function MainNav() {

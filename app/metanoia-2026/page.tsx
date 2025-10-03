@@ -66,7 +66,7 @@ export default function MetanoiaPage() {
 
   return (
     <>
-      <BackgroundVideo overlayOpacity={0.9} />
+      <BackgroundVideo overlayOpacity={0.85} />
       <main className="relative mx-auto max-w-3xl px-6 py-16">
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-10">
           Metanoia 2026

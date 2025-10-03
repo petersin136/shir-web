@@ -12,7 +12,7 @@ interface ImageCardProps {
 export default function ImageCard({ src, alt, caption }: ImageCardProps) {
   return (
     <div className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden">
-      <div className="aspect-square relative">
+      <div className="aspect-video relative">
         <Image
           src={src}
           alt={alt}
