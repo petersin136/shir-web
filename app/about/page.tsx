@@ -57,17 +57,6 @@ export default function AboutPage() {
               복음의 능력을 믿으며(롬1:16) 영원토록 예배받으실 분은 한 분이시며(계5:12-13) 다시 오실 영원한 왕을 바라보며(계22:20) 예수그리스도 안에서 모든 민족이 하나님께로 돌아오고 진정한 예배가 회복 될 것을 믿고 참된 복음 안에서 삼위일체 하나님을 예배하며 선포하는 사역을 합니다.
             </p>
             
-            <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium mb-8">
-              <strong>[METANOIA 컨퍼런스]</strong>를 통해 개인과 교회와 열방이 하나님과 회복되길 기도하고 예배하는 사역을 합니다.
-            </p>
-            
-            <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium mb-8">
-              <strong>[ONENESS Worship]</strong>를 통해 깨어졌던 개인과 교회와 열방이 하나님과 하나되고 개인과 개인이 교회와 교회가 더 나아가 남.북한이 복음으로 하나되길 기도하고 예배하는 사역을 합니다.
-            </p>
-            
-            <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium">
-              이를 위해 함께 기도하고 동참해 주세요.
-            </p>
           </div>
         </section>
         </main>
