@@ -12,6 +12,7 @@ const links = [
   { href: "/oneness", label: "ONENESS Worship", shortLabel: "ONENESS" },
   { href: "/media", label: "미디어", shortLabel: "미디어" },
   { href: "/events", label: "사역", shortLabel: "사역" },
+  { href: "/apply", label: "사역 신청", shortLabel: "신청" },
   { href: "/contact", label: "초청사역", shortLabel: "초청" },
   { href: "/inquiry", label: "문의하기", shortLabel: "문의" },
 ];
@@ -40,12 +41,12 @@ export default function MainNav() {
           </Link>
 
           {/* 데스크톱 메뉴 */}
-          <ul className="hidden sm:flex items-center gap-8">
+          <ul className="hidden sm:flex items-center gap-6">
             {links.map((l) => (
-              <li key={l.href}>
+              <li key={l.href} className="flex-shrink-0">
                 <Link
                   href={l.href}
-                  className="text-base uppercase tracking-wider text-white hover:text-gray-200 transition-colors font-bold"
+                  className="text-sm uppercase tracking-wider text-white hover:text-gray-200 transition-colors font-bold whitespace-nowrap block"
                 >
                   {l.label}
                 </Link>

@@ -8,6 +8,7 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,6 +23,12 @@ export default function ContactPage() {
       email: String(formData.get("email") || "").trim(),
       message: String(formData.get("message") || "").trim(),
     };
+
+    if (!privacyAgreed) {
+      setErr("개인정보 수집 및 이용에 동의해주세요.");
+      setLoading(false);
+      return;
+    }
 
     if (!payload.name || !payload.email || !payload.message) {
       setErr("이름/이메일/메시지를 모두 입력해 주세요.");
@@ -39,6 +46,7 @@ export default function ContactPage() {
       if (!res.ok) throw new Error(data?.error || "서버 오류");
       setOk("메시지가 전송되었습니다. 감사합니다!");
       form.reset();
+      setPrivacyAgreed(false);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : "전송에 실패했습니다.";
       setErr(errorMessage);
@@ -56,7 +64,7 @@ export default function ContactPage() {
       </h1>
 
       <p className="text-base sm:text-lg md:text-xl text-white font-medium mb-10">
-        교회 협력/집회 요청/문의 사항을 남겨 주세요.
+        사역초청 내용을 남겨주세요
       </p>
 
       <form onSubmit={onSubmit} className="space-y-4">
@@ -94,10 +102,34 @@ export default function ContactPage() {
           />
         </label>
 
+        <div className="space-y-4">
+          <label className="flex items-start space-x-3">
+            <input
+              type="checkbox"
+              checked={privacyAgreed}
+              onChange={(e) => setPrivacyAgreed(e.target.checked)}
+              className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+              required
+            />
+            <span className="text-sm sm:text-base text-white font-medium">
+              개인정보 수집 및 이용에 동의합니다 (필수)
+            </span>
+          </label>
+          
+          <div className="ml-7 text-xs sm:text-sm text-white/70">
+            <p>
+              입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
+              <a href="/privacy-policy" className="underline hover:text-white transition-colors">
+                개인정보 처리방침
+              </a>에 따라 안전하게 관리됩니다.
+            </p>
+          </div>
+        </div>
+
         <button
           type="submit"
-          disabled={loading}
-          className="mt-4 inline-flex items-center justify-center rounded border border-white px-8 py-4 text-base sm:text-lg md:text-xl font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50"
+          disabled={loading || !privacyAgreed}
+          className="mt-6 inline-flex items-center justify-center rounded border border-white px-8 py-4 text-base sm:text-lg md:text-xl font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? "전송 중..." : "메시지 보내기"}
         </button>

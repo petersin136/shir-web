@@ -1,7 +1,64 @@
 // app/inquiry/page.tsx
+"use client";
+
+import { useState } from "react";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 
 export default function InquiryPage() {
+  const [loading, setLoading] = useState(false);
+  const [ok, setOk] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setOk(null);
+    setErr(null);
+    setLoading(true);
+
+    if (!privacyAgreed) {
+      setErr("개인정보 수집 및 이용에 동의해주세요.");
+      setLoading(false);
+      return;
+    }
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const payload = {
+      name: String(formData.get("name") || "").trim(),
+      email: String(formData.get("email") || "").trim(),
+      subject: String(formData.get("subject") || "").trim(),
+      message: String(formData.get("message") || "").trim(),
+    };
+
+    if (!payload.name || !payload.email || !payload.subject || !payload.message) {
+      setErr("모든 필수 항목을 입력해주세요.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...payload,
+          subject: `문의하기: ${payload.subject}`,
+          message: `제목: ${payload.subject}\n\n${payload.message}`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "서버 오류");
+      setOk("문의가 전송되었습니다. 감사합니다!");
+      form.reset();
+      setPrivacyAgreed(false);
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "전송에 실패했습니다.";
+      setErr(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }
   return (
     <>
       <BackgroundVideo overlayOpacity={0.85} />
@@ -43,21 +100,6 @@ export default function InquiryPage() {
                 </p>
               </div>
 
-              <div>
-                <h3 className="text-lg font-bold text-white mb-2">전화</h3>
-                <div className="space-y-2">
-                  <p className="text-base text-white/90">
-                    <a href="tel:+82-10-5738-0570" className="hover:text-white transition-colors">
-                      010-5738-0570
-                    </a>
-                  </p>
-                  <p className="text-base text-white/90">
-                    <a href="tel:+82-10-4003-4442" className="hover:text-white transition-colors">
-                      010-4003-4442
-                    </a>
-                  </p>
-                </div>
-              </div>
 
               <div>
                 <h3 className="text-lg font-bold text-white mb-2">소셜미디어</h3>
@@ -79,7 +121,7 @@ export default function InquiryPage() {
               문의 양식
             </h2>
             
-            <form className="space-y-6">
+            <form onSubmit={onSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
                   이름 *
@@ -136,27 +178,44 @@ export default function InquiryPage() {
                 ></textarea>
               </div>
 
+              <div className="space-y-4">
+                <label className="flex items-start space-x-3">
+                  <input
+                    type="checkbox"
+                    checked={privacyAgreed}
+                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                    className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                    required
+                  />
+                  <span className="text-sm sm:text-base text-white font-medium">
+                    개인정보 수집 및 이용에 동의합니다 (필수)
+                  </span>
+                </label>
+                
+                <div className="ml-7 text-xs sm:text-sm text-white/70">
+                  <p>
+                    입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
+                    <a href="/privacy-policy" className="underline hover:text-white transition-colors">
+                      개인정보 처리방침
+                    </a>에 따라 안전하게 관리됩니다.
+                  </p>
+                </div>
+              </div>
+
               <button
                 type="submit"
-                className="w-full bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-white/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50"
+                disabled={loading || !privacyAgreed}
+                className="w-full bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-white/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                문의하기
+                {loading ? "전송 중..." : "문의하기"}
               </button>
+
+              {ok && <p className="text-emerald-400 text-base sm:text-lg font-medium mt-4">{ok}</p>}
+              {err && <p className="text-red-400 text-base sm:text-lg font-medium mt-4">{err}</p>}
             </form>
           </section>
         </div>
 
-        <div className="mt-16 p-6 bg-white/5 rounded-lg border border-white/10">
-          <h3 className="text-lg font-bold text-white mb-3">
-            문의 시 참고사항
-          </h3>
-          <ul className="space-y-2 text-sm text-white/80">
-            <li>• 일반적인 문의는 2-3일 내에 답변드립니다.</li>
-            <li>• 초청사역 관련 문의는 최소 1개월 전에 연락해 주세요.</li>
-            <li>• 급한 문의사항은 전화로 연락해 주시기 바랍니다.</li>
-            <li>• 스팸 메일 방지를 위해 문의 내용을 구체적으로 작성해 주세요.</li>
-          </ul>
-        </div>
       </main>
     </>
   );

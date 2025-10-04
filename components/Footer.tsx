@@ -11,17 +11,7 @@ export default function Footer() {
     <>
       <footer className="bg-black/30 backdrop-blur-sm border-t border-white/10 py-12">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* 왼쪽: 단체 정보 */}
-            <div className="text-center md:text-left">
-              <h3 className="text-lg font-bold text-white mb-3">SHIR BAND</h3>
-              <p className="text-sm text-white/70 mb-2">
-                삼위일체 하나님을 예배하며 선포하는 사역
-              </p>
-              <p className="text-xs text-white/50">
-                Spirit & Truth Worship
-              </p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 
             {/* 가운데: 연락처 */}
             <div className="text-center">
@@ -32,8 +22,6 @@ export default function Footer() {
                     shirband2025@gmail.com
                   </a>
                 </p>
-                <p>010-5738-0570</p>
-                <p>010-4003-4442</p>
               </div>
             </div>
 
@@ -59,24 +47,6 @@ export default function Footer() {
                 >
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center hover:scale-110 transition-transform opacity-50 cursor-not-allowed"
-                  title="Coming Soon"
-                >
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                  </svg>
-                </a>
-                <a
-                  href="#"
-                  className="w-8 h-8 bg-black rounded-lg flex items-center justify-center hover:scale-110 transition-transform opacity-50 cursor-not-allowed"
-                  title="Coming Soon"
-                >
-                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.174-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.347-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.402.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.357-.629-2.746-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24.009 12.017 24c6.624 0 11.99-5.367 11.99-11.987C24.007 5.367 18.641.001 12.017.001z"/>
                   </svg>
                 </a>
               </div>
@@ -172,7 +142,6 @@ export default function Footer() {
                   <div className="bg-gray-50 p-3 rounded">
                     <p><strong>개인정보 보호책임자:</strong> SHIR BAND 대표</p>
                     <p><strong>연락처:</strong> shirband2025@gmail.com</p>
-                    <p><strong>전화:</strong> 010-5738-0570</p>
                   </div>
                 </div>
 
