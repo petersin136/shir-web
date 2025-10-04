@@ -15,7 +15,7 @@ const eslintConfig = [
     rules: {
       // 관리자 페이지에서 사용되는 규칙들을 완화
       "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
       "react-hooks/exhaustive-deps": "warn",
       "react/no-unescaped-entities": "warn",
     },
