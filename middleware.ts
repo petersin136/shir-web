@@ -7,8 +7,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Restrict middleware to protected sections only
-    "/protected/:path*",
-    "/manage/:path*",
+    // 일단 middleware 비활성화
   ],
 };
