@@ -22,27 +22,72 @@ export function BackgroundVideo({
   className = "fixed inset-0 -z-10" 
 }: BackgroundVideoProps) {
   const [settings, setSettings] = useState<SettingsRow | null>(null);
+  const [hasError, setHasError] = useState(false);
+
+  // Supabase settings를 못 불러올 때 사용할 기본 영상 URL
+  const FALLBACK_VIDEO_URL =
+    "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/hero.mp4";
 
   useEffect(() => {
     const loadSettings = async () => {
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
+      try {
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-      const { data } = await supabase
-        .from("settings")
-        .select("*")
-        .limit(1)
-        .single();
+        if (!supabaseUrl || !supabaseAnonKey) {
+          console.warn(
+            "BackgroundVideo: Supabase env가 없습니다. 기본 배경만 표시합니다.",
+          );
+          setHasError(true);
+          return;
+        }
 
-      setSettings(data);
+        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+        const { data, error } = await supabase
+          .from("settings")
+          .select("*")
+          .limit(1)
+          .single();
+
+        if (error) {
+          console.error("BackgroundVideo: settings 로드 실패", error);
+          setHasError(true);
+          return;
+        }
+
+        setSettings(data);
+      } catch (e) {
+        console.error("BackgroundVideo: 알 수 없는 오류", e);
+        setHasError(true);
+      }
     };
 
     loadSettings();
   }, []);
 
-  if (!settings) return null;
+  // env가 없거나 오류가 나면 기본 영상 + 어두운 배경만 표시 (앱이 깨지지 않도록)
+  if (!settings || hasError) {
+    return (
+      <div className={className}>
+        {/* 기본 배경 비디오 */}
+        <video
+          className="absolute inset-0 w-full h-full object-cover"
+          src={FALLBACK_VIDEO_URL}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundColor: `rgba(0,0,0,${overlayOpacity})`,
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className={className}>

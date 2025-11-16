@@ -56,10 +56,16 @@ export default function Footer() {
           {/* 하단: 저작권 및 개인정보 처리방침 */}
           <div className="mt-8 pt-6 border-t border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-center sm:text-left">
+              <div className="text-center sm:text-left space-y-1">
                 <p className="text-sm text-white/70">
                   © 2025 SHIR BAND. All rights reserved.
                 </p>
+                <Link
+                  href="/manage"
+                  className="text-[11px] text-white/40 hover:text-white/70 underline"
+                >
+                  관리자 모드
+                </Link>
               </div>
               <div className="flex items-center gap-4 text-xs">
                 <button
