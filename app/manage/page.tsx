@@ -186,47 +186,47 @@ export default function ManagePage() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 bg-slate-50 text-slate-900 rounded-xl shadow-lg">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4">
         관리자 - 문의/집회 신청 목록
       </h1>
 
       {/* 로그인 폼 */}
       {!authed && (
         <section className="max-w-md">
-          <p className="text-sm text-slate-600 mb-4">
+          <p className="text-base text-slate-600 mb-4">
             관리자 아이디와 비밀번호를 입력하세요.
           </p>
           <form onSubmit={handleLogin} className="space-y-3">
             <div>
-              <label className="block text-xs font-medium text-slate-600">
+              <label className="block text-sm font-medium text-slate-700">
                 아이디
               </label>
               <input
                 type="text"
                 value={idInput}
                 onChange={(e) => setIdInput(e.target.value)}
-                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400"
+                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base outline-none focus:ring-2 focus:ring-slate-400"
                 autoComplete="username"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600">
+              <label className="block text-sm font-medium text-slate-700">
                 비밀번호
               </label>
               <input
                 type="password"
                 value={pwInput}
                 onChange={(e) => setPwInput(e.target.value)}
-                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-400"
+                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base outline-none focus:ring-2 focus:ring-slate-400"
                 autoComplete="current-password"
               />
             </div>
             {loginError && (
-              <p className="text-xs text-red-600">{loginError}</p>
+              <p className="text-sm text-red-600">{loginError}</p>
             )}
             <button
               type="submit"
-              className="mt-1 inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
+              className="mt-1 inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-base font-medium text-white hover:bg-slate-800"
             >
               로그인
             </button>
@@ -258,7 +258,7 @@ export default function ManagePage() {
       )}
 
       {authed && !loading && !error && data.length === 0 && (
-        <div className="text-sm text-slate-600">데이터가 없습니다.</div>
+        <div className="text-base text-slate-600">데이터가 없습니다.</div>
       )}
 
       {authed && !loading && rowsWithMeta.length > 0 && (
@@ -268,9 +268,9 @@ export default function ManagePage() {
             {rowsWithMeta.map((row) => (
               <div
                 key={row.id}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-3 shadow-sm"
+                className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
               >
-                <div className="flex items-center justify-between text-[11px] text-slate-500">
+                <div className="flex items-center justify-between text-xs text-slate-500">
                   <span>No. {row.index}</span>
                   <span>
                     {row.created_at
@@ -278,10 +278,10 @@ export default function ManagePage() {
                       : "-"}
                   </span>
                 </div>
-                <div className="mt-1 text-sm font-semibold">
+                <div className="mt-1 text-base font-semibold">
                   {row.parsed.name || row.name || "-"}
                 </div>
-                <div className="mt-0.5 text-[11px] text-slate-600 break-all">
+                <div className="mt-0.5 text-xs text-slate-600 break-all">
                   {row.parsed.email || row.email ? (
                     <a
                       href={`mailto:${row.parsed.email || row.email}`}
@@ -293,8 +293,8 @@ export default function ManagePage() {
                     "-"
                   )}
                 </div>
-                {(row.parsed.expectedText || row.parsed.church) && (
-                  <div className="mt-1 text-[11px] text-slate-600 space-y-0.5">
+                {(row.parsed.expectedText || row.parsed.church || row.parsed.role) && (
+                  <div className="mt-1 text-xs text-slate-600 space-y-0.5">
                     {row.parsed.expectedText && (
                       <div>참석: {row.parsed.expectedText}</div>
                     )}
@@ -307,7 +307,7 @@ export default function ManagePage() {
                   </div>
                 )}
                 {row.parsed.extraMessage && (
-                  <div className="mt-1 text-[11px] text-slate-500 whitespace-pre-wrap">
+                  <div className="mt-1 text-xs text-slate-500 whitespace-pre-wrap">
                     {row.parsed.extraMessage}
                   </div>
                 )}

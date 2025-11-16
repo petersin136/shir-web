@@ -56,15 +56,35 @@ export default function Footer() {
           {/* 하단: 저작권 및 개인정보 처리방침 */}
           <div className="mt-8 pt-6 border-t border-white/10">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-center sm:text-left space-y-1">
+              <div className="text-center sm:text-left space-y-1 flex flex-col items-center sm:items-start gap-1">
                 <p className="text-sm text-white/70">
                   © 2025 SHIR BAND. All rights reserved.
                 </p>
                 <Link
                   href="/manage"
-                  className="text-[11px] text-white/40 hover:text-white/70 underline"
+                  aria-label="관리자 모드"
+                  className="inline-flex items-center justify-center w-6 h-6 rounded-full border border-white/30 text-white/60 hover:text-white hover:border-white transition-colors"
                 >
-                  관리자 모드
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M15 11a4 4 0 1 0-7.465 2.002L7 16l3-.5.5 1.5 2-.5.5 1.5 2-2.5A4 4 0 0 0 15 11Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle
+                      cx="11"
+                      cy="10"
+                      r="1"
+                      fill="currentColor"
+                    />
+                  </svg>
                 </Link>
               </div>
               <div className="flex items-center gap-4 text-xs">
