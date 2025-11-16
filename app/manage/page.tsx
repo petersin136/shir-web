@@ -185,7 +185,7 @@ export default function ManagePage() {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10 bg-slate-50 text-slate-900 rounded-xl shadow-lg">
+    <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:py-16 mt-8 sm:mt-12 bg-slate-50 text-slate-900 rounded-xl shadow-lg">
       <h1 className="text-3xl sm:text-4xl font-bold mb-4">
         관리자 - 문의/집회 신청 목록
       </h1>
@@ -258,7 +258,7 @@ export default function ManagePage() {
       )}
 
       {authed && !loading && !error && data.length === 0 && (
-        <div className="text-base text-slate-600">데이터가 없습니다.</div>
+        <div className="text-lg text-slate-600">데이터가 없습니다.</div>
       )}
 
       {authed && !loading && rowsWithMeta.length > 0 && (
@@ -270,7 +270,7 @@ export default function ManagePage() {
                 key={row.id}
                 className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
               >
-                <div className="flex items-center justify-between text-xs text-slate-500">
+                <div className="flex items-center justify-between text-sm text-slate-500">
                   <span>No. {row.index}</span>
                   <span>
                     {row.created_at
@@ -278,10 +278,10 @@ export default function ManagePage() {
                       : "-"}
                   </span>
                 </div>
-                <div className="mt-1 text-base font-semibold">
+                <div className="mt-1 text-lg font-semibold">
                   {row.parsed.name || row.name || "-"}
                 </div>
-                <div className="mt-0.5 text-xs text-slate-600 break-all">
+                <div className="mt-0.5 text-sm text-slate-600 break-all">
                   {row.parsed.email || row.email ? (
                     <a
                       href={`mailto:${row.parsed.email || row.email}`}
@@ -294,7 +294,7 @@ export default function ManagePage() {
                   )}
                 </div>
                 {(row.parsed.expectedText || row.parsed.church || row.parsed.role) && (
-                  <div className="mt-1 text-xs text-slate-600 space-y-0.5">
+                  <div className="mt-1 text-sm text-slate-600 space-y-0.5">
                     {row.parsed.expectedText && (
                       <div>참석: {row.parsed.expectedText}</div>
                     )}
@@ -307,7 +307,7 @@ export default function ManagePage() {
                   </div>
                 )}
                 {row.parsed.extraMessage && (
-                  <div className="mt-1 text-xs text-slate-500 whitespace-pre-wrap">
+                  <div className="mt-1 text-sm text-slate-500 whitespace-pre-wrap">
                     {row.parsed.extraMessage}
                   </div>
                 )}
@@ -318,23 +318,23 @@ export default function ManagePage() {
           {/* 데스크톱: 전체 정보 테이블 */}
           <div className="hidden sm:block">
             <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-              <table className="min-w-full text-left text-sm">
+              <table className="min-w-full text-left text-base">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="px-4 py-3 font-semibold text-xs">No.</th>
-                    <th className="px-4 py-3 font-semibold text-xs">이름</th>
-                    <th className="px-4 py-3 font-semibold text-xs">이메일</th>
-                    <th className="px-4 py-3 font-semibold text-xs">연락처</th>
-                    <th className="px-4 py-3 font-semibold text-xs">
+                    <th className="px-4 py-3 font-semibold text-sm">No.</th>
+                    <th className="px-4 py-3 font-semibold text-sm">이름</th>
+                    <th className="px-4 py-3 font-semibold text-sm">이메일</th>
+                    <th className="px-4 py-3 font-semibold text-sm">연락처</th>
+                    <th className="px-4 py-3 font-semibold text-sm">
                       소속교회
                     </th>
-                    <th className="px-4 py-3 font-semibold text-xs">
+                    <th className="px-4 py-3 font-semibold text-sm">
                       직책/역할
                     </th>
-                    <th className="px-4 py-3 font-semibold text-xs whitespace-nowrap">
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">
                       참석 예상 인원
                     </th>
-                    <th className="px-4 py-3 font-semibold text-xs">
+                    <th className="px-4 py-3 font-semibold text-sm">
                       추가 메시지
                     </th>
                     <th className="px-4 py-3 font-semibold whitespace-nowrap">
@@ -345,13 +345,13 @@ export default function ManagePage() {
                 <tbody className="divide-y divide-slate-100">
                   {rowsWithMeta.map((row) => (
                     <tr key={row.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 align-top text-xs text-slate-500">
+                      <td className="px-4 py-3 align-top text-sm text-slate-500">
                         {row.index}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm font-medium">
+                      <td className="px-4 py-3 align-top text-base font-medium">
                         {row.parsed.name || row.name || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-600">
+                      <td className="px-4 py-3 align-top text-sm text-slate-600">
                         {row.parsed.email || row.email ? (
                           <a
                             href={`mailto:${row.parsed.email || row.email}`}
@@ -363,28 +363,28 @@ export default function ManagePage() {
                           "-"
                         )}
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-600 whitespace-nowrap">
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
                         {row.parsed.phone || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-600">
+                      <td className="px-4 py-3 align-top text-sm text-slate-600">
                         {row.parsed.church || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-600 whitespace-nowrap">
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
                         {row.parsed.role || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-700 whitespace-nowrap">
+                      <td className="px-4 py-3 align-top text-sm text-slate-700 whitespace-nowrap">
                         {row.parsed.expectedText
                           ? row.parsed.expectedText
                           : row.attendees > 0
                             ? `${row.attendees}명`
                             : "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-600 max-w-xs">
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
                         <div className="whitespace-pre-wrap break-words">
                           {row.parsed.extraMessage || "-"}
                         </div>
                       </td>
-                      <td className="px-4 py-3 align-top text-xs text-slate-500 whitespace-nowrap">
+                      <td className="px-4 py-3 align-top text-sm text-slate-500 whitespace-nowrap">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
