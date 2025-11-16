@@ -31,7 +31,7 @@ function parseContactMessage(message: string | null): ParsedContact {
     .filter(Boolean);
 
   const result: ParsedContact = {};
-  let extraMessageLines: string[] = [];
+  const extraMessageLines: string[] = [];
   let inExtraMessage = false;
 
   for (const line of lines) {
