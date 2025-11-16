@@ -30,7 +30,7 @@ export default function Footer() {
               <h4 className="text-base font-semibold text-white mb-3">Social Media</h4>
               <div className="flex justify-center md:justify-end gap-3">
                 <a
-                  href="https://www.instagram.com/shir_band/"
+                  href="https://www.instagram.com/shirband_official/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center hover:scale-110 transition-transform"
