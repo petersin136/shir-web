@@ -185,7 +185,7 @@ export default function ManagePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-12 sm:py-16 mt-8 sm:mt-12 bg-slate-50 text-slate-900 rounded-xl shadow-lg">
+    <main className="mx-auto w-full max-w-[90rem] px-4 py-12 sm:py-16 mt-8 sm:mt-12 bg-slate-50 text-slate-900 rounded-xl shadow-lg">
       <h1 className="text-3xl sm:text-4xl font-bold mb-4">
         관리자 - 문의/집회 신청 목록
       </h1>
