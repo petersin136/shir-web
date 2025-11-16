@@ -8,12 +8,19 @@ export default function MetanoiaPage() {
   const [loading, setLoading] = useState(false);
   const [ok, setOk] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setOk(null);
     setErr(null);
     setLoading(true);
+
+    if (!privacyAgreed) {
+      setErr("개인정보 수집 및 이용에 동의해주세요.");
+      setLoading(false);
+      return;
+    }
 
     const form = e.currentTarget;
     const formData = new FormData(form);
@@ -199,9 +206,28 @@ export default function MetanoiaPage() {
               />
             </label>
 
+            <div className="space-y-4">
+              <label className="flex items-start space-x-3">
+                <input
+                  type="checkbox"
+                  checked={privacyAgreed}
+                  onChange={(e) => setPrivacyAgreed(e.target.checked)}
+                  className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  required
+                />
+                <span className="text-sm sm:text-base text-white font-medium">개인정보 수집 및 이용에 동의합니다 (필수)</span>
+              </label>
+              <div className="ml-7 text-xs sm:text-sm text-white/70">
+                <p>
+                  입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
+                  <a href="/privacy-policy" className="underline hover:text-white transition-colors">개인정보 처리방침</a>에 따라 안전하게 관리됩니다.
+                </p>
+              </div>
+            </div>
+
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !privacyAgreed}
               className="mt-6 inline-flex items-center justify-center rounded border border-white px-8 py-4 text-base sm:text-lg md:text-xl font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50"
             >
               {loading ? "신청 중..." : "집회 신청하기"}

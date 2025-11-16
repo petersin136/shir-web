@@ -13,7 +13,6 @@ const links = [
   { href: "/media", label: "미디어", shortLabel: "미디어" },
   { href: "/events", label: "사역", shortLabel: "사역" },
   { href: "/apply", label: "사역 신청", shortLabel: "신청" },
-  { href: "/contact", label: "초청사역", shortLabel: "초청" },
   { href: "/inquiry", label: "문의하기", shortLabel: "문의" },
 ];
 

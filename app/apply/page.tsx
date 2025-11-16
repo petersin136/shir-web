@@ -66,7 +66,7 @@ export default function ApplyPage() {
         </h1>
 
         <p className="text-base sm:text-lg md:text-xl text-white font-medium mb-10">
-          SHIR BAND 사역에 참여하고 싶으시다면 아래 양식을 작성해주세요.
+          SHIR BAND 사역초청을 원하신다면 아래 양식을 작성해주세요.
         </p>
 
         <form onSubmit={onSubmit} className="space-y-6">
@@ -117,13 +117,13 @@ export default function ApplyPage() {
           </div>
 
           <label className="block">
-            <span className="text-sm sm:text-base md:text-lg text-white font-medium">참가동기 *</span>
+            <span className="text-sm sm:text-base md:text-lg text-white font-medium">사역 초청 내용 *</span>
             <textarea
               name="reason"
               rows={5}
               required
               className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
-              placeholder="SHIR BAND 사역에 참여하고 싶은 이유를 자세히 적어주세요."
+              placeholder="SHIR BAND 사역초청을 원하는 이유와 상세 내용을 적어주세요."
             />
           </label>
 
