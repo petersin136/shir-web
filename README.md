@@ -94,6 +94,57 @@ If you wish to just develop locally and not deploy to Vercel, [follow the steps 
 
 > Check out [the docs for Local Development](https://supabase.com/docs/guides/getting-started/local-development) to also run Supabase locally.
 
+## Supabase 자동 일시중지 방지 설정
+
+shir-web 프로젝트의 Supabase DB가 7일 후 자동 일시중지되는 것을 방지하기 위해 GitHub Actions 워크플로우가 설정되어 있습니다.
+
+### 자동 실행 스케줄
+
+- **매주 월요일, 목요일 오전 9시(UTC)** 자동 실행
+- Supabase REST API를 통해 간단한 SELECT 쿼리 실행
+- 데이터베이스가 활성 상태를 유지하도록 보장
+
+### GitHub Secrets 설정 방법
+
+1. GitHub 저장소로 이동
+2. **Settings** → **Secrets and variables** → **Actions** 클릭
+3. **New repository secret** 버튼 클릭
+4. 다음 두 개의 Secret을 추가:
+
+   ```
+   Name: SUPABASE_URL
+   Value: https://ewaqnqzivdceurhjxgpf.supabase.co
+   ```
+
+   ```
+   Name: SUPABASE_ANON_KEY
+   Value: [Supabase Dashboard → Settings → API → anon/public key]
+   ```
+
+5. **Add secret** 클릭하여 저장
+
+### 수동 실행 방법
+
+1. GitHub 저장소의 **Actions** 탭으로 이동
+2. 왼쪽 사이드바에서 **Supabase Auto-Ping (Prevent Pause)** 워크플로우 선택
+3. **Run workflow** 버튼 클릭
+4. **Run workflow** 드롭다운에서 **Run workflow** 클릭
+
+### 워크플로우 동작 방식
+
+- `curl` 명령어를 사용하여 Supabase REST API에 GET 요청 전송
+- `contact_messages` 테이블에서 `id` 컬럼만 조회 (`limit=1`)
+- HTTP 상태 코드를 확인하여 성공/실패 판단
+- 실패 시 상세한 에러 로그 출력
+
+### 문제 해결
+
+워크플로우가 실패하는 경우:
+
+1. **GitHub Secrets 확인**: `SUPABASE_URL`과 `SUPABASE_ANON_KEY`가 올바르게 설정되었는지 확인
+2. **Supabase 프로젝트 상태 확인**: Supabase 대시보드에서 프로젝트가 활성 상태인지 확인
+3. **Actions 로그 확인**: GitHub Actions 탭에서 실패한 워크플로우의 로그를 확인하여 상세 에러 메시지 확인
+
 ## Feedback and issues
 
 Please file feedback and issues over on the [Supabase GitHub org](https://github.com/supabase/supabase/issues/new/choose).

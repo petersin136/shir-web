@@ -1,0 +1,52 @@
+name: Supabase Auto-Ping (Prevent Pause)
+
+on:
+  schedule:
+    # 매주 월요일, 목요일 오전 9시(UTC) 실행
+    - cron: '0 9 * * 1,4'
+  workflow_dispatch: # 수동 실행 가능
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase Database
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "🚀 Starting Supabase ping..."
+          
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_ANON_KEY" ]; then
+            echo "❌ Error: SUPABASE_URL or SUPABASE_ANON_KEY is not set in GitHub Secrets"
+            exit 1
+          fi
+          
+          echo "📡 Sending GET request to Supabase REST API..."
+          echo "URL: $SUPABASE_URL/rest/v1/contact_messages?select=id&limit=1"
+          
+          HTTP_CODE=$(curl -s -o /tmp/response.json -w "%{http_code}" \
+            -X GET \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=minimal" \
+            "$SUPABASE_URL/rest/v1/contact_messages?select=id&limit=1")
+          
+          echo "📊 HTTP Status Code: $HTTP_CODE"
+          
+          if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+            echo "✅ Success! Supabase database is active."
+            echo "Response:"
+            cat /tmp/response.json
+            echo ""
+          else
+            echo "❌ Error: HTTP $HTTP_CODE"
+            echo "Response body:"
+            cat /tmp/response.json
+            echo ""
+            exit 1
+          fi
+          
+          echo "✨ Ping completed successfully!"
+
