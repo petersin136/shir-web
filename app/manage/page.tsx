@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 type ContactMessage = {
   id: number;
@@ -165,6 +168,123 @@ export default function ManagePage() {
     [rowsWithMeta],
   );
 
+  // 엑셀 다운로드 함수
+  async function handleExportExcel() {
+    try {
+      const worksheetData = rowsWithMeta.map((row) => ({
+        No: row.index,
+        이름: row.parsed.name || row.name || "-",
+        이메일: row.parsed.email || row.email || "-",
+        연락처: row.parsed.phone || "-",
+        소속교회: row.parsed.church || "-",
+        직책역할: row.parsed.role || "-",
+        참석예상인원: row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
+        추가메시지: row.parsed.extraMessage || "-",
+        받은시간: row.created_at
+          ? new Date(row.created_at).toLocaleString("ko-KR")
+          : "-",
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "신청목록");
+
+      const fileName = `문의집회신청목록_${new Date().toISOString().split("T")[0]}.xlsx`;
+      XLSX.writeFile(workbook, fileName);
+
+      // DB에 다운로드 기록 저장
+      await saveDownloadRecord("excel", fileName);
+    } catch (error) {
+      console.error("엑셀 다운로드 오류:", error);
+      alert("엑셀 다운로드 중 오류가 발생했습니다.");
+    }
+  }
+
+  // PDF 다운로드 함수
+  async function handleExportPDF() {
+    try {
+      const doc = new jsPDF("landscape", "mm", "a4");
+      
+      // 제목 추가
+      doc.setFontSize(16);
+      doc.text("문의/집회 신청 목록", 14, 15);
+      doc.setFontSize(10);
+      doc.text(`생성일: ${new Date().toLocaleString("ko-KR")}`, 14, 22);
+      doc.text(`총 ${rowsWithMeta.length}건, 총 예상 참석 인원: ${totalAttendees}명`, 14, 27);
+
+      // 테이블 데이터 준비
+      const tableData = rowsWithMeta.map((row) => [
+        row.index.toString(),
+        row.parsed.name || row.name || "-",
+        row.parsed.email || row.email || "-",
+        row.parsed.phone || "-",
+        row.parsed.church || "-",
+        row.parsed.role || "-",
+        row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
+        (row.parsed.extraMessage || "-").substring(0, 30),
+        row.created_at
+          ? new Date(row.created_at).toLocaleDateString("ko-KR")
+          : "-",
+      ]);
+
+      // 테이블 생성
+      (doc as any).autoTable({
+        head: [
+          [
+            "No.",
+            "이름",
+            "이메일",
+            "연락처",
+            "소속교회",
+            "직책/역할",
+            "참석 예상 인원",
+            "추가 메시지",
+            "받은 시간",
+          ],
+        ],
+        body: tableData,
+        startY: 32,
+        styles: { fontSize: 7 },
+        headStyles: { fillColor: [51, 65, 85], textColor: 255 },
+        alternateRowStyles: { fillColor: [245, 247, 250] },
+        margin: { top: 32 },
+      });
+
+      const fileName = `문의집회신청목록_${new Date().toISOString().split("T")[0]}.pdf`;
+      doc.save(fileName);
+
+      // DB에 다운로드 기록 저장
+      await saveDownloadRecord("pdf", fileName);
+    } catch (error) {
+      console.error("PDF 다운로드 오류:", error);
+      alert("PDF 다운로드 중 오류가 발생했습니다.");
+    }
+  }
+
+  // DB에 다운로드 기록 저장
+  async function saveDownloadRecord(format: "excel" | "pdf", fileName: string) {
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error } = await supabase.from("download_logs").insert({
+        format,
+        file_name: fileName,
+        record_count: rowsWithMeta.length,
+        total_attendees: totalAttendees,
+        created_at: new Date().toISOString(),
+      });
+
+      if (error) {
+        console.error("다운로드 기록 저장 오류:", error);
+        // 오류가 있어도 다운로드는 성공했으므로 사용자에게 알리지 않음
+      }
+    } catch (error) {
+      console.error("다운로드 기록 저장 중 예외:", error);
+      // 오류가 있어도 다운로드는 성공했으므로 사용자에게 알리지 않음
+    }
+  }
+
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoginError(null);
@@ -235,15 +355,33 @@ export default function ManagePage() {
       )}
 
       {authed && !loading && !error && (
-        <div className="mb-6 flex flex-wrap gap-4 text-sm">
-          <div className="rounded-md bg-slate-100 px-4 py-2">
-            <span className="font-semibold">총 신청 건수</span>{" "}
-            <span className="ml-2 text-slate-700">{data.length}건</span>
+        <div className="mb-6">
+          <div className="mb-4 flex flex-wrap gap-4 text-sm">
+            <div className="rounded-md bg-slate-100 px-4 py-2">
+              <span className="font-semibold">총 신청 건수</span>{" "}
+              <span className="ml-2 text-slate-700">{data.length}건</span>
+            </div>
+            <div className="rounded-md bg-slate-100 px-4 py-2">
+              <span className="font-semibold">총 예상 참석 인원</span>{" "}
+              <span className="ml-2 text-slate-700">{totalAttendees}명</span>
+            </div>
           </div>
-          <div className="rounded-md bg-slate-100 px-4 py-2">
-            <span className="font-semibold">총 예상 참석 인원</span>{" "}
-            <span className="ml-2 text-slate-700">{totalAttendees}명</span>
-          </div>
+          {rowsWithMeta.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleExportExcel}
+                className="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-colors"
+              >
+                📊 엑셀 다운로드
+              </button>
+              <button
+                onClick={handleExportPDF}
+                className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors"
+              >
+                📄 PDF 다운로드
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -293,6 +431,11 @@ export default function ManagePage() {
                     "-"
                   )}
                 </div>
+                {row.parsed.phone && (
+                  <div className="mt-0.5 text-sm text-slate-600">
+                    연락처: {row.parsed.phone}
+                  </div>
+                )}
                 {(row.parsed.expectedText || row.parsed.church || row.parsed.role) && (
                   <div className="mt-1 text-sm text-slate-600 space-y-0.5">
                     {row.parsed.expectedText && (
