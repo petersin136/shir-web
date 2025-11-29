@@ -11,6 +11,8 @@ async function loadPDFLibraries() {
 
   try {
     // jspdf-autotable v5.x는 autoTable을 함수로 직접 import
+    const [jsPDFModule, autoTableModule] = await Promise.all([
+      import("jspdf"),
       import("jspdf-autotable"),
     ]);
 
@@ -227,9 +229,19 @@ export default function ManagePage() {
     }
   }
 
+  // 모바일 디바이스 감지
+  function isMobileDevice(): boolean {
+    if (typeof window === "undefined") return false;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    ) || window.innerWidth < 768;
+  }
+
   // PDF 다운로드 함수
   async function handleExportPDF() {
     try {
+      const isMobile = isMobileDevice();
+      
       // PDF 라이브러리 로드
       const { jsPDF, autoTable } = await loadPDFLibraries();
 
@@ -240,34 +252,91 @@ export default function ManagePage() {
       let fontLoaded = false;
       const fontName = "NotoSansKR";
       
-      try {
-        // 여러 폰트 소스 시도 (우선순위 순서)
-        const fontUrls = [
-          "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLQ.ttf",
-          "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosanskr/NotoSansKR-Regular.ttf",
-        ];
-        
-        let fontLoadedSuccess = false;
-        
-        for (const fontUrl of fontUrls) {
-          try {
-            const fontResponse = await fetch(fontUrl, {
-              mode: 'cors',
-              cache: 'default'
-            });
-            
-            if (!fontResponse.ok) {
+      // 모바일에서는 폰트 로드를 더 안전하게 처리
+      if (!isMobile) {
+        try {
+          // 여러 폰트 소스 시도 (우선순위 순서)
+          const fontUrls = [
+            "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLQ.ttf",
+            "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosanskr/NotoSansKR-Regular.ttf",
+          ];
+          
+          let fontLoadedSuccess = false;
+          
+          for (const fontUrl of fontUrls) {
+            try {
+              const fontResponse = await fetch(fontUrl, {
+                mode: 'cors',
+                cache: 'default'
+              });
+              
+              if (!fontResponse.ok) {
+                continue; // 다음 URL 시도
+              }
+              
+              const fontArrayBuffer = await fontResponse.arrayBuffer();
+              const fontBytes = new Uint8Array(fontArrayBuffer);
+              
+              // Base64 인코딩 - 큰 파일도 처리 가능하도록
+              let binaryString = '';
+              const len = fontBytes.length;
+              for (let i = 0; i < len; i++) {
+                binaryString += String.fromCharCode(fontBytes[i]);
+              }
+              const fontBase64 = btoa(binaryString);
+              
+              // 폰트를 jsPDF에 추가
+              doc.addFileToVFS("NotoSansKR-Regular.ttf", fontBase64);
+              doc.addFont("NotoSansKR-Regular.ttf", fontName, "normal");
+              doc.setFont(fontName);
+              
+              // 폰트가 제대로 추가되었는지 확인
+              const testFont = doc.getFontList();
+              if (testFont[fontName]) {
+                fontLoaded = true;
+                fontLoadedSuccess = true;
+                console.log("한글 폰트가 성공적으로 로드되었습니다.");
+                break; // 성공하면 루프 종료
+              }
+            } catch (urlError) {
+              console.warn(`폰트 URL 실패 (${fontUrl}):`, urlError);
               continue; // 다음 URL 시도
             }
-            
+          }
+          
+          if (!fontLoadedSuccess) {
+            throw new Error("모든 폰트 소스에서 로드 실패");
+          }
+        } catch (fontError) {
+          console.error("한글 폰트 로드 실패:", fontError);
+          fontLoaded = false;
+        }
+      } else {
+        // 모바일에서는 폰트 로드를 시도하되, 실패해도 계속 진행
+        try {
+          // 모바일에서는 타임아웃을 짧게 설정
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10초 타임아웃
+          
+          const fontUrl = "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLQ.ttf";
+          const fontResponse = await fetch(fontUrl, {
+            mode: 'cors',
+            cache: 'default',
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (fontResponse.ok) {
             const fontArrayBuffer = await fontResponse.arrayBuffer();
             const fontBytes = new Uint8Array(fontArrayBuffer);
             
-            // Base64 인코딩 - 큰 파일도 처리 가능하도록
+            // 모바일에서는 청크 단위로 처리하여 메모리 부족 방지
             let binaryString = '';
-            const len = fontBytes.length;
-            for (let i = 0; i < len; i++) {
-              binaryString += String.fromCharCode(fontBytes[i]);
+            const chunkSize = 1024; // 작은 청크로 처리
+            for (let i = 0; i < fontBytes.length; i += chunkSize) {
+              const chunk = fontBytes.slice(i, i + chunkSize);
+              binaryString += String.fromCharCode(...new Uint8Array(chunk));
             }
             const fontBase64 = btoa(binaryString);
             
@@ -280,24 +349,13 @@ export default function ManagePage() {
             const testFont = doc.getFontList();
             if (testFont[fontName]) {
               fontLoaded = true;
-              fontLoadedSuccess = true;
               console.log("한글 폰트가 성공적으로 로드되었습니다.");
-              break; // 성공하면 루프 종료
             }
-          } catch (urlError) {
-            console.warn(`폰트 URL 실패 (${fontUrl}):`, urlError);
-            continue; // 다음 URL 시도
           }
+        } catch (fontError) {
+          console.warn("모바일에서 한글 폰트 로드 실패 (계속 진행):", fontError);
+          fontLoaded = false;
         }
-        
-        if (!fontLoadedSuccess) {
-          throw new Error("모든 폰트 소스에서 로드 실패");
-        }
-      } catch (fontError) {
-        console.error("한글 폰트 로드 실패:", fontError);
-        // 폰트 로드 실패 시에도 계속 진행 (한글이 깨질 수 있음)
-        // 사용자에게는 조용히 처리 (PDF는 생성되지만 한글이 깨질 수 있음)
-        fontLoaded = false;
       }
       
       // 제목 추가 - 폰트가 로드된 경우에만 한글 폰트 사용
@@ -404,7 +462,22 @@ export default function ManagePage() {
       autoTable(doc, tableOptions);
 
       const fileName = `문의집회신청목록_${new Date().toISOString().split("T")[0]}.pdf`;
-      doc.save(fileName);
+      
+      // 모바일에서는 파일 저장 방식 조정
+      if (isMobileDevice()) {
+        // 모바일에서는 blob으로 변환하여 다운로드
+        const pdfBlob = doc.output("blob");
+        const url = URL.createObjectURL(pdfBlob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } else {
+        doc.save(fileName);
+      }
 
       // DB에 다운로드 기록 저장
       await saveDownloadRecord("pdf", fileName);
@@ -412,7 +485,13 @@ export default function ManagePage() {
       console.error("PDF 다운로드 오류:", error);
       const errorMessage =
         error instanceof Error ? error.message : String(error);
-      alert(`PDF 다운로드 중 오류가 발생했습니다: ${errorMessage}`);
+      
+      // 모바일에서는 더 자세한 에러 메시지
+      if (isMobileDevice()) {
+        alert(`PDF 다운로드 중 오류가 발생했습니다.\n\n오류: ${errorMessage}\n\n모바일에서는 네트워크 연결이 안정적이어야 합니다. Wi-Fi에 연결되어 있는지 확인해주세요.`);
+      } else {
+        alert(`PDF 다운로드 중 오류가 발생했습니다: ${errorMessage}`);
+      }
     }
   }
 
@@ -431,11 +510,12 @@ export default function ManagePage() {
       });
 
       if (error) {
-        console.error("다운로드 기록 저장 오류:", error);
+        // 테이블이 없거나 권한 문제인 경우 조용히 처리
+        // 콘솔 오류를 표시하지 않음 (다운로드는 성공했으므로)
         // 오류가 있어도 다운로드는 성공했으므로 사용자에게 알리지 않음
       }
     } catch (error) {
-      console.error("다운로드 기록 저장 중 예외:", error);
+      // 콘솔 오류를 표시하지 않음 (다운로드는 성공했으므로)
       // 오류가 있어도 다운로드는 성공했으므로 사용자에게 알리지 않음
     }
   }
