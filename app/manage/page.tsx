@@ -390,48 +390,9 @@ export default function ManagePage() {
       });
 
       // 테이블 생성 - jspdf-autotable v5.x는 autoTable을 함수로 직접 호출
-      interface AutoTableOptions {
-        head: string[][];
-        body: string[][];
-        startY: number;
-        styles: {
-          fontSize: number;
-          font?: string;
-          fontStyle?: string;
-        };
-        headStyles: {
-          fillColor: number[];
-          textColor: number;
-          font?: string;
-          fontStyle?: string;
-        };
-        alternateRowStyles: {
-          fillColor: number[];
-          font?: string;
-          fontStyle?: string;
-        };
-        margin: {
-          top: number;
-        };
-        didParseCell?: (data: {
-          cell?: {
-            styles?: {
-              font?: string;
-              fontStyle?: string;
-            };
-          };
-        }) => void;
-        willDrawCell?: (data: {
-          cell?: {
-            styles?: {
-              font?: string;
-              fontStyle?: string;
-            };
-          };
-        }) => void;
-      }
-      
-      const tableOptions: AutoTableOptions = {
+      // jspdf-autotable의 타입을 사용하기 위해 any로 선언 (라이브러리 타입 정의가 불완전함)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const tableOptions: any = {
         head: [
           [
             "No.",
@@ -484,14 +445,8 @@ export default function ManagePage() {
         };
         
         // 모든 셀에 폰트를 강제로 적용하는 콜백
-        tableOptions.didParseCell = function(data: {
-          cell?: {
-            styles?: {
-              font?: string;
-              fontStyle?: string;
-            };
-          };
-        }) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tableOptions.didParseCell = function(data: any) {
           if (data.cell && data.cell.styles) {
             data.cell.styles.font = fontName;
             data.cell.styles.fontStyle = "normal";
@@ -499,14 +454,8 @@ export default function ManagePage() {
         };
         
         // 테이블 그리기 전에 폰트 설정
-        tableOptions.willDrawCell = function(data: {
-          cell?: {
-            styles?: {
-              font?: string;
-              fontStyle?: string;
-            };
-          };
-        }) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        tableOptions.willDrawCell = function(data: any) {
           if (data.cell && data.cell.styles) {
             data.cell.styles.font = fontName;
             data.cell.styles.fontStyle = "normal";
