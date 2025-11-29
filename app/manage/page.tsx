@@ -2,8 +2,35 @@
 
 import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
+
+// jspdf와 jspdf-autotable은 클라이언트 사이드에서만 사용
+async function loadPDFLibraries() {
+  if (typeof window === "undefined") {
+    throw new Error("PDF 라이브러리는 브라우저에서만 사용할 수 있습니다.");
+  }
+
+  try {
+    // jspdf-autotable v5.x는 autoTable을 함수로 직접 import
+      import("jspdf-autotable"),
+    ]);
+
+    // jspdf는 default export 또는 named export일 수 있음
+    const jsPDF = jsPDFModule.jsPDF || jsPDFModule.default;
+    const autoTable = autoTableModule.autoTable || autoTableModule.default;
+
+    if (!jsPDF) {
+      throw new Error("jsPDF를 로드할 수 없습니다.");
+    }
+    if (!autoTable) {
+      throw new Error("autoTable을 로드할 수 없습니다.");
+    }
+
+    return { jsPDF, autoTable };
+  } catch (error) {
+    console.error("PDF 라이브러리 로드 오류:", error);
+    throw new Error(`PDF 라이브러리를 로드할 수 없습니다: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
 
 type ContactMessage = {
   id: number;
@@ -203,32 +230,109 @@ export default function ManagePage() {
   // PDF 다운로드 함수
   async function handleExportPDF() {
     try {
+      // PDF 라이브러리 로드
+      const { jsPDF, autoTable } = await loadPDFLibraries();
+
       const doc = new jsPDF("landscape", "mm", "a4");
       
-      // 제목 추가
+      // 한글 폰트 추가 (Noto Sans KR)
+      // jsPDF에서 한글을 지원하려면 한글 폰트를 추가해야 함
+      let fontLoaded = false;
+      const fontName = "NotoSansKR";
+      
+      try {
+        // 여러 폰트 소스 시도 (우선순위 순서)
+        const fontUrls = [
+          "https://fonts.gstatic.com/s/notosanskr/v38/PbyxFmXiEBPT4ITbgNA5Cgms3VYcOA-vvnIzzuoyeLQ.ttf",
+          "https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/notosanskr/NotoSansKR-Regular.ttf",
+        ];
+        
+        let fontLoadedSuccess = false;
+        
+        for (const fontUrl of fontUrls) {
+          try {
+            const fontResponse = await fetch(fontUrl, {
+              mode: 'cors',
+              cache: 'default'
+            });
+            
+            if (!fontResponse.ok) {
+              continue; // 다음 URL 시도
+            }
+            
+            const fontArrayBuffer = await fontResponse.arrayBuffer();
+            const fontBytes = new Uint8Array(fontArrayBuffer);
+            
+            // Base64 인코딩 - 큰 파일도 처리 가능하도록
+            let binaryString = '';
+            const len = fontBytes.length;
+            for (let i = 0; i < len; i++) {
+              binaryString += String.fromCharCode(fontBytes[i]);
+            }
+            const fontBase64 = btoa(binaryString);
+            
+            // 폰트를 jsPDF에 추가
+            doc.addFileToVFS("NotoSansKR-Regular.ttf", fontBase64);
+            doc.addFont("NotoSansKR-Regular.ttf", fontName, "normal");
+            doc.setFont(fontName);
+            
+            // 폰트가 제대로 추가되었는지 확인
+            const testFont = doc.getFontList();
+            if (testFont[fontName]) {
+              fontLoaded = true;
+              fontLoadedSuccess = true;
+              console.log("한글 폰트가 성공적으로 로드되었습니다.");
+              break; // 성공하면 루프 종료
+            }
+          } catch (urlError) {
+            console.warn(`폰트 URL 실패 (${fontUrl}):`, urlError);
+            continue; // 다음 URL 시도
+          }
+        }
+        
+        if (!fontLoadedSuccess) {
+          throw new Error("모든 폰트 소스에서 로드 실패");
+        }
+      } catch (fontError) {
+        console.error("한글 폰트 로드 실패:", fontError);
+        // 폰트 로드 실패 시에도 계속 진행 (한글이 깨질 수 있음)
+        // 사용자에게는 조용히 처리 (PDF는 생성되지만 한글이 깨질 수 있음)
+        fontLoaded = false;
+      }
+      
+      // 제목 추가 - 폰트가 로드된 경우에만 한글 폰트 사용
+      if (fontLoaded) {
+        doc.setFont(fontName);
+      }
       doc.setFontSize(16);
       doc.text("문의/집회 신청 목록", 14, 15);
       doc.setFontSize(10);
       doc.text(`생성일: ${new Date().toLocaleString("ko-KR")}`, 14, 22);
       doc.text(`총 ${rowsWithMeta.length}건, 총 예상 참석 인원: ${totalAttendees}명`, 14, 27);
 
-      // 테이블 데이터 준비
-      const tableData = rowsWithMeta.map((row) => [
-        row.index.toString(),
-        row.parsed.name || row.name || "-",
-        row.parsed.email || row.email || "-",
-        row.parsed.phone || "-",
-        row.parsed.church || "-",
-        row.parsed.role || "-",
-        row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
-        (row.parsed.extraMessage || "-").substring(0, 30),
-        row.created_at
-          ? new Date(row.created_at).toLocaleDateString("ko-KR")
-          : "-",
-      ]);
+      // 테이블 데이터 준비 - null/undefined 값 처리
+      const tableData = rowsWithMeta.map((row) => {
+        const extraMsg = row.parsed?.extraMessage || "-";
+        return [
+          String(row.index || ""),
+          String(row.parsed?.name || row.name || "-"),
+          String(row.parsed?.email || row.email || "-"),
+          String(row.parsed?.phone || "-"),
+          String(row.parsed?.church || "-"),
+          String(row.parsed?.role || "-"),
+          String(
+            row.parsed?.expectedText ||
+              (row.attendees > 0 ? `${row.attendees}명` : "-")
+          ),
+          String(extraMsg.length > 30 ? extraMsg.substring(0, 30) + "..." : extraMsg),
+          row.created_at
+            ? new Date(row.created_at).toLocaleDateString("ko-KR")
+            : "-",
+        ];
+      });
 
-      // 테이블 생성
-      (doc as any).autoTable({
+      // 테이블 생성 - jspdf-autotable v5.x는 autoTable을 함수로 직접 호출
+      const tableOptions: any = {
         head: [
           [
             "No.",
@@ -244,11 +348,60 @@ export default function ManagePage() {
         ],
         body: tableData,
         startY: 32,
-        styles: { fontSize: 7 },
-        headStyles: { fillColor: [51, 65, 85], textColor: 255 },
-        alternateRowStyles: { fillColor: [245, 247, 250] },
+        styles: { 
+          fontSize: 7,
+        },
+        headStyles: { 
+          fillColor: [51, 65, 85], 
+          textColor: 255,
+        },
+        alternateRowStyles: { 
+          fillColor: [245, 247, 250],
+        },
         margin: { top: 32 },
-      });
+      };
+      
+      // 폰트가 로드된 경우에만 폰트 설정 추가
+      if (fontLoaded) {
+        // 기본 스타일에 폰트 설정
+        tableOptions.styles = {
+          ...tableOptions.styles,
+          font: fontName,
+          fontStyle: "normal",
+        };
+        
+        // 헤더 스타일에 폰트 설정
+        tableOptions.headStyles = {
+          ...tableOptions.headStyles,
+          font: fontName,
+          fontStyle: "normal",
+        };
+        
+        // 교대 행 스타일에 폰트 설정
+        tableOptions.alternateRowStyles = {
+          ...tableOptions.alternateRowStyles,
+          font: fontName,
+          fontStyle: "normal",
+        };
+        
+        // 모든 셀에 폰트를 강제로 적용하는 콜백
+        tableOptions.didParseCell = function(data: any) {
+          if (data.cell && data.cell.styles) {
+            data.cell.styles.font = fontName;
+            data.cell.styles.fontStyle = "normal";
+          }
+        };
+        
+        // 테이블 그리기 전에 폰트 설정
+        tableOptions.willDrawCell = function(data: any) {
+          if (data.cell && data.cell.styles) {
+            data.cell.styles.font = fontName;
+            data.cell.styles.fontStyle = "normal";
+          }
+        };
+      }
+      
+      autoTable(doc, tableOptions);
 
       const fileName = `문의집회신청목록_${new Date().toISOString().split("T")[0]}.pdf`;
       doc.save(fileName);
@@ -257,7 +410,9 @@ export default function ManagePage() {
       await saveDownloadRecord("pdf", fileName);
     } catch (error) {
       console.error("PDF 다운로드 오류:", error);
-      alert("PDF 다운로드 중 오류가 발생했습니다.");
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      alert(`PDF 다운로드 중 오류가 발생했습니다: ${errorMessage}`);
     }
   }
 
