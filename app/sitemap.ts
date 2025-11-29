@@ -69,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Supabase에서 동적 페이지 가져오기 (선택적)
-  let dynamicPages: MetadataRoute.Sitemap = [];
+  const dynamicPages: MetadataRoute.Sitemap = [];
 
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
