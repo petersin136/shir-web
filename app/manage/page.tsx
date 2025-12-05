@@ -146,7 +146,10 @@ export default function ManagePage() {
       return;
     }
 
-    async function load() {
+    async function load(retryCount = 0) {
+      const MAX_RETRIES = 2; // 최대 2번 재시도
+      const RETRY_DELAY = 3000; // 3초 대기
+
       try {
         const { createClient } = await import("@/lib/supabase/client");
         const supabase = createClient();
@@ -159,17 +162,80 @@ export default function ManagePage() {
 
         if (error) {
           console.error("Supabase error (contact_messages):", error);
-          setError(error.message || "데이터를 불러오는 중 오류가 발생했습니다.");
+          
+          // Supabase 프로젝트가 복원 중이거나 일시 중지된 경우 자동 재시도
+          const isServerError = 
+            error.code === "PGRST116" || 
+            error.message?.includes("500") || 
+            error.message?.includes("Internal Server Error") ||
+            error.message?.includes("Failed to fetch");
+
+          if (isServerError && retryCount < MAX_RETRIES) {
+            console.log(`Supabase 서버 오류 감지. ${RETRY_DELAY / 1000}초 후 재시도... (${retryCount + 1}/${MAX_RETRIES})`);
+            setError(`Supabase 프로젝트가 복원 중일 수 있습니다. 자동으로 재시도 중... (${retryCount + 1}/${MAX_RETRIES})`);
+            
+            // 재시도
+            setTimeout(() => {
+              load(retryCount + 1);
+            }, RETRY_DELAY);
+            return;
+          }
+          
+          // 재시도 횟수 초과 또는 다른 오류
+          let errorMsg = "데이터를 불러오는 중 오류가 발생했습니다.";
+          
+          if (isServerError) {
+            errorMsg = "Supabase 프로젝트가 복원 중이거나 일시 중지되었을 수 있습니다. Supabase 대시보드에서 프로젝트를 재시작해주세요.";
+          } else if (error.message?.includes("CORS") || error.message?.includes("fetch")) {
+            errorMsg = "네트워크 연결 오류가 발생했습니다. Supabase 설정을 확인해주세요.";
+          } else if (error.message) {
+            errorMsg = error.message;
+          } else if (error.details) {
+            errorMsg = error.details;
+          } else if (error.hint) {
+            errorMsg = error.hint;
+          }
+          
+          setError(errorMsg);
           setData([]);
+          setLoading(false);
           return;
         }
 
+        // 성공
         setData(data ?? []);
+        setError(null);
+        setLoading(false);
       } catch (e) {
         console.error("Unexpected error (manage page):", e);
-        setError("알 수 없는 오류가 발생했습니다.");
+        
+        // 네트워크 오류인 경우 재시도
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        const isNetworkError = 
+          errorMessage.includes("Failed to fetch") || 
+          errorMessage.includes("CORS") ||
+          errorMessage.includes("NetworkError");
+
+        if (isNetworkError && retryCount < MAX_RETRIES) {
+          console.log(`네트워크 오류 감지. ${RETRY_DELAY / 1000}초 후 재시도... (${retryCount + 1}/${MAX_RETRIES})`);
+          setError(`네트워크 연결 오류. 자동으로 재시도 중... (${retryCount + 1}/${MAX_RETRIES})`);
+          
+          setTimeout(() => {
+            load(retryCount + 1);
+          }, RETRY_DELAY);
+          return;
+        }
+        
+        // 재시도 횟수 초과 또는 다른 오류
+        let errorMsg = "알 수 없는 오류가 발생했습니다.";
+        if (errorMessage.includes("Failed to fetch") || errorMessage.includes("CORS")) {
+          errorMsg = "네트워크 연결 오류가 발생했습니다. 인터넷 연결과 Supabase 설정을 확인해주세요.";
+        } else if (errorMessage) {
+          errorMsg = errorMessage;
+        }
+        
+        setError(errorMsg);
         setData([]);
-      } finally {
         setLoading(false);
       }
     }

@@ -1,6 +1,5 @@
 'use client';
 
-import { createClient } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -31,18 +30,9 @@ export function BackgroundVideo({
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-        if (!supabaseUrl || !supabaseAnonKey) {
-          console.warn(
-            "BackgroundVideo: Supabase env가 없습니다. 기본 배경만 표시합니다.",
-          );
-          setHasError(true);
-          return;
-        }
-
-        const supabase = createClient(supabaseUrl, supabaseAnonKey);
+        // lib/supabase/client.ts의 createClient 사용 (환경 변수 자동 처리)
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
 
         const { data, error } = await supabase
           .from("settings")
