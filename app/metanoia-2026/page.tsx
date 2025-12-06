@@ -9,6 +9,14 @@ export default function MetanoiaPage() {
   const [ok, setOk] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
+  const [sessions, setSessions] = useState({
+    day1Morning: false,
+    day1Evening: false,
+    day2Morning: false,
+    day2Evening: false,
+    day3Morning: false,
+    day3Evening: false,
+  });
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,6 +32,28 @@ export default function MetanoiaPage() {
 
     const form = e.currentTarget;
     const formData = new FormData(form);
+    
+    // 선택된 세션 확인
+    const selectedSessions = Object.entries(sessions).filter(([_, checked]) => checked);
+    if (selectedSessions.length === 0) {
+      setErr("최소 1개 이상의 세션을 선택해주세요.");
+      setLoading(false);
+      return;
+    }
+
+    const sessionLabels = {
+      day1Morning: "DAY1 01.26(월) 14:00-15:00 WORSHIP",
+      day1Evening: "DAY1 01.26(월) 19:30-22:00 METANOIA part 1",
+      day2Morning: "DAY2 01.27(화) 15:00-17:00 WORSHIP & COMMUNION 2",
+      day2Evening: "DAY2 01.27(화) 19:30-22:00 METANOIA part 2",
+      day3Morning: "DAY3 01.28(수) 15:00-17:00 WORSHIP & COMMUNION 3",
+      day3Evening: "DAY3 01.28(수) 19:30-22:00 METANOIA part 3",
+    };
+
+    const selectedSessionsText = selectedSessions
+      .map(([key]) => sessionLabels[key as keyof typeof sessionLabels])
+      .join(", ");
+
     const payload = {
       name: String(formData.get("name") || "").trim(),
       email: String(formData.get("email") || "").trim(),
@@ -32,6 +62,7 @@ export default function MetanoiaPage() {
       position: String(formData.get("position") || "").trim(),
       participants: String(formData.get("participants") || "").trim(),
       message: String(formData.get("message") || "").trim(),
+      sessions: selectedSessionsText,
     };
 
     if (!payload.name || !payload.email || !payload.phone || !payload.church) {
@@ -55,6 +86,7 @@ export default function MetanoiaPage() {
 - 소속교회: ${payload.church}
 - 직책/역할: ${payload.position}
 - 참석 예상 인원: ${payload.participants}
+- 참석 세션: ${payload.sessions}
 - 추가 메시지: ${payload.message}
           `.trim()
         }),
@@ -63,6 +95,15 @@ export default function MetanoiaPage() {
       if (!res.ok) throw new Error(data?.error || "서버 오류");
       setOk("Metanoia 2026 집회 신청이 완료되었습니다. 감사합니다!");
       form.reset();
+      setPrivacyAgreed(false);
+      setSessions({
+        day1Morning: false,
+        day1Evening: false,
+        day2Morning: false,
+        day2Evening: false,
+        day3Morning: false,
+        day3Evening: false,
+      });
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : "신청에 실패했습니다.";
       setErr(errorMessage);
@@ -114,6 +155,80 @@ export default function MetanoiaPage() {
               <p className="text-base sm:text-lg md:text-xl text-white font-medium">김용의 선교사님</p>
               <p className="text-base sm:text-lg md:text-xl text-white font-medium">송바울 (Dr. One. K)</p>
               <p className="text-base sm:text-lg md:text-xl text-white font-medium">스캇브레너 목사님</p>
+            </div>
+          </div>
+
+          {/* 세부 일정 섹션 */}
+          <div className="space-y-4">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">세부 일정</h3>
+            
+            {/* DAY 1 */}
+            <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
+              <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-4">DAY1 01.26(월)</h4>
+              <div className="space-y-3">
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">14:00-15:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">15:00-17:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP & COMMUNION 1</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">17:00-19:30</span>
+                  <span className="text-sm sm:text-base text-white font-medium">저녁식사</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">19:30-22:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">METANOIA part 1</span>
+                </div>
+              </div>
+            </div>
+
+            {/* DAY 2 */}
+            <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
+              <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-4">DAY2 01.27(화)</h4>
+              <div className="space-y-3">
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">15:00-17:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP & COMMUNION 2</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">17:00-19:30</span>
+                  <span className="text-sm sm:text-base text-white font-medium">저녁식사</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">19:30-22:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">METANOIA part 2</span>
+                </div>
+              </div>
+            </div>
+
+            {/* DAY 3 */}
+            <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
+              <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-4">DAY3 01.28(수)</h4>
+              <div className="space-y-3">
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">15:00-17:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP & COMMUNION 3</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">17:00-19:30</span>
+                  <span className="text-sm sm:text-base text-white font-medium">저녁식사</span>
+                </div>
+                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">19:30-22:00</span>
+                  <span className="text-sm sm:text-base text-white font-medium">METANOIA part 3</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 신청 안내 */}
+            <div className="bg-yellow-500/10 rounded-lg p-4 sm:p-5 ring-1 ring-yellow-500/20 mt-6">
+              <p className="text-sm sm:text-base text-yellow-200 font-medium">
+                ※ 신청 1: 모든 시간 참석<br/>
+                ※ 신청 2: 저녁 시간 참석 (METANOIA part 1, 2, 3)
+              </p>
             </div>
           </div>
 
@@ -194,6 +309,81 @@ export default function MetanoiaPage() {
                   placeholder="예: 개인 1명, 팀 5명 등"
                 />
               </label>
+            </div>
+
+            {/* 참석 세션 선택 */}
+            <div className="space-y-4">
+              <span className="text-sm sm:text-base md:text-lg text-white font-medium">참석 세션 선택 *</span>
+              <p className="text-xs sm:text-sm text-white/70">참석하실 세션을 선택해주세요. (여러 개 선택 가능)</p>
+              
+              {/* DAY 1 세션 */}
+              <div className="bg-white/5 rounded-lg p-4 ring-1 ring-white/10 space-y-3">
+                <h4 className="text-sm sm:text-base font-bold text-white mb-2">DAY1 01.26(월)</h4>
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sessions.day1Morning}
+                    onChange={(e) => setSessions({...sessions, day1Morning: e.target.checked})}
+                    className="mt-0.5 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  />
+                  <span className="text-xs sm:text-sm text-white">14:00-15:00 WORSHIP</span>
+                </label>
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sessions.day1Evening}
+                    onChange={(e) => setSessions({...sessions, day1Evening: e.target.checked})}
+                    className="mt-0.5 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  />
+                  <span className="text-xs sm:text-sm text-white">19:30-22:00 METANOIA part 1</span>
+                </label>
+              </div>
+
+              {/* DAY 2 세션 */}
+              <div className="bg-white/5 rounded-lg p-4 ring-1 ring-white/10 space-y-3">
+                <h4 className="text-sm sm:text-base font-bold text-white mb-2">DAY2 01.27(화)</h4>
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sessions.day2Morning}
+                    onChange={(e) => setSessions({...sessions, day2Morning: e.target.checked})}
+                    className="mt-0.5 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  />
+                  <span className="text-xs sm:text-sm text-white">15:00-17:00 WORSHIP & COMMUNION 2</span>
+                </label>
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sessions.day2Evening}
+                    onChange={(e) => setSessions({...sessions, day2Evening: e.target.checked})}
+                    className="mt-0.5 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  />
+                  <span className="text-xs sm:text-sm text-white">19:30-22:00 METANOIA part 2</span>
+                </label>
+              </div>
+
+              {/* DAY 3 세션 */}
+              <div className="bg-white/5 rounded-lg p-4 ring-1 ring-white/10 space-y-3">
+                <h4 className="text-sm sm:text-base font-bold text-white mb-2">DAY3 01.28(수)</h4>
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sessions.day3Morning}
+                    onChange={(e) => setSessions({...sessions, day3Morning: e.target.checked})}
+                    className="mt-0.5 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  />
+                  <span className="text-xs sm:text-sm text-white">15:00-17:00 WORSHIP & COMMUNION 3</span>
+                </label>
+                <label className="flex items-start space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={sessions.day3Evening}
+                    onChange={(e) => setSessions({...sessions, day3Evening: e.target.checked})}
+                    className="mt-0.5 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
+                  />
+                  <span className="text-xs sm:text-sm text-white">19:30-22:00 METANOIA part 3</span>
+                </label>
+              </div>
             </div>
 
             <label className="block">

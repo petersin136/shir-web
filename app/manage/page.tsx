@@ -50,6 +50,7 @@ type ParsedContact = {
   role?: string;
   expectedText?: string;
   expectedCount?: number;
+  sessions?: string;
   extraMessage?: string;
 };
 
@@ -100,6 +101,10 @@ function parseContactMessage(message: string | null): ParsedContact {
           result.expectedCount = n;
         }
       }
+      continue;
+    }
+    if (clean.startsWith("참석 세션:")) {
+      result.sessions = clean.replace("참석 세션:", "").trim();
       continue;
     }
     if (clean.startsWith("추가 메시지:")) {
@@ -274,6 +279,7 @@ export default function ManagePage() {
         소속교회: row.parsed.church || "-",
         직책역할: row.parsed.role || "-",
         참석예상인원: row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
+        참석세션: row.parsed.sessions || "-",
         추가메시지: row.parsed.extraMessage || "-",
         받은시간: row.created_at
           ? new Date(row.created_at).toLocaleString("ko-KR")
@@ -437,6 +443,7 @@ export default function ManagePage() {
       // 테이블 데이터 준비 - null/undefined 값 처리
       const tableData = rowsWithMeta.map((row) => {
         const extraMsg = row.parsed?.extraMessage || "-";
+        const sessions = row.parsed?.sessions || "-";
         return [
           String(row.index || ""),
           String(row.parsed?.name || row.name || "-"),
@@ -448,6 +455,7 @@ export default function ManagePage() {
             row.parsed?.expectedText ||
               (row.attendees > 0 ? `${row.attendees}명` : "-")
           ),
+          String(sessions.length > 50 ? sessions.substring(0, 50) + "..." : sessions),
           String(extraMsg.length > 30 ? extraMsg.substring(0, 30) + "..." : extraMsg),
           row.created_at
             ? new Date(row.created_at).toLocaleDateString("ko-KR")
@@ -468,6 +476,7 @@ export default function ManagePage() {
             "소속교회",
             "직책/역할",
             "참석 예상 인원",
+            "참석 세션",
             "추가 메시지",
             "받은 시간",
           ],
@@ -741,7 +750,7 @@ export default function ManagePage() {
                     연락처: {row.parsed.phone}
                   </div>
                 )}
-                {(row.parsed.expectedText || row.parsed.church || row.parsed.role) && (
+                {(row.parsed.expectedText || row.parsed.church || row.parsed.role || row.parsed.sessions) && (
                   <div className="mt-1 text-sm text-slate-600 space-y-0.5">
                     {row.parsed.expectedText && (
                       <div>참석: {row.parsed.expectedText}</div>
@@ -751,6 +760,11 @@ export default function ManagePage() {
                     )}
                     {row.parsed.role && (
                       <div>직분: {row.parsed.role}</div>
+                    )}
+                    {row.parsed.sessions && (
+                      <div className="text-xs bg-blue-50 text-blue-700 p-2 rounded mt-1">
+                        세션: {row.parsed.sessions}
+                      </div>
                     )}
                   </div>
                 )}
@@ -781,6 +795,9 @@ export default function ManagePage() {
                     </th>
                     <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">
                       참석 예상 인원
+                    </th>
+                    <th className="px-4 py-3 font-semibold text-sm">
+                      참석 세션
                     </th>
                     <th className="px-4 py-3 font-semibold text-sm">
                       추가 메시지
@@ -826,6 +843,11 @@ export default function ManagePage() {
                           : row.attendees > 0
                             ? `${row.attendees}명`
                             : "-"}
+                      </td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
+                        <div className="whitespace-pre-wrap break-words">
+                          {row.parsed.sessions || "-"}
+                        </div>
                       </td>
                       <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
                         <div className="whitespace-pre-wrap break-words">
