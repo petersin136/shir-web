@@ -161,14 +161,6 @@ export default function MetanoiaPage() {
                 </div>
               </div>
             </div>
-
-            {/* 신청 안내 - 세션 선택과 함께 */}
-            <div className="bg-yellow-500/10 rounded-lg p-4 sm:p-5 ring-1 ring-yellow-500/20">
-              <p className="text-sm sm:text-base text-yellow-200 font-medium mb-4">
-                ※ 신청 1: 모든 시간 참석<br/>
-                ※ 신청 2: 저녁 시간 참석 (METANOIA part 1, 2, 3)
-              </p>
-            </div>
           </div>
 
         </div>
