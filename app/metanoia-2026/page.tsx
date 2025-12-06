@@ -138,69 +138,32 @@ export default function MetanoiaPage() {
           <div className="space-y-4">
             <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">세부 일정</h3>
             
-            {/* DAY 1 */}
+            {/* 일정 요약 */}
             <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
-              <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-4">DAY1 01.26(월)</h4>
-              <div className="space-y-3">
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">14:00-15:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP</span>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-base sm:text-lg font-bold text-white mb-2">DAY1 01.26(월)</h4>
+                  <p className="text-sm sm:text-base text-white/80">
+                    14:00 WORSHIP 시작 → 저녁식사 → 19:30 METANOIA part 1
+                  </p>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">15:00-17:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP & COMMUNION 1</span>
+                <div>
+                  <h4 className="text-base sm:text-lg font-bold text-white mb-2">DAY2 01.27(화)</h4>
+                  <p className="text-sm sm:text-base text-white/80">
+                    15:00 WORSHIP & COMMUNION 2 → 저녁식사 → 19:30 METANOIA part 2
+                  </p>
                 </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">17:00-19:30</span>
-                  <span className="text-sm sm:text-base text-white font-medium">저녁식사</span>
-                </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">19:30-22:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">METANOIA part 1</span>
-                </div>
-              </div>
-            </div>
-
-            {/* DAY 2 */}
-            <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
-              <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-4">DAY2 01.27(화)</h4>
-              <div className="space-y-3">
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">15:00-17:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP & COMMUNION 2</span>
-                </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">17:00-19:30</span>
-                  <span className="text-sm sm:text-base text-white font-medium">저녁식사</span>
-                </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">19:30-22:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">METANOIA part 2</span>
-                </div>
-              </div>
-            </div>
-
-            {/* DAY 3 */}
-            <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
-              <h4 className="text-base sm:text-lg md:text-xl font-bold text-white mb-4">DAY3 01.28(수)</h4>
-              <div className="space-y-3">
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">15:00-17:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">WORSHIP & COMMUNION 3</span>
-                </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">17:00-19:30</span>
-                  <span className="text-sm sm:text-base text-white font-medium">저녁식사</span>
-                </div>
-                <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                  <span className="text-sm sm:text-base text-white/70 font-medium min-w-[100px] sm:min-w-[120px]">19:30-22:00</span>
-                  <span className="text-sm sm:text-base text-white font-medium">METANOIA part 3</span>
+                <div>
+                  <h4 className="text-base sm:text-lg font-bold text-white mb-2">DAY3 01.28(수)</h4>
+                  <p className="text-sm sm:text-base text-white/80">
+                    15:00 WORSHIP & COMMUNION 3 → 저녁식사 → 19:30 METANOIA part 3
+                  </p>
                 </div>
               </div>
             </div>
 
             {/* 신청 안내 - 세션 선택과 함께 */}
-            <div className="bg-yellow-500/10 rounded-lg p-4 sm:p-5 ring-1 ring-yellow-500/20 mt-6">
+            <div className="bg-yellow-500/10 rounded-lg p-4 sm:p-5 ring-1 ring-yellow-500/20">
               <p className="text-sm sm:text-base text-yellow-200 font-medium mb-4">
                 ※ 신청 1: 모든 시간 참석<br/>
                 ※ 신청 2: 저녁 시간 참석 (METANOIA part 1, 2, 3)
