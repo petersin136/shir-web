@@ -94,20 +94,28 @@ function parseContactMessage(message: string | null): ParsedContact {
       const text = clean.replace("참석 예상 인원:", "").trim();
       result.expectedText = text;
 
+      // 빈 값이거나 "-"인 경우 1명으로 기본 처리 (신청자 본인)
+      if (!text || text === "-" || text === "") {
+        result.expectedCount = 1;
+        continue;
+      }
+
       // 숫자 추출 (여러 패턴 지원)
       let count = 0;
       
-      // "본인외X명" 패턴 (본인 포함해서 X+1명)
-      const selfPlusMatch = text.match(/본인\s*[외.]?\s*(\d+)\s*명/i);
+      // "본인외X명" 또는 "본인.X명" 패턴 (본인 포함해서 X+1명)
+      const selfPlusMatch = text.match(/본인\s*[외.]\s*(\d+)\s*명/i);
       if (selfPlusMatch) {
         count = Number(selfPlusMatch[1]) + 1; // 본인 포함
       }
-      // "보은,보은맘" 같이 쉼표로 구분된 이름 패턴 (이름 개수로 인원 계산)
+      // "보은,보은맘(해외전사님)" 같이 쉼표로 구분된 이름 패턴
+      // 괄호 안 내용 제거 후 쉼표로 분리
       else if (text.includes(',') || text.includes('，')) {
-        const names = text.split(/[,，]/).filter(n => n.trim().length > 0);
+        const cleanText = text.replace(/\([^)]*\)/g, ''); // 괄호 제거
+        const names = cleanText.split(/[,，]/).filter(n => n.trim().length > 0);
         count = names.length;
       }
-      // "X명" 패턴
+      // "X명" 패턴 (첫 번째 숫자만 추출)
       else if (text.match(/(\d+)\s*명/)) {
         const numMatch = text.match(/(\d+)\s*명/);
         if (numMatch) {
@@ -118,16 +126,22 @@ function parseContactMessage(message: string | null): ParsedContact {
       else if (/^\d+$/.test(text)) {
         count = Number(text);
       }
-      // "개인 1명", "팀 5명" 등
+      // "개인 1명", "팀 5명" 등 (첫 번째 숫자 추출)
       else if (text.match(/(\d+)/)) {
         const numMatch = text.match(/(\d+)/);
         if (numMatch) {
           count = Number(numMatch[1]);
         }
       }
+      // 아무 패턴도 매칭 안 되면 1명 (신청자 본인)
+      else {
+        count = 1;
+      }
 
       if (!Number.isNaN(count) && count > 0) {
         result.expectedCount = count;
+      } else {
+        result.expectedCount = 1; // 기본값
       }
       continue;
     }
