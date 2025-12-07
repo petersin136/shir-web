@@ -460,8 +460,16 @@ export default function MetanoiaPage() {
                 name="message"
                 rows={5}
                 className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
-                placeholder="집회 관련 문의사항이나 특별한 요청사항이 있으시면 입력해 주세요."
+                placeholder="집회 관련 문의사항이나 특별한 요청사항을 입력해 주세요.
+
+※ 단체로 오실 경우 함께 참석하시는 분들의 정보를 입력해주세요.
+예시:
+- 김철수 / 010-1234-5678
+- 이영희 / 010-2345-6789"
               />
+              <p className="mt-1 text-xs sm:text-sm text-white/70">
+                단체 참석 시 함께 오시는 분들의 이름과 연락처를 입력해주시면 더 원활한 준비가 가능합니다.
+              </p>
             </label>
 
             <div className="space-y-4">
