@@ -105,7 +105,7 @@ export default function InquiryPage() {
                 <h3 className="text-lg font-bold text-white mb-2">소셜미디어</h3>
                 <div className="space-y-2">
                   <p className="text-base text-white/90">
-                    Instagram: <a href="https://www.instagram.com/shir_band/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline">@shir_band</a>
+                    Instagram: <a href="https://www.instagram.com/shirband_official/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline">@shirband_official</a>
                   </p>
                   <p className="text-base text-white/90">
                     YouTube: <a href="https://www.youtube.com/@SHIRBAND" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline">@SHIRBAND</a>

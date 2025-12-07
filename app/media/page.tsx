@@ -68,7 +68,7 @@ export default function MediaPage() {
         <div className="flex flex-wrap gap-6 justify-center sm:justify-start">
           {/* Instagram */}
           <a
-            href="https://www.instagram.com/shir_band/"
+            href="https://www.instagram.com/shirband_official/"
             target="_blank"
             rel="noopener noreferrer"
             className="group flex items-center gap-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm rounded-lg p-4 sm:p-6 transition-all duration-300 hover:scale-105 border border-white/20"
