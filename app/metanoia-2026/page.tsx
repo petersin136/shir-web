@@ -170,10 +170,10 @@ export default function MetanoiaPage() {
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg")}
+                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg")}
               >
                 <img
-                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg"
+                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg"
                   alt="Metanoia 2026 집회 안내 1"
                   className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
@@ -181,10 +181,10 @@ export default function MetanoiaPage() {
 
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg")}
+                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpg")}
               >
                 <img
-                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg"
+                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpg"
                   alt="Metanoia 2026 집회 안내 2"
                   className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
@@ -192,10 +192,10 @@ export default function MetanoiaPage() {
 
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg")}
+                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg")}
               >
                 <img
-                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg"
+                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg"
                   alt="Metanoia 2026 집회 안내 3"
                   className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
