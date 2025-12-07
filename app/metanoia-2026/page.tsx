@@ -34,8 +34,9 @@ export default function MetanoiaPage() {
   // 이미지 닫기
   const closeImage = () => {
     setSelectedImage(null);
+    // URL에 해시가 있으면 제거 (뒤로가기 하지 않음)
     if (window.location.hash === '#image') {
-      window.history.back();
+      window.history.replaceState(null, '', window.location.pathname);
     }
   };
 
