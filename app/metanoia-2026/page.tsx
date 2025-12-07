@@ -10,6 +10,7 @@ export default function MetanoiaPage() {
   const [err, setErr] = useState<string | null>(null);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [sessionType, setSessionType] = useState<"" | "all" | "evening">("");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -134,7 +135,68 @@ export default function MetanoiaPage() {
             </div>
           </div>
 
+          {/* 이미지 갤러리 */}
+          <div className="space-y-4">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Gallery</h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div 
+                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all aspect-[4/3]"
+                onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg")}
+              >
+                <img
+                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg"
+                  alt="Metanoia 2026 Image 1"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              <div 
+                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all aspect-[4/3]"
+                onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg")}
+              >
+                <img
+                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg"
+                  alt="Metanoia 2026 Image 2"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+
+              <div 
+                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all aspect-[4/3]"
+                onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg")}
+              >
+                <img
+                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg"
+                  alt="Metanoia 2026 Image 3"
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            </div>
+          </div>
+
         </div>
+
+        {/* 이미지 모달 */}
+        {selectedImage && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+            onClick={() => setSelectedImage(null)}
+          >
+            <button
+              className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-white/70 transition-colors"
+              onClick={() => setSelectedImage(null)}
+            >
+              ×
+            </button>
+            <img
+              src={selectedImage}
+              alt="Metanoia 2026 Full Image"
+              className="max-w-full max-h-full object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        )}
 
         <div id="register-section" className="pt-8 scroll-mt-20">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
