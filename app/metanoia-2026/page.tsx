@@ -11,12 +11,17 @@ export default function MetanoiaPage() {
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [sessionType, setSessionType] = useState<"" | "all" | "evening">("");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const images = [
     "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg",
     "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpg",
     "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg",
   ];
+
+  // 최소 스와이프 거리 (픽셀)
+  const minSwipeDistance = 50;
 
   // 브라우저 뒤로가기 처리
   useEffect(() => {
@@ -57,6 +62,33 @@ export default function MetanoiaPage() {
   const nextImage = () => {
     if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
       setSelectedImageIndex(selectedImageIndex + 1);
+    }
+  };
+
+  // 터치 시작
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  // 터치 이동
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  // 터치 종료
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextImage();
+    }
+    if (isRightSwipe) {
+      previousImage();
     }
   };
 
@@ -230,6 +262,9 @@ export default function MetanoiaPage() {
           <div 
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
             onClick={closeImage}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             {/* 닫기 버튼 */}
             <button
