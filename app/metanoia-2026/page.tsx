@@ -137,39 +137,39 @@ export default function MetanoiaPage() {
 
           {/* 이미지 갤러리 */}
           <div className="space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Gallery</h3>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">집회 안내</h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div 
-                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all aspect-[4/3]"
+                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
                 onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg")}
               >
                 <img
                   src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg"
-                  alt="Metanoia 2026 Image 1"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  alt="Metanoia 2026 집회 안내 1"
+                  className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
               </div>
 
               <div 
-                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all aspect-[4/3]"
+                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
                 onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg")}
               >
                 <img
                   src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg"
-                  alt="Metanoia 2026 Image 2"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  alt="Metanoia 2026 집회 안내 2"
+                  className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
               </div>
 
               <div 
-                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all aspect-[4/3]"
+                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
                 onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg")}
               >
                 <img
                   src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg"
-                  alt="Metanoia 2026 Image 3"
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                  alt="Metanoia 2026 집회 안내 3"
+                  className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
               </div>
             </div>
