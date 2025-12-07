@@ -10,12 +10,18 @@ export default function MetanoiaPage() {
   const [err, setErr] = useState<string | null>(null);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [sessionType, setSessionType] = useState<"" | "all" | "evening">("");
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+
+  const images = [
+    "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg",
+    "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpg",
+    "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg",
+  ];
 
   // 브라우저 뒤로가기 처리
   useEffect(() => {
     const handlePopState = () => {
-      setSelectedImage(null);
+      setSelectedImageIndex(null);
     };
 
     window.addEventListener('popstate', handlePopState);
@@ -26,17 +32,31 @@ export default function MetanoiaPage() {
   }, []);
 
   // 이미지 열기
-  const openImage = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
+  const openImage = (index: number) => {
+    setSelectedImageIndex(index);
     window.history.pushState({ modal: true }, '', '#image');
   };
 
   // 이미지 닫기
   const closeImage = () => {
-    setSelectedImage(null);
+    setSelectedImageIndex(null);
     // URL에 해시가 있으면 제거 (뒤로가기 하지 않음)
     if (window.location.hash === '#image') {
       window.history.replaceState(null, '', window.location.pathname);
+    }
+  };
+
+  // 이전 이미지
+  const previousImage = () => {
+    if (selectedImageIndex !== null && selectedImageIndex > 0) {
+      setSelectedImageIndex(selectedImageIndex - 1);
+    }
+  };
+
+  // 다음 이미지
+  const nextImage = () => {
+    if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
+      setSelectedImageIndex(selectedImageIndex + 1);
     }
   };
 
@@ -170,10 +190,10 @@ export default function MetanoiaPage() {
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg")}
+                onClick={() => openImage(0)}
               >
                 <img
-                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg"
+                  src={images[0]}
                   alt="Metanoia 2026 집회 안내 1"
                   className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
@@ -181,10 +201,10 @@ export default function MetanoiaPage() {
 
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpg")}
+                onClick={() => openImage(1)}
               >
                 <img
-                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpg"
+                  src={images[1]}
                   alt="Metanoia 2026 집회 안내 2"
                   className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
@@ -192,10 +212,10 @@ export default function MetanoiaPage() {
 
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg")}
+                onClick={() => openImage(2)}
               >
                 <img
-                  src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg"
+                  src={images[2]}
                   alt="Metanoia 2026 집회 안내 3"
                   className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
                 />
@@ -206,23 +226,64 @@ export default function MetanoiaPage() {
         </div>
 
         {/* 이미지 모달 */}
-        {selectedImage && (
+        {selectedImageIndex !== null && (
           <div 
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
             onClick={closeImage}
           >
+            {/* 닫기 버튼 */}
             <button
-              className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-white/70 transition-colors"
+              className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-white/70 transition-colors z-10"
               onClick={closeImage}
             >
               ×
             </button>
+
+            {/* 이전 버튼 */}
+            {selectedImageIndex > 0 && (
+              <button
+                className="absolute left-4 text-white text-5xl font-bold hover:text-white/70 transition-colors z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  previousImage();
+                }}
+              >
+                ‹
+              </button>
+            )}
+
+            {/* 이미지 */}
             <img
-              src={selectedImage}
-              alt="Metanoia 2026 Full Image"
+              src={images[selectedImageIndex]}
+              alt={`Metanoia 2026 집회 안내 ${selectedImageIndex + 1}`}
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />
+
+            {/* 다음 버튼 */}
+            {selectedImageIndex < images.length - 1 && (
+              <button
+                className="absolute right-4 text-white text-5xl font-bold hover:text-white/70 transition-colors z-10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextImage();
+                }}
+              >
+                ›
+              </button>
+            )}
+
+            {/* 이미지 인디케이터 */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+              {images.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === selectedImageIndex ? 'bg-white' : 'bg-white/30'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         )}
 
