@@ -134,35 +134,6 @@ export default function MetanoiaPage() {
             </div>
           </div>
 
-          {/* 세부 일정 섹션 */}
-          <div className="space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">세부 일정</h3>
-            
-            {/* 일정 요약 */}
-            <div className="bg-white/5 rounded-lg p-4 sm:p-6 ring-1 ring-white/10">
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-base sm:text-lg font-bold text-white mb-2">DAY1 01.26(월)</h4>
-                  <p className="text-sm sm:text-base text-white/80">
-                    14:00 WORSHIP 시작 → 저녁식사 → 19:30 METANOIA part 1
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-bold text-white mb-2">DAY2 01.27(화)</h4>
-                  <p className="text-sm sm:text-base text-white/80">
-                    15:00 WORSHIP & COMMUNION 2 → 저녁식사 → 19:30 METANOIA part 2
-                  </p>
-                </div>
-                <div>
-                  <h4 className="text-base sm:text-lg font-bold text-white mb-2">DAY3 01.28(수)</h4>
-                  <p className="text-sm sm:text-base text-white/80">
-                    15:00 WORSHIP & COMMUNION 3 → 저녁식사 → 19:30 METANOIA part 3
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
 
         <div id="register-section" className="pt-8 scroll-mt-20">
