@@ -129,8 +129,8 @@ export default function MetanoiaPage() {
       sessions: sessionText,
     };
 
-    if (!payload.name || !payload.email || !payload.phone || !payload.church) {
-      setErr("이름, 이메일, 연락처, 소속교회는 필수 입력사항입니다.");
+    if (!payload.name || !payload.email || !payload.phone || !payload.church || !payload.participants) {
+      setErr("이름, 이메일, 연락처, 소속교회, 참석 예상 인원은 필수 입력사항입니다.");
       setLoading(false);
       return;
     }
@@ -149,7 +149,7 @@ export default function MetanoiaPage() {
 - 연락처: ${payload.phone}
 - 소속교회: ${payload.church}
 - 직책/역할: ${payload.position}
-- 참석 예상 인원: ${payload.participants}
+- 참석 예상 인원: ${payload.participants}명
 - 참석 세션: ${payload.sessions}
 - 추가 메시지: ${payload.message}
           `.trim()
@@ -429,13 +429,28 @@ export default function MetanoiaPage() {
                 />
               </label>
               <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">참석 예상 인원</span>
-                <input
+                <span className="text-sm sm:text-base md:text-lg text-white font-medium">참석 예상 인원 *</span>
+                <select
                   name="participants"
-                  type="text"
+                  required
                   className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
-                  placeholder="예: 개인 1명, 팀 5명 등"
-                />
+                >
+                  <option value="">선택해주세요</option>
+                  <option value="1">1명</option>
+                  <option value="2">2명</option>
+                  <option value="3">3명</option>
+                  <option value="4">4명</option>
+                  <option value="5">5명</option>
+                  <option value="6">6명</option>
+                  <option value="7">7명</option>
+                  <option value="8">8명</option>
+                  <option value="9">9명</option>
+                  <option value="10">10명</option>
+                  <option value="15">15명</option>
+                  <option value="20">20명</option>
+                  <option value="30">30명 이상</option>
+                </select>
+                <p className="mt-1 text-xs sm:text-sm text-white/70">본인 포함 총 참석 인원을 선택해주세요.</p>
               </label>
             </div>
 

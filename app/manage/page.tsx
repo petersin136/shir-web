@@ -98,9 +98,14 @@ function parseContactMessage(message: string | null): ParsedContact {
       let count = 0;
       
       // "본인외X명" 패턴 (본인 포함해서 X+1명)
-      const selfPlusMatch = text.match(/본인\s*외\s*(\d+)\s*명/i);
+      const selfPlusMatch = text.match(/본인\s*[외.]?\s*(\d+)\s*명/i);
       if (selfPlusMatch) {
         count = Number(selfPlusMatch[1]) + 1; // 본인 포함
+      }
+      // "보은,보은맘" 같이 쉼표로 구분된 이름 패턴 (이름 개수로 인원 계산)
+      else if (text.includes(',') || text.includes('，')) {
+        const names = text.split(/[,，]/).filter(n => n.trim().length > 0);
+        count = names.length;
       }
       // "X명" 패턴
       else if (text.match(/(\d+)\s*명/)) {
