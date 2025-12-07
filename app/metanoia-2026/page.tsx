@@ -1,7 +1,7 @@
 // app/metanoia-2026/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 
 export default function MetanoiaPage() {
@@ -11,6 +11,33 @@ export default function MetanoiaPage() {
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [sessionType, setSessionType] = useState<"" | "all" | "evening">("");
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  // 브라우저 뒤로가기 처리
+  useEffect(() => {
+    const handlePopState = () => {
+      setSelectedImage(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // 이미지 열기
+  const openImage = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    window.history.pushState({ modal: true }, '', '#image');
+  };
+
+  // 이미지 닫기
+  const closeImage = () => {
+    setSelectedImage(null);
+    if (window.location.hash === '#image') {
+      window.history.back();
+    }
+  };
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -142,7 +169,7 @@ export default function MetanoiaPage() {
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg")}
+                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg")}
               >
                 <img
                   src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpeg"
@@ -153,7 +180,7 @@ export default function MetanoiaPage() {
 
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg")}
+                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg")}
               >
                 <img
                   src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-39.jpeg"
@@ -164,7 +191,7 @@ export default function MetanoiaPage() {
 
               <div 
                 className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => setSelectedImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg")}
+                onClick={() => openImage("https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg")}
               >
                 <img
                   src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpeg"
@@ -181,11 +208,11 @@ export default function MetanoiaPage() {
         {selectedImage && (
           <div 
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
-            onClick={() => setSelectedImage(null)}
+            onClick={closeImage}
           >
             <button
               className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-white/70 transition-colors"
-              onClick={() => setSelectedImage(null)}
+              onClick={closeImage}
             >
               ×
             </button>
