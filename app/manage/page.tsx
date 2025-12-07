@@ -94,12 +94,35 @@ function parseContactMessage(message: string | null): ParsedContact {
       const text = clean.replace("참석 예상 인원:", "").trim();
       result.expectedText = text;
 
-      const numMatch = text.match(/(\d+)\s*명/);
-      if (numMatch) {
-        const n = Number(numMatch[1]);
-        if (!Number.isNaN(n)) {
-          result.expectedCount = n;
+      // 숫자 추출 (여러 패턴 지원)
+      let count = 0;
+      
+      // "본인외X명" 패턴 (본인 포함해서 X+1명)
+      const selfPlusMatch = text.match(/본인\s*외\s*(\d+)\s*명/i);
+      if (selfPlusMatch) {
+        count = Number(selfPlusMatch[1]) + 1; // 본인 포함
+      }
+      // "X명" 패턴
+      else if (text.match(/(\d+)\s*명/)) {
+        const numMatch = text.match(/(\d+)\s*명/);
+        if (numMatch) {
+          count = Number(numMatch[1]);
         }
+      }
+      // 숫자만 있는 경우 (예: "2", "5")
+      else if (/^\d+$/.test(text)) {
+        count = Number(text);
+      }
+      // "개인 1명", "팀 5명" 등
+      else if (text.match(/(\d+)/)) {
+        const numMatch = text.match(/(\d+)/);
+        if (numMatch) {
+          count = Number(numMatch[1]);
+        }
+      }
+
+      if (!Number.isNaN(count) && count > 0) {
+        result.expectedCount = count;
       }
       continue;
     }
