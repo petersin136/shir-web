@@ -13,6 +13,7 @@ export default function MetanoiaPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [showYouTubePopup, setShowYouTubePopup] = useState(false);
 
   const images = [
     "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-17-55.jpg",
@@ -35,6 +36,28 @@ export default function MetanoiaPage() {
       window.removeEventListener('popstate', handlePopState);
     };
   }, []);
+
+  // YouTube 팝업 표시 (페이지 로드 시)
+  useEffect(() => {
+    const hasSeenPopup = localStorage.getItem('metanoia-youtube-popup-seen');
+    
+    if (!hasSeenPopup) {
+      // 1초 후에 팝업 표시 (페이지 로드 후)
+      const timer = setTimeout(() => {
+        setShowYouTubePopup(true);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  // YouTube 팝업 닫기
+  const closeYouTubePopup = (dontShowAgain: boolean = false) => {
+    setShowYouTubePopup(false);
+    if (dontShowAgain) {
+      localStorage.setItem('metanoia-youtube-popup-seen', 'true');
+    }
+  };
 
   // 이미지 열기
   const openImage = (index: number) => {
@@ -256,6 +279,49 @@ export default function MetanoiaPage() {
           </div>
 
         </div>
+
+        {/* YouTube 팝업 */}
+        {showYouTubePopup && (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+            onClick={() => closeYouTubePopup(false)}
+          >
+            <div 
+              className="relative bg-black rounded-lg overflow-hidden max-w-md w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* 닫기 버튼 */}
+              <button
+                className="absolute top-2 right-2 text-white text-3xl font-bold hover:text-white/70 transition-colors z-10 bg-black/50 rounded-full w-10 h-10 flex items-center justify-center"
+                onClick={() => closeYouTubePopup(false)}
+              >
+                ×
+              </button>
+
+              {/* YouTube Shorts 임베드 */}
+              <div className="relative w-full" style={{ paddingBottom: '177.78%' }}>
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full"
+                  src="https://www.youtube.com/embed/iQrymX6hTaQ?si=6jI2qdjQDlo_PhUs&autoplay=1&mute=1"
+                  title="Metanoia 2026 YouTube Shorts"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+
+              {/* 다시 보지 않기 버튼 */}
+              <div className="p-4 bg-slate-900">
+                <button
+                  className="w-full py-2 px-4 text-sm text-white/70 hover:text-white transition-colors"
+                  onClick={() => closeYouTubePopup(true)}
+                >
+                  다시 보지 않기
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* 이미지 모달 */}
         {selectedImageIndex !== null && (
