@@ -8,16 +8,18 @@ export async function GET() {
       process.env.SUPABASE_SERVICE_ROLE_KEY
     );
 
-    const { data: authData, error: authError } = await supabase.auth.admin.listUsers({
-      page: 1,
-      perPage: 1
-    });
+    // public.contact_messages 테이블에 간단한 쿼리로 DB 활성 상태 유지
+    // 최근 1개 레코드만 조회 (실제 데이터는 사용하지 않음)
+    const { data, error } = await supabase
+      .from('contact_messages')
+      .select('id')
+      .limit(1);
 
-    if (authError) {
-      console.error('Ping error:', authError);
+    if (error) {
+      console.error('❌ Ping error:', error);
       return NextResponse.json({
         ok: false,
-        error: authError.message,
+        error: error.message,
         timestamp: new Date().toISOString()
       }, { status: 500 });
     }
@@ -27,11 +29,12 @@ export async function GET() {
       ok: true,
       dbActive: true,
       timestamp: new Date().toISOString(),
-      queryResult: 'success'
+      queryResult: 'success',
+      recordsChecked: data?.length || 0
     });
 
   } catch (err) {
-    console.error('Ping error:', err);
+    console.error('❌ Ping error:', err);
     return NextResponse.json({
       ok: false,
       error: err.message,
