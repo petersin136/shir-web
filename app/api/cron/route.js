@@ -5,13 +5,13 @@ export async function GET() {
   try {
     console.log('Environment check:', {
       hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-      hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      hasKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
       url: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 20) + '...'
     });
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.SUPABASE_SERVICE_ROLE_KEY
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     );
 
     // public.contact_messages 테이블에 간단한 쿼리로 DB 활성 상태 유지
