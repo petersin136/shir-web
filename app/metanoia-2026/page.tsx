@@ -120,7 +120,6 @@ export default function MetanoiaPage() {
 
     const payload = {
       name: String(formData.get("name") || "").trim(),
-      email: String(formData.get("email") || "").trim(),
       phone: String(formData.get("phone") || "").trim(),
       church: String(formData.get("church") || "").trim(),
       position: String(formData.get("position") || "").trim(),
@@ -129,8 +128,8 @@ export default function MetanoiaPage() {
       sessions: sessionText,
     };
 
-    if (!payload.name || !payload.email || !payload.phone || !payload.church || !payload.participants) {
-      setErr("이름, 이메일, 연락처, 소속교회, 참석 예상 인원은 필수 입력사항입니다.");
+    if (!payload.name || !payload.phone || !payload.church || !payload.participants) {
+      setErr("이름, 연락처, 소속교회, 참석 예상 인원은 필수 입력사항입니다.");
       setLoading(false);
       return;
     }
@@ -145,7 +144,6 @@ export default function MetanoiaPage() {
           message: `
 집회 신청 정보:
 - 이름: ${payload.name}
-- 이메일: ${payload.email}
 - 연락처: ${payload.phone}
 - 소속교회: ${payload.church}
 - 직책/역할: ${payload.position}
@@ -381,16 +379,6 @@ export default function MetanoiaPage() {
                   required
                   className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="홍길동"
-                />
-              </label>
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">이메일 *</span>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
-                  placeholder="you@example.com"
                 />
               </label>
             </div>
