@@ -139,7 +139,7 @@ export default function MetanoiaPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...payload,
+          name: payload.name,
           subject: "Metanoia 2026 집회 신청",
           message: `
 집회 신청 정보:

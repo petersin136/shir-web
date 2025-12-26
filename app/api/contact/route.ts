@@ -10,20 +10,23 @@ export async function POST(req: Request) {
   try {
     const { name, email, message } = await req.json();
 
+    // name과 message는 필수, email은 선택적
     if (
       !name ||
-      !email ||
       !message ||
       typeof name !== "string" ||
-      typeof email !== "string" ||
-      typeof message !== "string"
+      typeof message !== "string" ||
+      (email !== undefined && email !== null && typeof email !== "string")
     ) {
       return NextResponse.json({ error: "invalid payload" }, { status: 400 });
     }
 
+    // email이 없으면 빈 문자열 또는 기본값 사용
+    const emailValue = email && typeof email === "string" ? email.trim() : "";
+
     const { error } = await supabase.from("contact_messages").insert({
       name,
-      email,
+      email: emailValue,
       message,
     });
 
