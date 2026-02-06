@@ -51,19 +51,42 @@ export default function EventsPage() {
           {/* 2026 ONENESS Worship */}
           <section className="bg-white/5 rounded-lg p-6 sm:p-8 border border-white/10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
-              2026 ONENESS Worship
+              ONENESS Worship 2026
             </h2>
             
             <div className="space-y-4">
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white mb-2">일시</h3>
-                <p className="text-base sm:text-lg text-white/90">2026년 6월 27일</p>
+                <p className="text-base sm:text-lg text-white/90">2026년 6월 27일 1시~ (7시간 연속 예배)</p>
               </div>
               
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-white mb-2">장소</h3>
-                <p className="text-base sm:text-lg text-white/90">추후 공지</p>
+                <p className="text-base sm:text-lg text-white/90">장소 미정</p>
               </div>
+              
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Speaker</h3>
+                <div className="space-y-2">
+                  <p className="text-base sm:text-lg text-white/90">송바울 (Dr. One. K)</p>
+                  <p className="text-base sm:text-lg text-white/90">이재진 선교사</p>
+                  <p className="text-base sm:text-lg text-white/90">우홍식 목사</p>
+                  <p className="text-base sm:text-lg text-white/90">신승용 대표</p>
+                </div>
+              </div>
+              
+              <div>
+                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">워십팀</h3>
+                <div className="space-y-2">
+                  <p className="text-base sm:text-lg text-white/90">쉬르밴드 (SHIR BAND)</p>
+                  <p className="text-base sm:text-lg text-white/90">로드웨이브 (LORD WAVE)</p>
+                  <p className="text-base sm:text-lg text-white/90">팀 다니엘초이 (Daniel Choi)</p>
+                </div>
+              </div>
+              
+              <p className="text-base sm:text-lg text-white/90">
+                6월 27일 1시부터 7시간 연속 자율 금식집회입니다.
+              </p>
             </div>
             
             <div className="mt-8">
