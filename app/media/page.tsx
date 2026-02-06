@@ -8,7 +8,7 @@ export default function MediaPage() {
   const videos = [
     { title: "SHIR Worship Live — Video 1", url: "https://youtu.be/Hm-0Er8d8a8?feature=shared" },
     { title: "SHIR Worship Live — Video 2", url: "https://youtu.be/r1oBC3shdbg?feature=shared" },
-    { title: "SHIR Worship Live — Video 3", url: "https://youtu.be/U-crsDRiLW0?feature=shared" },
+    { title: "SHIR Worship Live — Video 3", url: "https://youtu.be/Xlbb-oeIu2g?si=4NHGebjIGmeMsX4O" },
   ];
 
   const photos = [
