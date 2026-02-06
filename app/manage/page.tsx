@@ -42,6 +42,34 @@ type ContactMessage = {
   created_at: string | null;
 };
 
+type Application = {
+  id: number;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  church: string | null;
+  reason: string | null;
+  created_at: string | null;
+};
+
+type TabId = "metanoia" | "oneness" | "inquiry" | "applications";
+
+function isOnenessMessage(msg: string | null): boolean {
+  if (!msg) return false;
+  return msg.includes("ONENESS Worship 2026");
+}
+
+function isMetanoiaMessage(msg: string | null): boolean {
+  if (!msg) return false;
+  if (isOnenessMessage(msg)) return false;
+  return msg.includes("참석 세션:") || msg.includes("Metanoia 2026") || msg.includes("집회 신청 정보:");
+}
+
+function isInquiryMessage(msg: string | null): boolean {
+  if (!msg) return false;
+  return msg.trim().startsWith("제목:");
+}
+
 type ParsedContact = {
   name?: string;
   email?: string;
@@ -170,12 +198,24 @@ function parseContactMessage(message: string | null): ParsedContact {
 
 export default function ManagePage() {
   const [data, setData] = useState<ContactMessage[]>([]);
+  const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [authed, setAuthed] = useState(false);
   const [idInput, setIdInput] = useState("");
   const [pwInput, setPwInput] = useState("");
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<TabId>("metanoia");
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const [page, setPage] = useState(1);
+
+  const PAGE_SIZE = 20;
+  const refreshData = () => setRefreshTrigger((t) => t + 1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab]);
 
   useEffect(() => {
     const stored =
@@ -201,11 +241,21 @@ export default function ManagePage() {
         const { createClient } = await import("@/lib/supabase/client");
         const supabase = createClient();
 
-        const { data, error } = await supabase
-          .from("contact_messages")
-          .select("id, name, email, message, created_at")
-          .order("created_at", { ascending: false })
-          .limit(100);
+        const [contactRes, applicationsRes] = await Promise.all([
+          supabase
+            .from("contact_messages")
+            .select("id, name, email, message, created_at")
+            .order("created_at", { ascending: false })
+            .limit(200),
+          supabase
+            .from("applications")
+            .select("id, name, phone, email, church, reason, created_at")
+            .order("created_at", { ascending: false })
+            .limit(200),
+        ]);
+
+        const { data: contactData, error } = contactRes;
+        const { data: applicationsData, error: applicationsError } = applicationsRes;
 
         if (error) {
           console.error("Supabase error (contact_messages):", error);
@@ -250,7 +300,11 @@ export default function ManagePage() {
         }
 
         // 성공
-        setData(data ?? []);
+        setData(contactData ?? []);
+        setApplications(applicationsData ?? []);
+        if (applicationsError) {
+          console.warn("applications 로드 경고:", applicationsError);
+        }
         setError(null);
         setLoading(false);
       } catch (e) {
@@ -288,55 +342,202 @@ export default function ManagePage() {
     }
 
     load();
-  }, [authed]);
+  }, [authed, refreshTrigger]);
 
-  const rowsWithMeta = useMemo(
-    () =>
-      data.map((row, idx) => {
-        const parsed = parseContactMessage(row.message);
+  const metanoiaRows = useMemo(() => {
+    const filtered = data.filter((r) => isMetanoiaMessage(r.message));
+    return filtered.map((row, idx) => {
+      const parsed = parseContactMessage(row.message);
+      return {
+        ...row,
+        index: idx + 1,
+        parsed,
+        attendees: parsed.expectedCount ?? 0,
+      };
+    });
+  }, [data]);
 
-        return {
-          ...row,
-          index: idx + 1,
-          parsed,
-          attendees: parsed.expectedCount ?? 0,
-        };
-      }),
-    [data],
+  const onenessRows = useMemo(() => {
+    const filtered = data.filter((r) => isOnenessMessage(r.message));
+    return filtered.map((row, idx) => {
+      const parsed = parseContactMessage(row.message);
+      return {
+        ...row,
+        index: idx + 1,
+        parsed,
+        attendees: parsed.expectedCount ?? 0,
+      };
+    });
+  }, [data]);
+
+  const inquiryRows = useMemo(() => {
+    const filtered = data.filter((r) => isInquiryMessage(r.message));
+    return filtered.map((row, idx) => ({
+      ...row,
+      index: idx + 1,
+    }));
+  }, [data]);
+
+  const paginatedMetanoia = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return metanoiaRows.slice(start, start + PAGE_SIZE);
+  }, [metanoiaRows, page]);
+  const paginatedOneness = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return onenessRows.slice(start, start + PAGE_SIZE);
+  }, [onenessRows, page]);
+  const paginatedInquiry = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return inquiryRows.slice(start, start + PAGE_SIZE);
+  }, [inquiryRows, page]);
+  const paginatedApplications = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return applications.slice(start, start + PAGE_SIZE);
+  }, [applications, page]);
+
+  const currentPaginatedRows = useMemo(() => {
+    if (activeTab === "metanoia") return paginatedMetanoia;
+    if (activeTab === "oneness") return paginatedOneness;
+    return [];
+  }, [activeTab, paginatedMetanoia, paginatedOneness]);
+
+  const totalPages = useMemo(() => {
+    const total =
+      activeTab === "metanoia"
+        ? metanoiaRows.length
+        : activeTab === "oneness"
+          ? onenessRows.length
+          : activeTab === "inquiry"
+            ? inquiryRows.length
+            : applications.length;
+    return Math.max(1, Math.ceil(total / PAGE_SIZE));
+  }, [activeTab, metanoiaRows.length, onenessRows.length, inquiryRows.length, applications.length]);
+
+  const currentRows = useMemo(() => {
+    if (activeTab === "metanoia") return metanoiaRows;
+    if (activeTab === "oneness") return onenessRows;
+    if (activeTab === "inquiry") return inquiryRows;
+    return [];
+  }, [activeTab, metanoiaRows, onenessRows, inquiryRows]);
+
+  const totalAttendeesMetanoia = useMemo(
+    () => metanoiaRows.reduce((sum, row) => sum + (row.attendees ?? 0), 0),
+    [metanoiaRows],
+  );
+  const totalAttendeesOneness = useMemo(
+    () => onenessRows.reduce((sum, row) => sum + (row.attendees ?? 0), 0),
+    [onenessRows],
   );
 
-  const totalAttendees = useMemo(
-    () => rowsWithMeta.reduce((sum, row) => sum + (row.attendees ?? 0), 0),
-    [rowsWithMeta],
+  const currentTabIds = useMemo(() => {
+    if (activeTab === "metanoia") return metanoiaRows.map((r) => r.id);
+    if (activeTab === "oneness") return onenessRows.map((r) => r.id);
+    if (activeTab === "inquiry") return inquiryRows.map((r) => r.id);
+    if (activeTab === "applications") return applications.map((r) => r.id);
+    return [];
+  }, [activeTab, metanoiaRows, onenessRows, inquiryRows, applications]);
+
+  const currentTabType = useMemo(
+    () => (activeTab === "applications" ? "applications" : "contact_messages"),
+    [activeTab]
   );
+
+  async function handleDelete(ids: (number | string)[]) {
+    const validIds = ids.filter((id) => id != null && id !== "");
+    if (validIds.length === 0) return;
+    if (!confirm("정말 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+    setDeleting(true);
+    try {
+      const res = await fetch("/api/manage/delete-rows", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          adminId: "shiradmin",
+          adminPw: "shir2025!",
+          type: currentTabType,
+          ids: validIds,
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.error || "삭제 실패");
+      refreshData();
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "삭제 중 오류가 발생했습니다.");
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  function handleDeleteAll() {
+    if (currentTabIds.length === 0) return;
+    if (!confirm(`정말 ${currentTabIds.length}건을 모두 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) return;
+    handleDelete(currentTabIds);
+  }
 
   // 엑셀 다운로드 함수
   async function handleExportExcel() {
     try {
-      const worksheetData = rowsWithMeta.map((row) => ({
-        No: row.index,
-        이름: row.parsed.name || row.name || "-",
-        이메일: row.parsed.email || row.email || "-",
-        연락처: row.parsed.phone || "-",
-        소속교회: row.parsed.church || "-",
-        직책역할: row.parsed.role || "-",
-        참석예상인원: row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
-        참석세션: row.parsed.sessions || "-",
-        추가메시지: row.parsed.extraMessage || "-",
-        받은시간: row.created_at
-          ? new Date(row.created_at).toLocaleString("ko-KR")
-          : "-",
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(worksheetData);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "신청목록");
-
-      const fileName = `문의집회신청목록_${new Date().toISOString().split("T")[0]}.xlsx`;
-      XLSX.writeFile(workbook, fileName);
-
-      // DB에 다운로드 기록 저장
-      await saveDownloadRecord("excel", fileName);
+      let fileName: string;
+      if (activeTab === "applications") {
+        const worksheetData = applications.map((row, idx) => ({
+          No: idx + 1,
+          이름: row.name || "-",
+          연락처: row.phone || "-",
+          소속교회: row.church || "-",
+          사역초청내용: row.reason || "-",
+          받은시간: row.created_at ? new Date(row.created_at).toLocaleString("ko-KR") : "-",
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "사역신청");
+        fileName = `사역신청목록_${new Date().toISOString().split("T")[0]}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+      } else if (activeTab === "inquiry") {
+        const worksheetData = inquiryRows.map((row) => ({
+          No: row.index,
+          이름: row.name || "-",
+          메시지: row.message || "-",
+          받은시간: row.created_at ? new Date(row.created_at).toLocaleString("ko-KR") : "-",
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "문의목록");
+        fileName = `문의하기_목록_${new Date().toISOString().split("T")[0]}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+      } else {
+        const rows = activeTab === "metanoia" ? metanoiaRows : onenessRows;
+        const worksheetData = rows.map((row) => ({
+          No: row.index,
+          이름: row.parsed.name || row.name || "-",
+          연락처: row.parsed.phone || "-",
+          소속교회: row.parsed.church || "-",
+          직책역할: row.parsed.role || "-",
+          참석예상인원: row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
+          참석세션: row.parsed.sessions || "-",
+          추가메시지: row.parsed.extraMessage || "-",
+          받은시간: row.created_at ? new Date(row.created_at).toLocaleString("ko-KR") : "-",
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "신청목록");
+        fileName = `${activeTab === "metanoia" ? "METANOIA" : "ONENESS"}_신청목록_${new Date().toISOString().split("T")[0]}.xlsx`;
+        XLSX.writeFile(workbook, fileName);
+      }
+      const recordCount =
+        activeTab === "applications"
+          ? applications.length
+          : activeTab === "inquiry"
+            ? inquiryRows.length
+            : activeTab === "metanoia"
+              ? metanoiaRows.length
+              : onenessRows.length;
+      const totalCount =
+        activeTab === "applications" || activeTab === "inquiry"
+          ? 0
+          : activeTab === "metanoia"
+            ? totalAttendeesMetanoia
+            : totalAttendeesOneness;
+      await saveDownloadRecord("excel", fileName, recordCount, totalCount);
     } catch (error) {
       console.error("엑셀 다운로드 오류:", error);
       alert("엑셀 다운로드 중 오류가 발생했습니다.");
@@ -476,53 +677,94 @@ export default function ManagePage() {
       if (fontLoaded) {
         doc.setFont(fontName);
       }
+      const pdfRows =
+        activeTab === "metanoia"
+          ? metanoiaRows
+          : activeTab === "oneness"
+            ? onenessRows
+            : [];
+      const pdfTotal =
+        activeTab === "metanoia" ? totalAttendeesMetanoia : totalAttendeesOneness;
+      const pdfTitle =
+        activeTab === "metanoia"
+          ? "METANOIA 2026 신청 목록"
+          : activeTab === "oneness"
+            ? "ONENESS Worship 2026 신청 목록"
+            : "문의하기 목록";
+
       doc.setFontSize(16);
-      doc.text("문의/집회 신청 목록", 14, 15);
+      doc.text(
+        activeTab === "applications"
+          ? "사역 신청 목록"
+          : activeTab === "inquiry"
+            ? "문의하기 목록"
+            : pdfTitle,
+        14,
+        15
+      );
       doc.setFontSize(10);
       doc.text(`생성일: ${new Date().toLocaleString("ko-KR")}`, 14, 22);
-      doc.text(`총 ${rowsWithMeta.length}건, 총 예상 참석 인원: ${totalAttendees}명`, 14, 27);
+      if (activeTab === "applications") {
+        doc.text(`총 ${applications.length}건`, 14, 27);
+      } else if (activeTab === "inquiry") {
+        doc.text(`총 ${inquiryRows.length}건`, 14, 27);
+      } else {
+        doc.text(`총 ${pdfRows.length}건, 총 예상 참석 인원: ${pdfTotal}명`, 14, 27);
+      }
 
-      // 테이블 데이터 준비 - null/undefined 값 처리
-      const tableData = rowsWithMeta.map((row) => {
-        const extraMsg = row.parsed?.extraMessage || "-";
-        const sessions = row.parsed?.sessions || "-";
-        return [
+      // 테이블 데이터 준비
+      let tableData: string[][];
+      let tableHead: string[][];
+
+      if (activeTab === "applications") {
+        tableHead = [["No.", "이름", "연락처", "소속교회", "사역초청내용", "받은 시간"]];
+        tableData = applications.map((row, idx) => [
+          String(idx + 1),
+          String(row.name || "-"),
+          String(row.phone || "-"),
+          String(row.church || "-"),
+          String((row.reason || "-").length > 40 ? (row.reason || "").substring(0, 40) + "..." : row.reason || "-"),
+          row.created_at ? new Date(row.created_at).toLocaleDateString("ko-KR") : "-",
+        ]);
+      } else if (activeTab === "inquiry") {
+        tableHead = [["No.", "이름", "메시지", "받은 시간"]];
+        tableData = inquiryRows.map((row) => [
           String(row.index || ""),
-          String(row.parsed?.name || row.name || "-"),
-          String(row.parsed?.email || row.email || "-"),
-          String(row.parsed?.phone || "-"),
-          String(row.parsed?.church || "-"),
-          String(row.parsed?.role || "-"),
-          String(
-            row.parsed?.expectedText ||
-              (row.attendees > 0 ? `${row.attendees}명` : "-")
-          ),
-          String(sessions.length > 50 ? sessions.substring(0, 50) + "..." : sessions),
-          String(extraMsg.length > 30 ? extraMsg.substring(0, 30) + "..." : extraMsg),
-          row.created_at
-            ? new Date(row.created_at).toLocaleDateString("ko-KR")
-            : "-",
+          String(row.name || "-"),
+          String((row.message || "-").length > 50 ? (row.message || "").substring(0, 50) + "..." : row.message || "-"),
+          row.created_at ? new Date(row.created_at).toLocaleDateString("ko-KR") : "-",
+        ]);
+      } else {
+        tableHead = [
+          ["No.", "이름", "연락처", "소속교회", "직책/역할", "참석 예상 인원", "참석 세션", "추가 메시지", "받은 시간"],
         ];
-      });
+        tableData = pdfRows.map((row) => {
+          const extraMsg = row.parsed?.extraMessage || "-";
+          const sessions = row.parsed?.sessions || "-";
+          return [
+            String(row.index || ""),
+            String(row.parsed?.name || row.name || "-"),
+            String(row.parsed?.phone || "-"),
+            String(row.parsed?.church || "-"),
+            String(row.parsed?.role || "-"),
+            String(
+              row.parsed?.expectedText ||
+                (row.attendees > 0 ? `${row.attendees}명` : "-")
+            ),
+            String(sessions.length > 50 ? sessions.substring(0, 50) + "..." : sessions),
+            String(extraMsg.length > 30 ? extraMsg.substring(0, 30) + "..." : extraMsg),
+            row.created_at
+              ? new Date(row.created_at).toLocaleDateString("ko-KR")
+              : "-",
+          ];
+        });
+      }
 
       // 테이블 생성 - jspdf-autotable v5.x는 autoTable을 함수로 직접 호출
       // jspdf-autotable의 타입을 사용하기 위해 any로 선언 (라이브러리 타입 정의가 불완전함)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const tableOptions: any = {
-        head: [
-          [
-            "No.",
-            "이름",
-            "이메일",
-            "연락처",
-            "소속교회",
-            "직책/역할",
-            "참석 예상 인원",
-            "참석 세션",
-            "추가 메시지",
-            "받은 시간",
-          ],
-        ],
+        head: tableHead,
         body: tableData,
         startY: 32,
         styles: { 
@@ -582,7 +824,12 @@ export default function ManagePage() {
       
       autoTable(doc, tableOptions);
 
-      const fileName = `문의집회신청목록_${new Date().toISOString().split("T")[0]}.pdf`;
+      const fileName =
+        activeTab === "applications"
+          ? `사역신청목록_${new Date().toISOString().split("T")[0]}.pdf`
+          : activeTab === "inquiry"
+            ? `문의하기_목록_${new Date().toISOString().split("T")[0]}.pdf`
+            : `${activeTab === "metanoia" ? "METANOIA" : "ONENESS"}_신청목록_${new Date().toISOString().split("T")[0]}.pdf`;
       
       // 모바일에서는 파일 저장 방식 조정
       if (isMobileDevice()) {
@@ -601,7 +848,15 @@ export default function ManagePage() {
       }
 
       // DB에 다운로드 기록 저장
-      await saveDownloadRecord("pdf", fileName);
+      const recordCount =
+        activeTab === "applications"
+          ? applications.length
+          : activeTab === "inquiry"
+            ? inquiryRows.length
+            : pdfRows.length;
+      const totalCount =
+        activeTab === "applications" || activeTab === "inquiry" ? 0 : pdfTotal;
+      await saveDownloadRecord("pdf", fileName, recordCount, totalCount);
     } catch (error) {
       console.error("PDF 다운로드 오류:", error);
       const errorMessage =
@@ -617,7 +872,12 @@ export default function ManagePage() {
   }
 
   // DB에 다운로드 기록 저장
-  async function saveDownloadRecord(format: "excel" | "pdf", fileName: string) {
+  async function saveDownloadRecord(
+    format: "excel" | "pdf",
+    fileName: string,
+    recordCount: number,
+    totalAttendeesCount: number
+  ) {
     try {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
@@ -625,8 +885,8 @@ export default function ManagePage() {
       const { error } = await supabase.from("download_logs").insert({
         format,
         file_name: fileName,
-        record_count: rowsWithMeta.length,
-        total_attendees: totalAttendees,
+        record_count: recordCount,
+        total_attendees: totalAttendeesCount,
         created_at: new Date().toISOString(),
       });
 
@@ -712,18 +972,98 @@ export default function ManagePage() {
 
       {authed && !loading && !error && (
         <div className="mb-6">
-          <div className="mb-4 flex flex-wrap gap-4 text-sm">
-            <div className="rounded-md bg-slate-100 px-4 py-2">
-              <span className="font-semibold">총 신청 건수</span>{" "}
-              <span className="ml-2 text-slate-700">{data.length}건</span>
-            </div>
-            <div className="rounded-md bg-slate-100 px-4 py-2">
-              <span className="font-semibold">총 예상 참석 인원</span>{" "}
-              <span className="ml-2 text-slate-700">{totalAttendees}명</span>
-            </div>
+          {/* 탭 */}
+          <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200">
+            <button
+              type="button"
+              onClick={() => setActiveTab("metanoia")}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                activeTab === "metanoia"
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              METANOIA 2026
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("oneness")}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                activeTab === "oneness"
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              ONENESS Worship 2026
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("inquiry")}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                activeTab === "inquiry"
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              문의하기
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("applications")}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
+                activeTab === "applications"
+                  ? "bg-slate-900 text-white"
+                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+              }`}
+            >
+              사역 신청
+            </button>
           </div>
-          {rowsWithMeta.length > 0 && (
-            <div className="flex flex-wrap gap-3">
+
+          <div className="mb-4 flex flex-wrap gap-4 text-sm">
+            {activeTab === "metanoia" && (
+              <>
+                <div className="rounded-md bg-slate-100 px-4 py-2">
+                  <span className="font-semibold">총 신청 건수</span>{" "}
+                  <span className="ml-2 text-slate-700">{metanoiaRows.length}건</span>
+                </div>
+                <div className="rounded-md bg-slate-100 px-4 py-2">
+                  <span className="font-semibold">총 예상 참석 인원</span>{" "}
+                  <span className="ml-2 text-slate-700">{totalAttendeesMetanoia}명</span>
+                </div>
+              </>
+            )}
+            {activeTab === "oneness" && (
+              <>
+                <div className="rounded-md bg-slate-100 px-4 py-2">
+                  <span className="font-semibold">총 신청 건수</span>{" "}
+                  <span className="ml-2 text-slate-700">{onenessRows.length}건</span>
+                </div>
+                <div className="rounded-md bg-slate-100 px-4 py-2">
+                  <span className="font-semibold">총 예상 참석 인원</span>{" "}
+                  <span className="ml-2 text-slate-700">{totalAttendeesOneness}명</span>
+                </div>
+              </>
+            )}
+            {activeTab === "inquiry" && (
+              <div className="rounded-md bg-slate-100 px-4 py-2">
+                <span className="font-semibold">총 문의 건수</span>{" "}
+                <span className="ml-2 text-slate-700">{inquiryRows.length}건</span>
+              </div>
+            )}
+            {activeTab === "applications" && (
+              <div className="rounded-md bg-slate-100 px-4 py-2">
+                <span className="font-semibold">총 사역 신청 건수</span>{" "}
+                <span className="ml-2 text-slate-700">{applications.length}건</span>
+              </div>
+            )}
+          </div>
+          {((activeTab === "metanoia" && metanoiaRows.length > 0) ||
+            (activeTab === "inquiry" && inquiryRows.length > 0) ||
+            (activeTab === "oneness" && onenessRows.length > 0) ||
+            (activeTab === "inquiry" && inquiryRows.length > 0) ||
+            (activeTab === "applications" && applications.length > 0)) && (
+            <div className="flex flex-wrap gap-3 items-center">
               <button
                 onClick={handleExportExcel}
                 className="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-colors"
@@ -735,6 +1075,13 @@ export default function ManagePage() {
                 className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors"
               >
                 📄 PDF 다운로드
+              </button>
+              <button
+                onClick={handleDeleteAll}
+                disabled={deleting || currentTabIds.length === 0}
+                className="inline-flex items-center justify-center rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? "삭제 중..." : "🗑️ 전체 삭제"}
               </button>
             </div>
           )}
@@ -751,41 +1098,45 @@ export default function ManagePage() {
         </div>
       )}
 
-      {authed && !loading && !error && data.length === 0 && (
-        <div className="text-lg text-slate-600">데이터가 없습니다.</div>
+      {authed && !loading && !error &&
+        ((activeTab === "metanoia" && metanoiaRows.length === 0) ||
+          (activeTab === "oneness" && onenessRows.length === 0) ||
+          (activeTab === "inquiry" && inquiryRows.length === 0) ||
+          (activeTab === "applications" && applications.length === 0)) && (
+        <div className="text-lg text-slate-600">
+          {activeTab === "applications" ? "사역 신청 데이터가 없습니다." : activeTab === "inquiry" ? "문의 데이터가 없습니다." : "해당 탭에 데이터가 없습니다."}
+        </div>
       )}
 
-      {authed && !loading && rowsWithMeta.length > 0 && (
+      {authed && !loading && !error && (activeTab === "metanoia" || activeTab === "oneness") && currentPaginatedRows.length > 0 && (
         <>
-          {/* 모바일: 극단적으로 간단한 카드 리스트 */}
+          {/* 모바일: 극단적으로 간단한 카드 리스트 (집회 신청) */}
           <div className="space-y-3 sm:hidden">
-            {rowsWithMeta.map((row) => (
+            {currentPaginatedRows.map((row) => (
               <div
                 key={row.id}
                 className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
               >
                 <div className="flex items-center justify-between text-sm text-slate-500">
                   <span>No. {row.index}</span>
-                  <span>
-                    {row.created_at
-                      ? new Date(row.created_at).toLocaleDateString("ko-KR")
-                      : "-"}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {row.created_at
+                        ? new Date(row.created_at).toLocaleDateString("ko-KR")
+                        : "-"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete([row.id])}
+                      disabled={deleting}
+                      className="text-red-600 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                    >
+                      삭제
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-1 text-lg font-semibold">
                   {row.parsed.name || row.name || "-"}
-                </div>
-                <div className="mt-0.5 text-sm text-slate-600 break-all">
-                  {row.parsed.email || row.email ? (
-                    <a
-                      href={`mailto:${row.parsed.email || row.email}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      {row.parsed.email || row.email}
-                    </a>
-                  ) : (
-                    "-"
-                  )}
                 </div>
                 {row.parsed.phone && (
                   <div className="mt-0.5 text-sm text-slate-600">
@@ -825,56 +1176,32 @@ export default function ManagePage() {
               <table className="min-w-full text-left text-base">
                 <thead className="bg-slate-100">
                   <tr>
-                    <th className="px-4 py-3 font-semibold text-sm">No.</th>
-                    <th className="px-4 py-3 font-semibold text-sm">이름</th>
-                    <th className="px-4 py-3 font-semibold text-sm">이메일</th>
-                    <th className="px-4 py-3 font-semibold text-sm">연락처</th>
-                    <th className="px-4 py-3 font-semibold text-sm">
-                      소속교회
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-sm">
-                      직책/역할
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">
-                      참석 예상 인원
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-sm">
-                      참석 세션
-                    </th>
-                    <th className="px-4 py-3 font-semibold text-sm">
-                      추가 메시지
-                    </th>
-                    <th className="px-4 py-3 font-semibold whitespace-nowrap">
-                      받은 시간
-                    </th>
+                    <th className="px-4 py-3 font-semibold text-sm w-12">No.</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap min-w-[4rem]">이름</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">연락처</th>
+                    <th className="px-4 py-3 font-semibold text-sm min-w-[120px]">소속교회</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">직책/역할</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap w-24">참석 예상 인원</th>
+                    <th className="px-4 py-3 font-semibold text-sm min-w-[220px]">참석 세션</th>
+                    <th className="px-4 py-3 font-semibold text-sm max-w-[120px]">추가 메시지</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">받은 시간</th>
+                    <th className="px-4 py-3 font-semibold text-sm w-16">삭제</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {rowsWithMeta.map((row) => (
+                  {currentPaginatedRows.map((row) => (
                     <tr key={row.id} className="hover:bg-slate-50">
                       <td className="px-4 py-3 align-top text-sm text-slate-500">
                         {row.index}
                       </td>
-                      <td className="px-4 py-3 align-top text-base font-medium">
+                      <td className="px-4 py-3 align-top text-base font-medium whitespace-nowrap">
                         {row.parsed.name || row.name || "-"}
-                      </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600">
-                        {row.parsed.email || row.email ? (
-                          <a
-                            href={`mailto:${row.parsed.email || row.email}`}
-                            className="text-blue-600 hover:underline"
-                          >
-                            {row.parsed.email || row.email}
-                          </a>
-                        ) : (
-                          "-"
-                        )}
                       </td>
                       <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
                         {row.parsed.phone || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600">
-                        {row.parsed.church || "-"}
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 min-w-[120px]">
+                        <span className="break-words">{row.parsed.church || "-"}</span>
                       </td>
                       <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
                         {row.parsed.role || "-"}
@@ -886,13 +1213,11 @@ export default function ManagePage() {
                             ? `${row.attendees}명`
                             : "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
-                        <div className="whitespace-pre-wrap break-words">
-                          {row.parsed.sessions || "-"}
-                        </div>
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
+                        {row.parsed.sessions || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
-                        <div className="whitespace-pre-wrap break-words">
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-[120px]">
+                        <div className="break-words" title={row.parsed.extraMessage || ""}>
                           {row.parsed.extraMessage || "-"}
                         </div>
                       </td>
@@ -901,12 +1226,268 @@ export default function ManagePage() {
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
+                      <td className="px-4 py-3 align-top">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete([row.id])}
+                          disabled={deleting}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                        >
+                          삭제
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+              >
+                이전
+              </button>
+              <span className="text-sm text-slate-600">
+                {page} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+              >
+                다음
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {authed && !loading && !error && activeTab === "inquiry" && inquiryRows.length > 0 && (
+        <>
+          <div className="space-y-3 sm:hidden">
+            {paginatedInquiry.map((row) => (
+              <div
+                key={row.id}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
+              >
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>No. {row.index}</span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {row.created_at
+                        ? new Date(row.created_at).toLocaleDateString("ko-KR")
+                        : "-"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete([row.id])}
+                      disabled={deleting}
+                      className="text-red-600 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-1 text-lg font-semibold">{row.name || "-"}</div>
+                {row.message && (
+                  <div className="mt-2 text-sm text-slate-600 whitespace-pre-wrap border-t border-slate-100 pt-2">
+                    {row.message}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="hidden sm:block">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+              <table className="min-w-full text-left text-base">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold text-sm w-12">No.</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">이름</th>
+                    <th className="px-4 py-3 font-semibold text-sm min-w-[200px]">메시지</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">받은 시간</th>
+                    <th className="px-4 py-3 font-semibold text-sm w-16">삭제</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {paginatedInquiry.map((row) => (
+                    <tr key={row.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 align-top text-sm text-slate-500">{row.index}</td>
+                      <td className="px-4 py-3 align-top text-base font-medium whitespace-nowrap">{row.name || "-"}</td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-600">
+                        <div className="whitespace-pre-wrap break-words line-clamp-3 max-w-md">
+                          {row.message || "-"}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-500 whitespace-nowrap">
+                        {row.created_at
+                          ? new Date(row.created_at).toLocaleString("ko-KR")
+                          : "-"}
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete([row.id])}
+                          disabled={deleting}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                        >
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+              >
+                이전
+              </button>
+              <span className="text-sm text-slate-600">
+                {page} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+              >
+                다음
+              </button>
+            </div>
+          )}
+        </>
+      )}
+
+      {authed && !loading && !error && activeTab === "applications" && applications.length > 0 && (
+        <>
+          {/* 모바일: 사역 신청 카드 리스트 */}
+          <div className="space-y-3 sm:hidden">
+            {paginatedApplications.map((row, idx) => (
+              <div
+                key={row.id}
+                className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
+              >
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>No. {(page - 1) * PAGE_SIZE + idx + 1}</span>
+                  <div className="flex items-center gap-2">
+                    <span>
+                      {row.created_at
+                        ? new Date(row.created_at).toLocaleDateString("ko-KR")
+                        : "-"}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete([row.id])}
+                      disabled={deleting}
+                      className="text-red-600 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </div>
+                <div className="mt-1 text-lg font-semibold">{row.name || "-"}</div>
+                {row.phone && (
+                  <div className="mt-0.5 text-sm text-slate-600">연락처: {row.phone}</div>
+                )}
+                {row.church && (
+                  <div className="mt-0.5 text-sm text-slate-600">소속교회: {row.church}</div>
+                )}
+                {row.reason && (
+                  <div className="mt-2 text-sm text-slate-600 whitespace-pre-wrap border-t border-slate-100 pt-2">
+                    {row.reason}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* 데스크톱: 사역 신청 테이블 */}
+          <div className="hidden sm:block">
+            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
+              <table className="min-w-full text-left text-base">
+                <thead className="bg-slate-100">
+                  <tr>
+                    <th className="px-4 py-3 font-semibold text-sm w-12">No.</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">이름</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">연락처</th>
+                    <th className="px-4 py-3 font-semibold text-sm min-w-[100px]">소속교회</th>
+                    <th className="px-4 py-3 font-semibold text-sm min-w-[180px]">사역 초청 내용</th>
+                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">받은 시간</th>
+                    <th className="px-4 py-3 font-semibold text-sm w-16">삭제</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {paginatedApplications.map((row, idx) => (
+                    <tr key={row.id} className="hover:bg-slate-50">
+                      <td className="px-4 py-3 align-top text-sm text-slate-500">{(page - 1) * PAGE_SIZE + idx + 1}</td>
+                      <td className="px-4 py-3 align-top text-base font-medium whitespace-nowrap">{row.name || "-"}</td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
+                        {row.phone || "-"}
+                      </td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 min-w-[100px]">
+                        <span className="break-words">{row.church || "-"}</span>
+                      </td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
+                        <div className="whitespace-pre-wrap break-words">{row.reason || "-"}</div>
+                      </td>
+                      <td className="px-4 py-3 align-top text-sm text-slate-500 whitespace-nowrap">
+                        {row.created_at
+                          ? new Date(row.created_at).toLocaleString("ko-KR")
+                          : "-"}
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete([row.id])}
+                          disabled={deleting}
+                          className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                        >
+                          삭제
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-4">
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page <= 1}
+                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+              >
+                이전
+              </button>
+              <span className="text-sm text-slate-600">
+                {page} / {totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page >= totalPages}
+                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+              >
+                다음
+              </button>
+            </div>
+          )}
         </>
       )}
     </main>
