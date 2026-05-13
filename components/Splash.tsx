@@ -26,12 +26,12 @@ export function Splash() {
           style={{ backgroundColor: SPLASH_BG }}
           onClick={endSplash}
         >
-          {/* 데스크탑: 부드러운 정면 클로즈업 (iOS 스타일 자연 이징) */}
+          {/* 데스크탑: 부드러운 정면 클로즈업 (iOS 스타일 자연 이징, 1.5초) */}
           <motion.div
             initial={{ scale: 1 }}
-            animate={{ scale: 1.5 }}
+            animate={{ scale: 1.42 }}
             transition={{
-              duration: 1.9,
+              duration: 1.5,
               ease: [0.32, 0.72, 0, 1],
             }}
             className="hidden md:block absolute inset-0"

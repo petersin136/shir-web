@@ -3,7 +3,9 @@
 import { useEffect, useState } from 'react';
 
 const SPLASH_SESSION_KEY = 'shir-splash-shown';
-const SPLASH_DURATION = 2400; // 짧고 자연스럽게
+// 데스크탑은 2초 (페이드 포함), 모바일은 회전 클라이맥스 위해 약간 길게
+const SPLASH_DURATION_DESKTOP = 1500;
+const SPLASH_DURATION_MOBILE = 2400;
 const FADE_DURATION = 500; // 0.5초
 
 export function useIntroSplash() {
@@ -22,17 +24,19 @@ export function useIntroSplash() {
       return;
     }
 
-    // 스플래시는 이미 true로 시작
-    
+    // 디바이스별 splash duration 결정
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const splashDuration = isDesktop ? SPLASH_DURATION_DESKTOP : SPLASH_DURATION_MOBILE;
+
     // 0.6초 후 스킵 버튼 표시
     const skipTimer = setTimeout(() => {
       setShowSkip(true);
     }, 600);
 
-    // 1초 후 자동 종료
+    // 디바이스별 시간 후 자동 종료
     const autoEndTimer = setTimeout(() => {
       endSplash();
-    }, SPLASH_DURATION);
+    }, splashDuration);
 
     // 키보드 이벤트 리스너
     const handleKeyDown = (e: KeyboardEvent) => {

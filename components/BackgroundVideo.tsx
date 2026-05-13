@@ -1,120 +1,48 @@
+// components/BackgroundVideo.tsx
+// (이름은 호환성 유지를 위해 그대로 두지만, 더 이상 영상이 아닌
+//  SHIRBAND 히어로 이미지를 전역 배경으로 렌더합니다.)
 'use client';
 
-import Image from "next/image";
-import { useEffect, useState } from "react";
+import Image from 'next/image';
 
-type SettingsRow = {
-  hero_video_url: string | null;
-  hero_image_url: string | null;
-  overlay_opacity: number | null;
-  blur_px: number | null;
-  video_opacity?: number | null;
-};
+const HERO_BG_PC =
+  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_PC%20MERGED.jpg';
+const HERO_BG_MOBILE =
+  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_M%20MERGED.jpg';
 
 interface BackgroundVideoProps {
-  overlayOpacity?: number; // 페이지별로 다른 투명도 설정 가능
+  overlayOpacity?: number;
   className?: string;
 }
 
-export function BackgroundVideo({ 
-  overlayOpacity = 0.3, // 기본값: 다른 페이지에서는 더 어둡게
-  className = "fixed inset-0 -z-10" 
+export function BackgroundVideo({
+  overlayOpacity = 0.5,
+  className = 'fixed inset-0 -z-10',
 }: BackgroundVideoProps) {
-  const [settings, setSettings] = useState<SettingsRow | null>(null);
-  const [hasError, setHasError] = useState(false);
-
-  // Supabase settings를 못 불러올 때 사용할 기본 영상 URL
-  const FALLBACK_VIDEO_URL =
-    "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/hero.mp4";
-
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        // lib/supabase/client.ts의 createClient 사용 (환경 변수 자동 처리)
-        const { createClient } = await import("@/lib/supabase/client");
-        const supabase = createClient();
-
-        const { data, error } = await supabase
-          .from("settings")
-          .select("*")
-          .limit(1)
-          .single();
-
-        if (error) {
-          console.error("BackgroundVideo: settings 로드 실패", error);
-          setHasError(true);
-          return;
-        }
-
-        setSettings(data);
-      } catch (e) {
-        console.error("BackgroundVideo: 알 수 없는 오류", e);
-        setHasError(true);
-      }
-    };
-
-    loadSettings();
-  }, []);
-
-  // env가 없거나 오류가 나면 기본 영상 + 어두운 배경만 표시 (앱이 깨지지 않도록)
-  if (!settings || hasError) {
-    return (
-      <div className={className}>
-        {/* 기본 배경 비디오 */}
-        <video
-          className="absolute inset-0 w-full h-full object-cover"
-          src={FALLBACK_VIDEO_URL}
-          autoPlay
-          muted
-          loop
-          playsInline
-          suppressHydrationWarning
-        />
+  return (
+    <div className={`${className} bg-black`}>
+      <Image
+        src={HERO_BG_PC}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="hidden md:block object-cover"
+      />
+      <Image
+        src={HERO_BG_MOBILE}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
+        className="block md:hidden object-cover"
+      />
+      {overlayOpacity > 0 && (
         <div
           className="absolute inset-0"
-          style={{
-            backgroundColor: `rgba(0,0,0,${overlayOpacity})`,
-          }}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className={className}>
-      {/* 배경 비디오 */}
-      {settings.hero_video_url && (
-        <video
-          className="absolute inset-0 w-full h-full object-cover"
-          src={settings.hero_video_url}
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ opacity: settings.video_opacity || 1 }}
-          suppressHydrationWarning
+          style={{ backgroundColor: `rgba(0,0,0,${overlayOpacity})` }}
         />
       )}
-
-      {/* 블러 이미지 레이어 */}
-      {settings.hero_image_url && (
-        <Image
-          src={settings.hero_image_url}
-          alt=""
-          fill
-          className="object-cover"
-          style={{ filter: settings.blur_px ? `blur(${settings.blur_px}px)` : undefined }}
-        />
-      )}
-
-      {/* 어둡게 오버레이 */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundColor: `rgba(0,0,0,${overlayOpacity})`,
-        }}
-      />
     </div>
   );
 }
-

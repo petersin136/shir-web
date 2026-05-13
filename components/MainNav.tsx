@@ -7,13 +7,13 @@ import { useState } from "react";
 
 const links = [
   { href: "/", label: "HOME", shortLabel: "HOME" },
-  { href: "/about", label: "소개", shortLabel: "소개" },
-  { href: "/metanoia-2026", label: "METANOIA 컨퍼런스", shortLabel: "META" },
-  { href: "/oneness", label: "ONENESS Worship", shortLabel: "ONENESS" },
-  { href: "/media", label: "미디어", shortLabel: "미디어" },
-  { href: "/events", label: "사역", shortLabel: "사역" },
-  { href: "/apply", label: "사역 신청", shortLabel: "신청" },
-  { href: "/inquiry", label: "문의하기", shortLabel: "문의" },
+  { href: "/about", label: "ABOUT", shortLabel: "ABOUT" },
+  { href: "/metanoia-2026", label: "METANOIA", shortLabel: "META" },
+  { href: "/oneness", label: "ONENESS WORSHIP", shortLabel: "ONENESS" },
+  { href: "/media", label: "MEDIA", shortLabel: "MEDIA" },
+  { href: "/events", label: "MINISTRY", shortLabel: "MINISTRY" },
+  { href: "/apply", label: "APPLY", shortLabel: "APPLY" },
+  { href: "/inquiry", label: "CONTACT", shortLabel: "CONTACT" },
 ];
 
 export default function MainNav() {
@@ -21,22 +21,18 @@ export default function MainNav() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/10">
-        <nav className="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black border-b border-white/10">
+        <nav className="mx-auto max-w-6xl px-3 sm:px-6 lg:px-8 h-12 sm:h-14 flex items-center justify-between">
           {/* 왼쪽: 로고 자리 */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <div className="bg-white rounded-md p-1.5 sm:rounded-lg sm:p-2 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10">
-              <Image 
-                src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/shir-logo.png" 
-                alt="SHIR Logo" 
-                width={24}
-                height={24}
-                className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
-              />
-            </div>
-            <span className="text-base sm:text-xl tracking-wide uppercase font-bold text-white whitespace-nowrap">
-              SHIR BAND
-            </span>
+          <Link href="/" className="flex items-center flex-shrink-0">
+            <Image
+              src="https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND%20Sub%20Logotype%2003_WHITE(500).png"
+              alt="SHIR BAND"
+              width={500}
+              height={130}
+              priority
+              className="h-7 sm:h-9 w-auto object-contain"
+            />
           </Link>
 
           {/* 데스크톱 메뉴 */}
@@ -70,7 +66,7 @@ export default function MainNav() {
       {isOpen && (
         <div className="fixed inset-0 z-40 sm:hidden">
           <div className="fixed inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsOpen(false)}></div>
-          <div className="fixed top-16 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/20">
+          <div className="fixed top-12 left-0 right-0 bg-black/95 backdrop-blur-md border-b border-white/20">
             <ul className="py-4">
               {links.map((l) => (
                 <li key={l.href}>
