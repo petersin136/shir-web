@@ -13,6 +13,12 @@ const ETERNAL_PRAISE_BG_MOBILE =
 const SHIRBAND_WHITE_LOGO =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND%20Sub%20Logotype%2003_WHITE(500).png";
 
+// 푸터 직전 마지막 섹션 - SONG TO SING FOREVER 그래픽
+const SONG_TO_SING_IMAGE =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/9.12.17.png";
+// 이미지의 크림톤 배경과 동일한 색 (이미지에서 직접 샘플링)
+const SONG_TO_SING_BG = "#F8F4E9";
+
 // 데스크탑 이미지에 박혀있는 "ETERNAL PRAISE" 타이포와 동일한 인상을 내는 폰트 스택
 // (Impact / Bebas Neue / Anton 계열 — 헤비 + 컨덴스드 디스플레이)
 const DISPLAY_FONT_STACK =
@@ -122,6 +128,82 @@ export default function HomePage() {
             height={130}
             className="md:w-44 lg:w-48 h-auto"
           />
+        </div>
+      </section>
+
+      {/* 마지막 섹션 - SONG TO SING FOREVER 그래픽 + 카피 (푸터 직전) */}
+      <section
+        className="relative w-full pt-12 md:pt-8 pb-12 md:pb-8"
+        style={{ backgroundColor: SONG_TO_SING_BG }}
+      >
+        <div className="flex flex-col md:flex-row md:items-end gap-y-12 md:gap-x-8 lg:gap-x-14 px-6 sm:px-10 md:pl-12 lg:pl-20 xl:pl-28 md:pr-10 lg:pr-16">
+          {/* 좌측 - 그래픽 이미지 (위아래 거의 꽉, 자연 비율 그대로) */}
+          <div className="w-full md:w-auto md:flex-shrink-0">
+            <Image
+              src={SONG_TO_SING_IMAGE}
+              alt="SHIRBAND — Song to Sing Forever"
+              width={2048}
+              height={1448}
+              sizes="(max-width: 768px) 100vw, 80vh"
+              className="block w-full h-auto md:w-auto md:h-[calc(100dvh-3.5rem-4rem)]"
+              priority={false}
+            />
+          </div>
+
+          {/* 우측 - 타이포 카피 (이미지 하단보다 약 3cm 위로 올림) */}
+          <div className="w-full md:flex-1 flex flex-col text-neutral-900 md:mb-[120px]">
+          {/* 아이브로우 (영문 — 세리프 small caps 느낌) */}
+          <p
+            className="text-[11px] sm:text-[12px] tracking-[0.45em] uppercase font-light text-neutral-500/80 mb-7 sm:mb-8"
+            style={{ fontFamily: "var(--font-serif-en), 'EB Garamond', Georgia, serif" }}
+          >
+            Song to Sing Forever
+          </p>
+
+          {/* 메인 카피 (국문 — 노토 세리프 KR 라이트) */}
+          <h2
+            className="leading-[1.35] tracking-[-0.01em] text-neutral-900"
+            style={{
+              fontFamily:
+                "var(--font-serif-kr), 'Noto Serif KR', 'Nanum Myeongjo', serif",
+              fontWeight: 300,
+              fontSize: "clamp(1.75rem, 3vw, 2.625rem)",
+            }}
+          >
+            영원히 부를
+            <br />
+            구원의 노래
+            <span className="text-neutral-400 font-light">…</span>
+          </h2>
+
+          {/* 디바이더 */}
+          <div className="w-12 h-px bg-neutral-400/60 my-8 sm:my-10" />
+
+          {/* 영문 부카피 (EB Garamond Italic) */}
+          <p
+            className="leading-[1.7] text-neutral-600 max-w-md"
+            style={{
+              fontFamily:
+                "var(--font-serif-en), 'EB Garamond', Georgia, serif",
+              fontStyle: "italic",
+              fontWeight: 400,
+              fontSize: "clamp(0.95rem, 1.1vw, 1.0625rem)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            A song of salvation,
+            <br />
+            to be sung for eternity.
+          </p>
+
+          {/* 푸트노트 (메타 라인) */}
+          <p
+            className="mt-10 sm:mt-14 text-[10.5px] sm:text-[11px] tracking-[0.4em] uppercase text-neutral-400"
+            style={{ fontFamily: "var(--font-serif-en), 'EB Garamond', Georgia, serif" }}
+          >
+            SHIRBAND · ID 01 / ETERNITY
+          </p>
+          </div>
         </div>
       </section>
       </main>
