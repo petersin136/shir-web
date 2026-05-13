@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 const SPLASH_SESSION_KEY = 'shir-splash-shown';
-const SPLASH_DURATION = 2500; // 2.5초로 조정
+const SPLASH_DURATION = 3200; // 클로즈업 + 회전 클라이맥스
 const FADE_DURATION = 500; // 0.5초
 
 export function useIntroSplash() {
