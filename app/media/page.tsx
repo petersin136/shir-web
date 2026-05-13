@@ -29,22 +29,17 @@ export default function MediaPage() {
     name: string;
     handle: string;
     href: string;
-    available: boolean;
   }[] = [
     {
       name: "Instagram",
       handle: "@shirband.official",
       href: "https://www.instagram.com/shirband.official",
-      available: true,
     },
     {
       name: "YouTube",
       handle: "@SHIRBAND",
       href: "https://www.youtube.com/@SHIRBAND",
-      available: true,
     },
-    { name: "Facebook", handle: "Coming soon", href: "#", available: false },
-    { name: "Threads", handle: "Coming soon", href: "#", available: false },
   ];
 
   return (
@@ -69,9 +64,14 @@ export default function MediaPage() {
               YouTube · Vimeo
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {videos.map((v) => (
-              <VideoCard key={v.title} title={v.title} url={v.url} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+            {videos.map((v, i) => (
+              <VideoCard
+                key={v.title}
+                title={v.title}
+                url={v.url}
+                index={i + 1}
+              />
             ))}
           </div>
         </section>
@@ -83,13 +83,14 @@ export default function MediaPage() {
           <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-8 sm:mb-10">
             Photos
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {photos.map((p) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
+            {photos.map((p, i) => (
               <ImageCard
                 key={p.src}
                 src={p.src}
                 alt={p.caption}
                 caption={p.caption}
+                index={i + 1}
               />
             ))}
           </div>
@@ -106,37 +107,24 @@ export default function MediaPage() {
           <ul className="divide-y divide-white/10 border-y border-white/10">
             {socials.map((s) => (
               <li key={s.name}>
-                {s.available ? (
-                  <a
-                    href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between py-5 sm:py-6 group transition-colors"
-                  >
-                    <div className="flex items-baseline gap-6">
-                      <span className="text-base sm:text-lg text-white font-light tracking-wider group-hover:text-white/80 transition-colors">
-                        {s.name}
-                      </span>
-                      <span className="text-[14px] text-white/45 font-light">
-                        {s.handle}
-                      </span>
-                    </div>
-                    <span className="text-white/30 group-hover:text-white/70 group-hover:translate-x-1 transition-all text-lg font-light">
-                      →
+                <a
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between py-5 sm:py-6 group transition-colors"
+                >
+                  <div className="flex items-baseline gap-6">
+                    <span className="text-base sm:text-lg text-white font-light tracking-wider group-hover:text-white/80 transition-colors">
+                      {s.name}
                     </span>
-                  </a>
-                ) : (
-                  <div className="flex items-center justify-between py-5 sm:py-6 opacity-40">
-                    <div className="flex items-baseline gap-6">
-                      <span className="text-base sm:text-lg text-white font-light tracking-wider">
-                        {s.name}
-                      </span>
-                      <span className="text-[14px] text-white/45 font-light">
-                        {s.handle}
-                      </span>
-                    </div>
+                    <span className="text-[14px] text-white/45 font-light">
+                      {s.handle}
+                    </span>
                   </div>
-                )}
+                  <span className="text-white/30 group-hover:text-white/70 group-hover:translate-x-1 transition-all text-lg font-light">
+                    →
+                  </span>
+                </a>
               </li>
             ))}
           </ul>

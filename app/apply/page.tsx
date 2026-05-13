@@ -50,8 +50,21 @@ export default function ApplyPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "서버 오류");
+
+      const contentType = res.headers.get("content-type") || "";
+      let data: { error?: string; message?: string } | null = null;
+      if (contentType.includes("application/json")) {
+        data = await res.json().catch(() => null);
+      } else {
+        await res.text().catch(() => "");
+      }
+
+      if (!res.ok) {
+        throw new Error(
+          data?.error ||
+            `요청 처리에 실패했습니다. (HTTP ${res.status})`
+        );
+      }
       setOk("사역 신청이 완료되었습니다. 감사합니다.");
       form.reset();
       setPrivacyAgreed(false);

@@ -8,22 +8,44 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
+// 파비콘 (브라우저 탭) — 기존 Apple Touch Icon 그대로 사용
 const FAVICON_URL =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_APPLE%20TOUCH%20ICON_180.png";
 
-// Metadata configuration - Updated for Vercel deployment
+// 검색엔진 · SNS 링크 미리보기용 이미지 (빨강 SHIRBAND 로고)
+const OG_IMAGE_URL =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND%20Sub%20Logotype%2002_RED(1000X1000).png";
+
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "SHIR BAND | Spirit & Truth Worship",
   description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
   icons: {
-    icon: [
-      { url: FAVICON_URL, type: "image/png", sizes: "180x180" },
-    ],
+    icon: [{ url: FAVICON_URL, type: "image/png", sizes: "180x180" }],
     shortcut: [{ url: FAVICON_URL, type: "image/png" }],
-    apple: [
-      { url: FAVICON_URL, sizes: "180x180", type: "image/png" },
+    apple: [{ url: FAVICON_URL, sizes: "180x180", type: "image/png" }],
+  },
+  openGraph: {
+    title: "SHIR BAND | Spirit & Truth Worship",
+    description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+    url: defaultUrl,
+    siteName: "SHIR BAND",
+    images: [
+      {
+        url: OG_IMAGE_URL,
+        width: 1000,
+        height: 1000,
+        alt: "SHIR BAND",
+      },
     ],
+    locale: "ko_KR",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SHIR BAND | Spirit & Truth Worship",
+    description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+    images: [OG_IMAGE_URL],
   },
 };
 

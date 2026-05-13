@@ -1,37 +1,67 @@
 // app/api/apply/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(url, anon);
+export const runtime = "nodejs";
+
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !anon) {
+    return null;
+  }
+
+  return createClient(url, anon);
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
-    const { name, phone, email, church, reason } = body;
-
-    // 필수 필드 및 타입 검증
-    if (
-      !name ||
-      !phone ||
-      !email ||
-      !church ||
-      !reason ||
-      typeof name !== "string" ||
-      typeof phone !== "string" ||
-      typeof email !== "string" ||
-      typeof church !== "string" ||
-      typeof reason !== "string"
-    ) {
-      console.error("Invalid payload:", { name, phone, email, church, reason });
+    const supabase = getSupabase();
+    if (!supabase) {
+      console.error(
+        "Supabase env vars missing: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY"
+      );
       return NextResponse.json(
-        { error: "invalid payload" },
+        {
+          error:
+            "서버 설정 오류입니다. 잠시 후 다시 시도해 주세요. (env not configured)",
+        },
+        { status: 500 }
+      );
+    }
+
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "잘못된 요청 형식입니다." },
         { status: 400 }
       );
     }
 
-    // applications 테이블에 데이터 삽입
+    const { name, phone, email, church, reason } =
+      (body ?? {}) as Record<string, unknown>;
+
+    if (
+      typeof name !== "string" ||
+      typeof phone !== "string" ||
+      typeof email !== "string" ||
+      typeof church !== "string" ||
+      typeof reason !== "string" ||
+      !name.trim() ||
+      !phone.trim() ||
+      !email.trim() ||
+      !church.trim() ||
+      !reason.trim()
+    ) {
+      return NextResponse.json(
+        { error: "모든 필수 항목을 입력해주세요." },
+        { status: 400 }
+      );
+    }
+
     const { data, error } = await supabase
       .from("applications")
       .insert([
@@ -47,8 +77,7 @@ export async function POST(request: NextRequest) {
       .select();
 
     if (error) {
-      console.error("Supabase error:", error);
-      console.error("Error details:", {
+      console.error("Supabase error:", {
         message: error.message,
         details: error.details,
         hint: error.hint,
@@ -65,12 +94,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : "server error";
-    console.error("API error:", error);
-    console.error("Error message:", errorMessage);
-    return NextResponse.json(
-      { error: errorMessage },
-      { status: 500 }
-    );
+    const errorMessage =
+      error instanceof Error ? error.message : "server error";
+    console.error("API /apply error:", error);
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
