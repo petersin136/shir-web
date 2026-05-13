@@ -8,11 +8,23 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
+const FAVICON_URL =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_APPLE%20TOUCH%20ICON_180.png";
+
 // Metadata configuration - Updated for Vercel deployment
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "SHIR BAND | Spirit & Truth Worship",
   description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+  icons: {
+    icon: [
+      { url: FAVICON_URL, type: "image/png", sizes: "180x180" },
+    ],
+    shortcut: [{ url: FAVICON_URL, type: "image/png" }],
+    apple: [
+      { url: FAVICON_URL, sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

@@ -26,21 +26,26 @@ export function Splash() {
           style={{ backgroundColor: SPLASH_BG }}
           onClick={endSplash}
         >
-          {/* 데스크탑: 시네마틱 클로즈업 + 임팩트 펀치 + 카메라 셰이크 */}
+          {/* 데스크탑: 매끈한 가속 → 피크 → 부드러운 안착 (cinematic 3-phase) */}
           <motion.div
-            initial={{ scale: 1, x: 0, rotate: 0 }}
+            initial={{ scale: 1, x: 0, y: 0, rotate: 0 }}
             animate={{
-              scale: [1, 1.12, 1.5, 2.7, 2.6, 2.55],
-              x: [0, 0, 0, -6, 4, 0],
-              rotate: [0, 0, 0, -1.2, 0.6, 0],
+              scale: [1, 1.16, 1.88, 1.62],
+              x: [0, -6, -38, -26],
+              y: [0, 3, 16, 10],
+              rotate: [0, -1, -5, -3],
             }}
             transition={{
-              duration: 3.0,
-              times: [0, 0.35, 0.65, 0.9, 0.96, 1],
-              ease: [0.7, 0, 0.25, 1],
+              duration: 2.4,
+              times: [0, 0.42, 0.78, 1],
+              ease: ['easeOut', 'circIn', 'easeOut'],
             }}
             className="hidden md:block absolute inset-0"
-            style={{ transformOrigin: 'center center' }}
+            style={{
+              transformOrigin: 'center center',
+              willChange: 'transform',
+              backfaceVisibility: 'hidden',
+            }}
           >
             <Image
               src={SPLASH_PC}
@@ -65,7 +70,11 @@ export function Splash() {
               ease: [0.45, 0, 0.2, 1],
             }}
             className="block md:hidden absolute inset-0"
-            style={{ transformOrigin: 'center center' }}
+            style={{
+              transformOrigin: 'center center',
+              willChange: 'transform',
+              backfaceVisibility: 'hidden',
+            }}
           >
             <Image
               src={SPLASH_MOBILE}

@@ -68,6 +68,7 @@ export function BackgroundVideo({
           muted
           loop
           playsInline
+          suppressHydrationWarning
         />
         <div
           className="absolute inset-0"
@@ -91,6 +92,7 @@ export function BackgroundVideo({
           loop
           playsInline
           style={{ opacity: settings.video_opacity || 1 }}
+          suppressHydrationWarning
         />
       )}
 
