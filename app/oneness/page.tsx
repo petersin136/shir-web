@@ -34,7 +34,12 @@ export default function OnenessPage() {
       message: String(formData.get("message") || "").trim(),
     };
 
-    if (!payload.name || !payload.phone || !payload.church || !payload.participants) {
+    if (
+      !payload.name ||
+      !payload.phone ||
+      !payload.church ||
+      !payload.participants
+    ) {
       setErr("이름, 연락처, 소속교회, 참석 예상 인원은 필수 입력사항입니다.");
       setLoading(false);
       return;
@@ -55,16 +60,17 @@ ONENESS Worship 2026 신청 정보:
 - 직책/역할: ${payload.position}
 - 참석 예상 인원: ${payload.participants}명
 - 추가 메시지: ${payload.message}
-          `.trim()
+          `.trim(),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "서버 오류");
-      setOk("ONENESS Worship 2026 신청이 완료되었습니다. 감사합니다!");
+      setOk("ONENESS Worship 2026 신청이 완료되었습니다. 감사합니다.");
       form.reset();
       setPrivacyAgreed(false);
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : "신청에 실패했습니다.";
+      const errorMessage =
+        e instanceof Error ? e.message : "신청에 실패했습니다.";
       setErr(errorMessage);
     } finally {
       setLoading(false);
@@ -74,211 +80,285 @@ ONENESS Worship 2026 신청 정보:
   return (
     <>
       <BackgroundVideo overlayOpacity={0.85} />
-      <main className="relative mx-auto max-w-4xl px-6 py-16">
-        <div className="space-y-8 mb-12">
-          {/* 성경구절 섹션 - 그대로 유지 */}
-          <div className="space-y-6">
-            <div>
-              <p className="text-base sm:text-lg md:text-xl leading-loose text-white font-light mb-4" style={{lineHeight: '1.8'}}>
-                &ldquo;아버지여, 아버지께서 내안에, 내가 아버지 안에 있는 것 같이 그들도 다 하나가 되어 우리 안에 있게 하사 세상으로 아버지께서 나를 보내시 것을 믿게 하옵소서&rdquo;
-              </p>
-              <p className="text-sm sm:text-base text-white/80 font-medium text-right">
-                요 17:21
-              </p>
-            </div>
-
-            <div>
-              <p className="text-base sm:text-lg md:text-xl leading-loose text-white font-light mb-4" style={{lineHeight: '1.8'}}>
-                &ldquo;평안의 매는 줄로 성령이 하나되게 하신 것을 힘써 지키라&rdquo;
-              </p>
-              <p className="text-sm sm:text-base text-white/80 font-medium text-right">
-                엡 4:3
-              </p>
-            </div>
-          </div>
-
-          <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium mb-8">
-            깨어졌던 개인과 교회와 열방이 하나님과 하나되고 개인과 개인이 교회와 교회가 더 나아가 남.북한이 복음으로 하나되길 기도하고 예배합니다.
+      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+        {/* Header */}
+        <header className="mb-14 sm:mb-16">
+          <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
+            Worship · 2026.06
           </p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
+            Oneness
+          </h1>
+          <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
+        </header>
 
-          {/* ONENESS Worship 2026 섹션 */}
-          <div className="space-y-6">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-wide uppercase mb-6">
-              ONENESS Worship 2026
-            </h2>
-            
-            <div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">일시</h3>
-              <p className="text-base sm:text-lg md:text-xl text-white font-medium">
-                2026년 6월 27일 1시~ (7시간 연속 예배)
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">장소</h3>
-              <p className="text-base sm:text-lg md:text-xl text-white font-medium">
-                장소 미정
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Speaker</h3>
-              <div className="space-y-2">
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">송바울 (Dr. One. K)</p>
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">이재진 선교사</p>
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">우홍식 목사</p>
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">신승용 대표</p>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">워십팀</h3>
-              <div className="space-y-2">
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">쉬르밴드 (SHIR BAND)</p>
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">로드웨이브 (LORD WAVE)</p>
-                <p className="text-base sm:text-lg md:text-xl text-white font-medium">팀 다니엘초이 (Daniel Choi)</p>
-              </div>
-            </div>
-
-            <p className="text-base sm:text-lg md:text-xl text-white/90 font-medium">
-              6월 27일 1시부터 7시간 연속 자율 금식집회입니다.
+        {/* 성경구절 */}
+        <section className="space-y-10 sm:space-y-12 mb-14 sm:mb-16">
+          <blockquote className="border-l border-white/15 pl-5 sm:pl-6">
+            <p className="text-[16px] sm:text-[17px] leading-loose text-white/85 font-light">
+              아버지여, 아버지께서 내안에, 내가 아버지 안에 있는 것 같이 그들도
+              다 하나가 되어 우리 안에 있게 하사 세상으로 아버지께서 나를
+              보내신 것을 믿게 하옵소서
             </p>
-          </div>
-        </div>
+            <cite className="block mt-3 sm:mt-4 text-[12px] sm:text-[13px] text-white/45 not-italic tracking-[0.2em] uppercase">
+              John · 요한복음 17:21
+            </cite>
+          </blockquote>
+
+          <blockquote className="border-l border-white/15 pl-5 sm:pl-6">
+            <p className="text-[16px] sm:text-[17px] leading-loose text-white/85 font-light">
+              평안의 매는 줄로 성령이 하나되게 하신 것을 힘써 지키라
+            </p>
+            <cite className="block mt-3 sm:mt-4 text-[12px] sm:text-[13px] text-white/45 not-italic tracking-[0.2em] uppercase">
+              Ephesians · 에베소서 4:3
+            </cite>
+          </blockquote>
+        </section>
+
+        <p className="text-[16px] sm:text-[17px] leading-loose text-white/80 font-light mb-14 sm:mb-16">
+          깨어졌던 개인과 교회와 열방이 하나님과 하나되고 개인과 개인이, 교회와
+          교회가, 더 나아가 남·북한이 복음으로 하나되길 기도하고 예배합니다.
+        </p>
+
+        <div className="w-10 h-px bg-white/15 mb-14 sm:mb-16" />
+
+        {/* 행사 정보 */}
+        <section className="mb-14 sm:mb-16">
+          <h2 className="text-xl sm:text-2xl font-light tracking-wider text-white mb-8">
+            ONENESS Worship 2026
+          </h2>
+
+          <dl className="space-y-5 text-[16px] sm:text-[17px]">
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-xs uppercase pt-0.5">
+                Date
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed">
+                2026년 6월 27일 1시
+                <span className="block text-white/50 text-sm mt-0.5">
+                  7시간 연속 예배
+                </span>
+              </dd>
+            </div>
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-xs uppercase pt-0.5">
+                Venue
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed">
+                장소 미정
+              </dd>
+            </div>
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-xs uppercase pt-0.5">
+                Speaker
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed space-y-1">
+                <p>송바울 (Dr. One. K)</p>
+                <p>이재진 선교사 (에클레시아 선교회 대표)</p>
+                <p>우홍식 목사</p>
+                <p>신승용 그날 미니스트리 대표</p>
+              </dd>
+            </div>
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-xs uppercase pt-0.5">
+                Team
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed space-y-1">
+                <p>쉬르밴드 (SHIR BAND)</p>
+                <p>로드웨이브 (LORD WAVE)</p>
+                <p>팀 다니엘초이 (Daniel Choi)</p>
+              </dd>
+            </div>
+          </dl>
+
+          <p className="text-[14px] sm:text-[15px] text-white/55 font-light mt-6 leading-relaxed">
+            6월 27일 1시부터 7시간 연속 자율 금식집회입니다.
+          </p>
+        </section>
+
+        <div className="w-10 h-px bg-white/15 mb-14 sm:mb-16" />
 
         {/* 집회 신청 */}
-        <div id="register-section" className="pt-8 scroll-mt-20">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
-            집회 신청
+        <section id="register-section" className="scroll-mt-20">
+          <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-8">
+            Registration
           </h2>
-          
-          <p className="text-base sm:text-lg md:text-xl text-white font-medium mb-6">
+
+          <p className="text-[16px] text-white/80 font-light leading-loose mb-10">
             ONENESS Worship 2026 참석을 신청해 주세요.
           </p>
 
-          <form onSubmit={onSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">이름 *</span>
+          <form onSubmit={onSubmit} className="space-y-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+              <Field label="Name *" htmlFor="name">
                 <input
+                  id="name"
                   name="name"
                   type="text"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="홍길동"
+                  className={inputClass}
                 />
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">연락처 *</span>
+              </Field>
+              <Field label="Phone *" htmlFor="phone">
                 <input
+                  id="phone"
                   name="phone"
                   type="tel"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="010-1234-5678"
+                  className={inputClass}
                 />
-              </label>
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">소속교회 *</span>
+              </Field>
+              <Field label="Church *" htmlFor="church">
                 <input
+                  id="church"
                   name="church"
                   type="text"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="○○교회"
+                  className={inputClass}
                 />
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">직책/역할</span>
+              </Field>
+              <Field label="Position" htmlFor="position">
                 <input
+                  id="position"
                   name="position"
                   type="text"
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="목사, 전도사, 청년부장 등"
+                  className={inputClass}
                 />
-              </label>
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">참석 예상 인원 *</span>
+              </Field>
+              <Field label="Participants *" htmlFor="participants">
                 <select
+                  id="participants"
                   name="participants"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
+                  className={`${inputClass} appearance-none cursor-pointer`}
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%23ffffff60' d='M6 8L2 4h8z'/%3e%3c/svg%3e\")",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "right 0 center",
+                  }}
                 >
-                  <option value="">선택해주세요</option>
-                  <option value="1">1명</option>
-                  <option value="2">2명</option>
-                  <option value="3">3명</option>
-                  <option value="4">4명</option>
-                  <option value="5">5명</option>
-                  <option value="6">6명</option>
-                  <option value="7">7명</option>
-                  <option value="8">8명</option>
-                  <option value="9">9명</option>
-                  <option value="10">10명</option>
-                  <option value="15">15명</option>
-                  <option value="20">20명</option>
-                  <option value="30">30명 이상</option>
+                  <option value="" className="bg-black">
+                    선택해주세요
+                  </option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((n) => (
+                    <option key={n} value={n} className="bg-black">
+                      {n}명
+                    </option>
+                  ))}
+                  <option value="30" className="bg-black">
+                    30명 이상
+                  </option>
                 </select>
-                <p className="mt-1 text-xs sm:text-sm text-white/70">본인 포함 총 참석 인원을 선택해주세요.</p>
-              </label>
+                <p className="mt-2 text-[12px] text-white/40 font-light">
+                  본인 포함 총 참석 인원을 선택해주세요.
+                </p>
+              </Field>
             </div>
 
-            <label className="block">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">추가 메시지</span>
+            <Field label="Message" htmlFor="message">
               <textarea
+                id="message"
                 name="message"
                 rows={5}
-                className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
-                placeholder="집회 관련 문의사항이나 특별한 요청사항을 입력해 주세요.
-
-※ 단체로 오실 경우 함께 참석하시는 분들의 정보를 입력해주세요.
-예시:
-- 김철수 / 010-1234-5678
-- 이영희 / 010-2345-6789"
+                placeholder="집회 관련 문의사항이나 특별한 요청사항을 입력해 주세요."
+                className={`${inputClass} leading-loose resize-none`}
               />
-              <p className="mt-1 text-xs sm:text-sm text-white/70">
-                단체 참석 시 함께 오시는 분들의 이름과 연락처를 입력해주시면 더 원활한 준비가 가능합니다.
+              <p className="mt-2 text-[12px] text-white/40 font-light leading-relaxed">
+                단체 참석 시 함께 오시는 분들의 이름과 연락처를 입력해주시면
+                더 원활한 준비가 가능합니다.
               </p>
-            </label>
+            </Field>
 
-            <div className="space-y-4">
-              <label className="flex items-start space-x-3">
-                <input
-                  type="checkbox"
-                  checked={privacyAgreed}
-                  onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                  className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
-                  required
-                />
-                <span className="text-sm sm:text-base text-white font-medium">개인정보 수집 및 이용에 동의합니다 (필수)</span>
-              </label>
-              <div className="ml-7 text-xs sm:text-sm text-white/70">
-                <p>
-                  입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
-                  <a href="/privacy-policy" className="underline hover:text-white transition-colors">개인정보 처리방침</a>에 따라 안전하게 관리됩니다.
-                </p>
-              </div>
+            <PrivacyConsent agreed={privacyAgreed} onChange={setPrivacyAgreed} />
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading || !privacyAgreed}
+                className="border border-white/40 px-8 py-3.5 text-[12px] tracking-[0.3em] uppercase font-light text-white hover:bg-white hover:text-black hover:border-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
+              >
+                {loading ? "Sending…" : "Register"}
+              </button>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !privacyAgreed}
-              className="mt-6 inline-flex items-center justify-center rounded border border-white px-8 py-4 text-base sm:text-lg md:text-xl font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50"
-            >
-              {loading ? "신청 중..." : "집회 신청하기"}
-            </button>
-
-            {ok && <p className="text-emerald-400 text-base sm:text-lg font-medium mt-4">{ok}</p>}
-            {err && <p className="text-red-400 text-base sm:text-lg font-medium mt-4">{err}</p>}
+            {ok && (
+              <p className="text-emerald-300/90 text-[14px] tracking-wider font-light pt-2">
+                {ok}
+              </p>
+            )}
+            {err && (
+              <p className="text-red-300/90 text-[14px] tracking-wider font-light pt-2">
+                {err}
+              </p>
+            )}
           </form>
-        </div>
+        </section>
       </main>
     </>
+  );
+}
+
+const inputClass =
+  "w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors";
+
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="block text-[12px] text-white/45 tracking-[0.25em] uppercase mb-2"
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function PrivacyConsent({
+  agreed,
+  onChange,
+}: {
+  agreed: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="space-y-3 pt-4">
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-1 w-3.5 h-3.5 accent-white"
+          required
+        />
+        <span className="text-[14px] sm:text-[15px] text-white/75 font-light leading-relaxed">
+          개인정보 수집 및 이용에 동의합니다 (필수)
+        </span>
+      </label>
+      <p className="ml-7 text-[12px] sm:text-[13px] text-white/45 font-light leading-relaxed">
+        입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,{" "}
+        <a
+          href="/privacy-policy"
+          className="underline underline-offset-2 hover:text-white/80 transition-colors"
+        >
+          개인정보 처리방침
+        </a>
+        에 따라 안전하게 관리됩니다.
+      </p>
+    </div>
   );
 }

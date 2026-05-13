@@ -3,42 +3,47 @@
 import { useEffect, useState } from 'react';
 
 const SPLASH_SESSION_KEY = 'shir-splash-shown';
-// 데스크탑은 2초 (페이드 포함), 모바일은 회전 클라이맥스 위해 약간 길게
+// 데스크탑은 1.5초 (페이드 포함), 모바일은 회전 클라이맥스 위해 약간 길게
 const SPLASH_DURATION_DESKTOP = 1500;
 const SPLASH_DURATION_MOBILE = 2400;
-const FADE_DURATION = 500; // 0.5초
+const FADE_DURATION = 500;
 
 export function useIntroSplash() {
-  const [showSplash, setShowSplash] = useState(true); // 기본값을 true로 변경
+  // SSR 안전을 위해 false로 시작 → 클라이언트에서 첫 방문 여부 확인 후 결정
+  const [showSplash, setShowSplash] = useState(false);
   const [showSkip, setShowSkip] = useState(false);
 
   useEffect(() => {
-    // prefers-reduced-motion 체크
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    // 세션스토리지 체크 (테스트를 위해 임시 비활성화)
-    // const hasShownSplash = sessionStorage.getItem(SPLASH_SESSION_KEY);
-    
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
     if (prefersReducedMotion) {
-      setShowSplash(false); // 즉시 숨김
+      sessionStorage.setItem(SPLASH_SESSION_KEY, 'true');
       return;
     }
 
-    // 디바이스별 splash duration 결정
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
-    const splashDuration = isDesktop ? SPLASH_DURATION_DESKTOP : SPLASH_DURATION_MOBILE;
+    // 이미 이번 세션에서 스플래시를 본 경우엔 노출하지 않음
+    const hasShownSplash = sessionStorage.getItem(SPLASH_SESSION_KEY);
+    if (hasShownSplash) {
+      return;
+    }
 
-    // 0.6초 후 스킵 버튼 표시
+    setShowSplash(true);
+
+    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+    const splashDuration = isDesktop
+      ? SPLASH_DURATION_DESKTOP
+      : SPLASH_DURATION_MOBILE;
+
     const skipTimer = setTimeout(() => {
       setShowSkip(true);
     }, 600);
 
-    // 디바이스별 시간 후 자동 종료
     const autoEndTimer = setTimeout(() => {
       endSplash();
     }, splashDuration);
 
-    // 키보드 이벤트 리스너
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -53,17 +58,18 @@ export function useIntroSplash() {
       clearTimeout(autoEndTimer);
       document.removeEventListener('keydown', handleKeyDown);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const endSplash = () => {
     setShowSplash(false);
-    // sessionStorage.setItem(SPLASH_SESSION_KEY, 'true'); // 테스트를 위해 임시 비활성화
+    sessionStorage.setItem(SPLASH_SESSION_KEY, 'true');
   };
 
   return {
     showSplash,
     showSkip,
     endSplash,
-    fadeDuration: FADE_DURATION
+    fadeDuration: FADE_DURATION,
   };
 }

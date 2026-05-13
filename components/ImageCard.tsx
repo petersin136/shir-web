@@ -11,20 +11,20 @@ interface ImageCardProps {
 
 export default function ImageCard({ src, alt, caption }: ImageCardProps) {
   return (
-    <div className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden">
-      <div className="aspect-video relative">
+    <div className="group">
+      <div className="aspect-video relative overflow-hidden bg-white/5 ring-1 ring-white/10 transition-all group-hover:ring-white/20">
         <Image
           src={src}
           alt={alt}
           fill
-          className="object-cover"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
       </div>
       {caption && (
-        <div className="p-4">
-          <p className="text-sm text-white/70">{caption}</p>
-        </div>
+        <p className="mt-3 text-[13px] text-white/70 font-light tracking-wider">
+          {caption}
+        </p>
       )}
     </div>
   );

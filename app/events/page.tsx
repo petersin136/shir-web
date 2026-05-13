@@ -1,112 +1,128 @@
 // app/events/page.tsx
+import Link from "next/link";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
+
+type Archive = {
+  year: string;
+  label: string;
+  href: string;
+};
+
+type Ministry = {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  archives: Archive[];
+};
+
+const METANOIA: Ministry = {
+  eyebrow: "Conference",
+  title: "METANOIA",
+  subtitle: "회개로 돌아서는 세대",
+  description:
+    "복음의 능력으로 회개의 자리에 서며, 그리스도의 십자가 앞에서 개인과 교회와 열방이 하나님께로 돌아오는 예배의 시간을 함께 합니다.",
+  archives: [
+    {
+      year: "2026",
+      label: "METANOIA 2026",
+      href: "/metanoia-2026",
+    },
+  ],
+};
+
+const ONENESS: Ministry = {
+  eyebrow: "Worship",
+  title: "ONENESS WORSHIP",
+  subtitle: "복음 안에서 하나되는 예배",
+  description:
+    "깨어졌던 개인과 교회와 열방이 하나님과 하나되고, 교회와 교회가, 더 나아가 남·북한이 복음으로 하나되길 기도하며 함께 예배합니다.",
+  archives: [
+    {
+      year: "2026",
+      label: "ONENESS Worship 2026",
+      href: "/oneness",
+    },
+  ],
+};
 
 export default function EventsPage() {
   return (
     <>
       <BackgroundVideo overlayOpacity={0.85} />
-      <main className="relative mx-auto max-w-4xl px-6 py-16">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-12">
-          Ministry
-        </h1>
+      <main className="relative max-w-6xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+        {/* Header */}
+        <header className="mb-16 sm:mb-20">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
+            Ministry
+          </h1>
+          <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
+          <p className="text-[16px] sm:text-[17px] text-white/70 font-light leading-loose mt-6 sm:mt-8 max-w-2xl">
+            쉬르밴드는 예수 그리스도의 복음 안에서 회개와 예배의 사역을 감당합니다.
+          </p>
+        </header>
 
-        <div className="space-y-12">
-          {/* 2026 METANOIA 컨퍼런스 */}
-          <section className="bg-white/5 rounded-lg p-6 sm:p-8 border border-white/10">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
-              2026 METANOIA 컨퍼런스
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">일시</h3>
-                <p className="text-base sm:text-lg text-white/90">2026년 1월 26일 ~ 28일</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">장소</h3>
-                <p className="text-base sm:text-lg text-white/90">포천중앙침례교회</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Speaker</h3>
-                <div className="space-y-2">
-                  <p className="text-base sm:text-lg text-white/90">김용의 선교사</p>
-                  <p className="text-base sm:text-lg text-white/90">송바울(Dr. One. K)</p>
-                  <p className="text-base sm:text-lg text-white/90">스캇브레너 목사</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-8">
-              <a
-                href="/metanoia-2026"
-                className="inline-block bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-white/90 transition-colors"
-              >
-                자세히 보기
-              </a>
-            </div>
-          </section>
-
-          {/* 2026 ONENESS Worship */}
-          <section className="bg-white/5 rounded-lg p-6 sm:p-8 border border-white/10">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
-              ONENESS Worship 2026
-            </h2>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">일시</h3>
-                <p className="text-base sm:text-lg text-white/90">2026년 6월 27일 1시~ (7시간 연속 예배)</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">장소</h3>
-                <p className="text-base sm:text-lg text-white/90">장소 미정</p>
-              </div>
-              
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Speaker</h3>
-                <div className="space-y-2">
-                  <p className="text-base sm:text-lg text-white/90">송바울 (Dr. One. K)</p>
-                  <p className="text-base sm:text-lg text-white/90">이재진 선교사</p>
-                  <p className="text-base sm:text-lg text-white/90">우홍식 목사</p>
-                  <p className="text-base sm:text-lg text-white/90">신승용 대표</p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-lg sm:text-xl font-bold text-white mb-2">워십팀</h3>
-                <div className="space-y-2">
-                  <p className="text-base sm:text-lg text-white/90">쉬르밴드 (SHIR BAND)</p>
-                  <p className="text-base sm:text-lg text-white/90">로드웨이브 (LORD WAVE)</p>
-                  <p className="text-base sm:text-lg text-white/90">팀 다니엘초이 (Daniel Choi)</p>
-                </div>
-              </div>
-              
-              <p className="text-base sm:text-lg text-white/90">
-                6월 27일 1시부터 7시간 연속 자율 금식집회입니다.
-              </p>
-            </div>
-            
-            <div className="mt-8">
-              <a
-                href="/oneness"
-                className="inline-block bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-white/90 transition-colors"
-              >
-                자세히 보기
-              </a>
-            </div>
-          </section>
-
-          {/* 추가 정보 */}
-          <section className="text-center">
-            <p className="text-base sm:text-lg text-white/80 font-medium">
-              더 자세한 정보와 등록은 각 사역 페이지에서 확인하실 수 있습니다.
-            </p>
-          </section>
+        {/* Two-column ministries */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-12 lg:gap-20">
+          <MinistryColumn data={METANOIA} />
+          <MinistryColumn data={ONENESS} />
         </div>
       </main>
     </>
+  );
+}
+
+function MinistryColumn({ data }: { data: Ministry }) {
+  return (
+    <section>
+      {/* 카테고리 라벨 */}
+      <p className="text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
+        {data.eyebrow}
+      </p>
+
+      {/* 메인 타이틀 */}
+      <h2 className="text-xl sm:text-2xl md:text-[28px] font-light tracking-wider text-white">
+        {data.title}
+      </h2>
+
+      <div className="w-10 h-px bg-white/25 mt-5 mb-6" />
+
+      {/* 서브타이틀 + 설명 */}
+      <p className="text-[14px] sm:text-[15px] text-white/55 font-light italic tracking-wider mb-5">
+        {data.subtitle}
+      </p>
+      <p className="text-[16px] sm:text-[17px] text-white/80 font-light leading-loose mb-10 sm:mb-12">
+        {data.description}
+      </p>
+
+      {/* 아카이브 라벨 */}
+      <p className="text-[12px] text-white/40 tracking-[0.25em] uppercase mb-4">
+        Archive
+      </p>
+
+      {/* 연도별 리스트 */}
+      <ul className="border-t border-white/10">
+        {data.archives.map((archive) => (
+          <li key={archive.href}>
+            <Link
+              href={archive.href}
+              className="group flex items-baseline justify-between gap-4 py-4 sm:py-5 border-b border-white/10 transition-colors hover:bg-white/[0.02]"
+            >
+              <div className="flex items-baseline gap-5 sm:gap-6">
+                <span className="text-[13px] text-white/40 tracking-wider font-light tabular-nums">
+                  {archive.year}
+                </span>
+                <span className="text-[15px] sm:text-base text-white/85 font-light tracking-wider group-hover:text-white transition-colors">
+                  {archive.label}
+                </span>
+              </div>
+              <span className="text-white/30 group-hover:text-white/70 group-hover:translate-x-1 transition-all text-base font-light">
+                →
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

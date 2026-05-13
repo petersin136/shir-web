@@ -10,7 +10,9 @@ export default function MetanoiaPage() {
   const [err, setErr] = useState<string | null>(null);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
   const [sessionType, setSessionType] = useState<"" | "all" | "evening">("");
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
@@ -20,66 +22,56 @@ export default function MetanoiaPage() {
     "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/media/KakaoTalk_Photo_2025-12-07-12-18-45.jpg",
   ];
 
-  // 최소 스와이프 거리 (픽셀)
   const minSwipeDistance = 50;
 
-  // 브라우저 뒤로가기 처리
   useEffect(() => {
     const handlePopState = () => {
       setSelectedImageIndex(null);
     };
 
-    window.addEventListener('popstate', handlePopState);
+    window.addEventListener("popstate", handlePopState);
 
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener("popstate", handlePopState);
     };
   }, []);
 
-  // 이미지 열기
   const openImage = (index: number) => {
     setSelectedImageIndex(index);
-    window.history.pushState({ modal: true }, '', '#image');
+    window.history.pushState({ modal: true }, "", "#image");
   };
 
-  // 이미지 닫기
   const closeImage = () => {
     setSelectedImageIndex(null);
-    // URL에 해시가 있으면 제거 (뒤로가기 하지 않음)
-    if (window.location.hash === '#image') {
-      window.history.replaceState(null, '', window.location.pathname);
+    if (window.location.hash === "#image") {
+      window.history.replaceState(null, "", window.location.pathname);
     }
   };
 
-  // 이전 이미지
   const previousImage = () => {
     if (selectedImageIndex !== null && selectedImageIndex > 0) {
       setSelectedImageIndex(selectedImageIndex - 1);
     }
   };
 
-  // 다음 이미지
   const nextImage = () => {
     if (selectedImageIndex !== null && selectedImageIndex < images.length - 1) {
       setSelectedImageIndex(selectedImageIndex + 1);
     }
   };
 
-  // 터치 시작
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
-  // 터치 이동
   const onTouchMove = (e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
 
-  // 터치 종료
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -106,17 +98,17 @@ export default function MetanoiaPage() {
 
     const form = e.currentTarget;
     const formData = new FormData(form);
-    
-    // 세션 타입 확인
+
     if (!sessionType) {
       setErr("참석 세션을 선택해주세요.");
       setLoading(false);
       return;
     }
 
-    const sessionText = sessionType === "all" 
-      ? "신청 1: 모든 시간 참석" 
-      : "신청 2: 저녁 시간 참석 (METANOIA part 1, 2, 3)";
+    const sessionText =
+      sessionType === "all"
+        ? "신청 1: 모든 시간 참석"
+        : "신청 2: 저녁 시간 참석 (METANOIA part 1, 2, 3)";
 
     const payload = {
       name: String(formData.get("name") || "").trim(),
@@ -128,7 +120,12 @@ export default function MetanoiaPage() {
       sessions: sessionText,
     };
 
-    if (!payload.name || !payload.phone || !payload.church || !payload.participants) {
+    if (
+      !payload.name ||
+      !payload.phone ||
+      !payload.church ||
+      !payload.participants
+    ) {
       setErr("이름, 연락처, 소속교회, 참석 예상 인원은 필수 입력사항입니다.");
       setLoading(false);
       return;
@@ -150,17 +147,18 @@ export default function MetanoiaPage() {
 - 참석 예상 인원: ${payload.participants}명
 - 참석 세션: ${payload.sessions}
 - 추가 메시지: ${payload.message}
-          `.trim()
+          `.trim(),
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "서버 오류");
-      setOk("Metanoia 2026 집회 신청이 완료되었습니다. 감사합니다!");
+      setOk("Metanoia 2026 집회 신청이 완료되었습니다. 감사합니다.");
       form.reset();
       setPrivacyAgreed(false);
       setSessionType("");
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : "신청에 실패했습니다.";
+      const errorMessage =
+        e instanceof Error ? e.message : "신청에 실패했습니다.";
       setErr(errorMessage);
     } finally {
       setLoading(false);
@@ -170,149 +168,157 @@ export default function MetanoiaPage() {
   return (
     <>
       <BackgroundVideo overlayOpacity={0.85} />
-      <main className="relative mx-auto max-w-3xl px-6 py-16">
-        {/* 성경구절 섹션 - 최상단 */}
-        <div className="mb-10">
-          <p className="text-base sm:text-lg md:text-xl leading-loose text-white font-light mb-4" style={{lineHeight: '1.8'}}>
-            &ldquo;내가 복음을 부끄러워하지 아니하노니 이 복음은 모든 믿는자에게 구원을 주시는 하나님의 능력이 됨이라 먼저는 유대인에게요 그리고 헬라인에게로다&rdquo;
+      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+        {/* Header */}
+        <header className="mb-14 sm:mb-16">
+          <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
+            Conference · 2026.01
           </p>
-          <p className="text-sm sm:text-base text-white/80 font-medium text-right mb-6">
-            롬 1:16
-          </p>
-          <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium">
-            예수그리스도의 복음을 통해 개인과 교회와 열방이 하나님과 회복되길 기도하고 예배합니다.
-          </p>
-        </div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
+            Metanoia
+          </h1>
+          <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
+        </header>
 
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-10">
-          Metanoia 2026
-        </h1>
-  
-        <div className="space-y-8 mb-12">
-
-          <div className="space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">일정</h3>
-            <p className="text-base sm:text-lg md:text-xl text-white font-medium">
-              2026년 1월 26일(월) ~ 28일(수)
+        {/* 성경구절 */}
+        <section className="mb-14 sm:mb-16">
+          <blockquote className="border-l border-white/15 pl-5 sm:pl-6">
+            <p className="text-[16px] sm:text-[17px] leading-loose text-white/85 font-light">
+              내가 복음을 부끄러워하지 아니하노니 이 복음은 모든 믿는 자에게
+              구원을 주시는 하나님의 능력이 됨이라 먼저는 유대인에게요 그리고
+              헬라인에게로다
             </p>
-          </div>
+            <cite className="block mt-3 sm:mt-4 text-[12px] sm:text-[13px] text-white/45 not-italic tracking-[0.2em] uppercase">
+              Romans · 로마서 1:16
+            </cite>
+          </blockquote>
+        </section>
 
-          <div className="space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">장소</h3>
-            <p className="text-base sm:text-lg md:text-xl text-white font-medium">
-              포천중앙침례교회
-            </p>
-          </div>
+        <p className="text-[16px] sm:text-[17px] leading-loose text-white/80 font-light mb-14 sm:mb-16">
+          예수그리스도의 복음을 통해 개인과 교회와 열방이 하나님과 회복되길
+          기도하고 예배합니다.
+        </p>
 
-          <div className="space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Speaker</h3>
-            <div className="space-y-2">
-              <p className="text-base sm:text-lg md:text-xl text-white font-medium">김용의 선교사님</p>
-              <p className="text-base sm:text-lg md:text-xl text-white font-medium">송바울 (Dr. One. K)</p>
-              <p className="text-base sm:text-lg md:text-xl text-white font-medium">스캇브레너 목사님</p>
+        <div className="w-10 h-px bg-white/15 mb-14 sm:mb-16" />
+
+        {/* 행사 정보 */}
+        <section className="mb-14 sm:mb-16">
+          <h2 className="text-xl sm:text-2xl font-light tracking-wider text-white mb-8">
+            METANOIA 2026
+          </h2>
+
+          <dl className="space-y-5 text-[16px] sm:text-[17px]">
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-[13px] uppercase pt-0.5">
+                Date
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed">
+                2026년 1월 26일(월) — 28일(수)
+              </dd>
             </div>
-          </div>
-
-          {/* 이미지 갤러리 */}
-          <div className="space-y-4">
-            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">집회 안내</h3>
-            
-            <div className="grid grid-cols-3 gap-2 sm:gap-4">
-              <div 
-                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage(0)}
-              >
-                <img
-                  src={images[0]}
-                  alt="Metanoia 2026 집회 안내 1"
-                  className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
-                />
-              </div>
-
-              <div 
-                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage(1)}
-              >
-                <img
-                  src={images[1]}
-                  alt="Metanoia 2026 집회 안내 2"
-                  className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
-                />
-              </div>
-
-              <div 
-                className="relative cursor-pointer overflow-hidden rounded-lg ring-1 ring-white/10 hover:ring-white/30 transition-all bg-white/5"
-                onClick={() => openImage(2)}
-              >
-                <img
-                  src={images[2]}
-                  alt="Metanoia 2026 집회 안내 3"
-                  className="w-full h-auto object-contain hover:opacity-80 transition-opacity duration-300"
-                />
-              </div>
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-[13px] uppercase pt-0.5">
+                Venue
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed">
+                포천중앙침례교회
+              </dd>
             </div>
-          </div>
+            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-[13px] uppercase pt-0.5">
+                Speaker
+              </dt>
+              <dd className="text-white/85 font-light leading-relaxed space-y-1">
+                <p>김용의 선교사</p>
+                <p>송바울 (Dr. One. K)</p>
+                <p>스캇브레너 목사</p>
+              </dd>
+            </div>
+          </dl>
+        </section>
 
-        </div>
+        {/* 이미지 갤러리 */}
+        <section className="mb-14 sm:mb-16">
+          <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-6">
+            Schedule
+          </h2>
+
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
+            {images.map((src, idx) => (
+              <button
+                key={src}
+                type="button"
+                onClick={() => openImage(idx)}
+                className="relative overflow-hidden bg-white/5 ring-1 ring-white/10 hover:ring-white/30 transition-all"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt={`Metanoia 2026 일정 ${idx + 1}`}
+                  className="w-full h-auto object-contain hover:opacity-85 transition-opacity"
+                />
+              </button>
+            ))}
+          </div>
+        </section>
 
         {/* 이미지 모달 */}
         {selectedImageIndex !== null && (
-          <div 
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
             onClick={closeImage}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            {/* 닫기 버튼 */}
             <button
-              className="absolute top-4 right-4 text-white text-4xl font-bold hover:text-white/70 transition-colors z-10"
+              className="absolute top-6 right-6 text-white/70 text-2xl font-light hover:text-white transition-colors z-10 w-10 h-10 flex items-center justify-center"
               onClick={closeImage}
+              aria-label="Close"
             >
               ×
             </button>
 
-            {/* 이전 버튼 */}
             {selectedImageIndex > 0 && (
               <button
-                className="absolute left-4 text-white text-5xl font-bold hover:text-white/70 transition-colors z-10"
+                className="absolute left-4 sm:left-8 text-white/60 text-4xl font-light hover:text-white transition-colors z-10 w-10 h-10 flex items-center justify-center"
                 onClick={(e) => {
                   e.stopPropagation();
                   previousImage();
                 }}
+                aria-label="Previous"
               >
                 ‹
               </button>
             )}
 
-            {/* 이미지 */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={images[selectedImageIndex]}
-              alt={`Metanoia 2026 집회 안내 ${selectedImageIndex + 1}`}
+              alt={`Metanoia 2026 일정 ${selectedImageIndex + 1}`}
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />
 
-            {/* 다음 버튼 */}
             {selectedImageIndex < images.length - 1 && (
               <button
-                className="absolute right-4 text-white text-5xl font-bold hover:text-white/70 transition-colors z-10"
+                className="absolute right-4 sm:right-8 text-white/60 text-4xl font-light hover:text-white transition-colors z-10 w-10 h-10 flex items-center justify-center"
                 onClick={(e) => {
                   e.stopPropagation();
                   nextImage();
                 }}
+                aria-label="Next"
               >
                 ›
               </button>
             )}
 
-            {/* 이미지 인디케이터 */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
               {images.map((_, index) => (
                 <div
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === selectedImageIndex ? 'bg-white' : 'bg-white/30'
+                  className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                    index === selectedImageIndex ? "bg-white" : "bg-white/25"
                   }`}
                 />
               ))}
@@ -320,179 +326,251 @@ export default function MetanoiaPage() {
           </div>
         )}
 
-        <div id="register-section" className="pt-8 scroll-mt-20">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-wide mb-6">
-            집회 신청
+        <div className="w-10 h-px bg-white/15 mb-14 sm:mb-16" />
+
+        {/* 집회 신청 */}
+        <section id="register-section" className="scroll-mt-20">
+          <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-8">
+            Registration
           </h2>
-          
-          <p className="text-base sm:text-lg md:text-xl text-white font-medium mb-6">
+
+          <p className="text-[16px] text-white/80 font-light leading-loose mb-10">
             Metanoia 2026 집회 참석을 신청해 주세요.
           </p>
 
-          <form onSubmit={onSubmit} className="space-y-6">
-            {/* 참석 세션 선택 - 상단에 배치 */}
-            <div className="space-y-4">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">참석 세션 선택 *</span>
-              
-              <div className="space-y-3">
-                <label className="flex items-center space-x-3 cursor-pointer bg-white/5 rounded-lg p-4 ring-1 ring-white/10 hover:bg-white/10 transition-colors">
-                  <input
-                    type="radio"
-                    name="sessionType"
-                    value="all"
-                    checked={sessionType === "all"}
-                    onChange={(e) => setSessionType(e.target.value as "all")}
-                    className="w-5 h-5 text-white bg-white/5 border-white/20 focus:ring-white/30 focus:ring-2"
-                  />
-                  <div>
-                    <div className="text-base sm:text-lg text-white font-semibold">신청 1: 모든 시간 참석</div>
-                    <div className="text-xs sm:text-sm text-white/70 mt-1">
-                      DAY1~3 모든 WORSHIP, COMMUNION 및 METANOIA 세션
-                    </div>
-                  </div>
-                </label>
+          <form onSubmit={onSubmit} className="space-y-10">
+            {/* 참석 세션 선택 */}
+            <div>
+              <p className="text-[12px] text-white/45 tracking-[0.25em] uppercase mb-4">
+                Session *
+              </p>
 
-                <label className="flex items-center space-x-3 cursor-pointer bg-white/5 rounded-lg p-4 ring-1 ring-white/10 hover:bg-white/10 transition-colors">
-                  <input
-                    type="radio"
-                    name="sessionType"
-                    value="evening"
-                    checked={sessionType === "evening"}
-                    onChange={(e) => setSessionType(e.target.value as "evening")}
-                    className="w-5 h-5 text-white bg-white/5 border-white/20 focus:ring-white/30 focus:ring-2"
-                  />
-                  <div>
-                    <div className="text-base sm:text-lg text-white font-semibold">신청 2: 저녁 시간 참석</div>
-                    <div className="text-xs sm:text-sm text-white/70 mt-1">
-                      METANOIA part 1, 2, 3 (19:30-22:00)
-                    </div>
-                  </div>
-                </label>
+              <div className="space-y-3">
+                <SessionOption
+                  selected={sessionType === "all"}
+                  onSelect={() => setSessionType("all")}
+                  title="신청 1 · 모든 시간 참석"
+                  description="DAY 1—3 모든 WORSHIP, COMMUNION 및 METANOIA 세션"
+                />
+                <SessionOption
+                  selected={sessionType === "evening"}
+                  onSelect={() => setSessionType("evening")}
+                  title="신청 2 · 저녁 시간 참석"
+                  description="METANOIA part 1, 2, 3 (19:30—22:00)"
+                />
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">이름 *</span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+              <Field label="Name *" htmlFor="name">
                 <input
+                  id="name"
                   name="name"
                   type="text"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="홍길동"
+                  className={inputClass}
                 />
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">연락처 *</span>
+              </Field>
+              <Field label="Phone *" htmlFor="phone">
                 <input
+                  id="phone"
                   name="phone"
                   type="tel"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="010-1234-5678"
+                  className={inputClass}
                 />
-              </label>
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">소속교회 *</span>
+              </Field>
+              <Field label="Church *" htmlFor="church">
                 <input
+                  id="church"
                   name="church"
                   type="text"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="○○교회"
+                  className={inputClass}
                 />
-              </label>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">직책/역할</span>
+              </Field>
+              <Field label="Position" htmlFor="position">
                 <input
+                  id="position"
                   name="position"
                   type="text"
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                   placeholder="목사, 전도사, 청년부장 등"
+                  className={inputClass}
                 />
-              </label>
-              <label className="block">
-                <span className="text-sm sm:text-base md:text-lg text-white font-medium">참석 예상 인원 *</span>
+              </Field>
+              <Field label="Participants *" htmlFor="participants">
                 <select
+                  id="participants"
                   name="participants"
                   required
-                  className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
+                  className={`${inputClass} appearance-none cursor-pointer`}
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3e%3cpath fill='%23ffffff60' d='M6 8L2 4h8z'/%3e%3c/svg%3e\")",
+                    backgroundRepeat: "no-repeat",
+                    backgroundPosition: "right 0 center",
+                  }}
                 >
-                  <option value="">선택해주세요</option>
-                  <option value="1">1명</option>
-                  <option value="2">2명</option>
-                  <option value="3">3명</option>
-                  <option value="4">4명</option>
-                  <option value="5">5명</option>
-                  <option value="6">6명</option>
-                  <option value="7">7명</option>
-                  <option value="8">8명</option>
-                  <option value="9">9명</option>
-                  <option value="10">10명</option>
-                  <option value="15">15명</option>
-                  <option value="20">20명</option>
-                  <option value="30">30명 이상</option>
+                  <option value="" className="bg-black">
+                    선택해주세요
+                  </option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((n) => (
+                    <option key={n} value={n} className="bg-black">
+                      {n}명
+                    </option>
+                  ))}
+                  <option value="30" className="bg-black">
+                    30명 이상
+                  </option>
                 </select>
-                <p className="mt-1 text-xs sm:text-sm text-white/70">본인 포함 총 참석 인원을 선택해주세요.</p>
-              </label>
+                <p className="mt-2 text-[12px] text-white/40 font-light">
+                  본인 포함 총 참석 인원을 선택해주세요.
+                </p>
+              </Field>
             </div>
 
-            <label className="block">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">추가 메시지</span>
+            <Field label="Message" htmlFor="message">
               <textarea
+                id="message"
                 name="message"
                 rows={5}
-                className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
-                placeholder="집회 관련 문의사항이나 특별한 요청사항을 입력해 주세요.
-
-※ 단체로 오실 경우 함께 참석하시는 분들의 정보를 입력해주세요.
-예시:
-- 김철수 / 010-1234-5678
-- 이영희 / 010-2345-6789"
+                placeholder="집회 관련 문의사항이나 특별한 요청사항을 입력해 주세요."
+                className={`${inputClass} leading-loose resize-none`}
               />
-              <p className="mt-1 text-xs sm:text-sm text-white/70">
-                단체 참석 시 함께 오시는 분들의 이름과 연락처를 입력해주시면 더 원활한 준비가 가능합니다.
+              <p className="mt-2 text-[12px] text-white/40 font-light leading-relaxed">
+                단체 참석 시 함께 오시는 분들의 이름과 연락처를 입력해주시면
+                더 원활한 준비가 가능합니다.
               </p>
-            </label>
+            </Field>
 
-            <div className="space-y-4">
-              <label className="flex items-start space-x-3">
-                <input
-                  type="checkbox"
-                  checked={privacyAgreed}
-                  onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                  className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
-                  required
-                />
-                <span className="text-sm sm:text-base text-white font-medium">개인정보 수집 및 이용에 동의합니다 (필수)</span>
-              </label>
-              <div className="ml-7 text-xs sm:text-sm text-white/70">
-                <p>
-                  입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
-                  <a href="/privacy-policy" className="underline hover:text-white transition-colors">개인정보 처리방침</a>에 따라 안전하게 관리됩니다.
-                </p>
-              </div>
+            <PrivacyConsent agreed={privacyAgreed} onChange={setPrivacyAgreed} />
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={loading || !privacyAgreed}
+                className="border border-white/40 px-8 py-3.5 text-[12px] tracking-[0.3em] uppercase font-light text-white hover:bg-white hover:text-black hover:border-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
+              >
+                {loading ? "Sending…" : "Register"}
+              </button>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !privacyAgreed}
-              className="mt-6 inline-flex items-center justify-center rounded border border-white px-8 py-4 text-base sm:text-lg md:text-xl font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50"
-            >
-              {loading ? "신청 중..." : "집회 신청하기"}
-          </button>
-
-            {ok && <p className="text-emerald-400 text-base sm:text-lg font-medium mt-4">{ok}</p>}
-            {err && <p className="text-red-400 text-base sm:text-lg font-medium mt-4">{err}</p>}
+            {ok && (
+              <p className="text-emerald-300/90 text-[14px] tracking-wider font-light pt-2">
+                {ok}
+              </p>
+            )}
+            {err && (
+              <p className="text-red-300/90 text-[14px] tracking-wider font-light pt-2">
+                {err}
+              </p>
+            )}
           </form>
+        </section>
+      </main>
+    </>
+  );
+}
+
+const inputClass =
+  "w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors";
+
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="block text-[12px] text-white/45 tracking-[0.25em] uppercase mb-2"
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function SessionOption({
+  selected,
+  onSelect,
+  title,
+  description,
+}: {
+  selected: boolean;
+  onSelect: () => void;
+  title: string;
+  description: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={`w-full text-left border px-5 py-4 transition-all ${
+        selected
+          ? "border-white/60 bg-white/[0.04]"
+          : "border-white/15 hover:border-white/30"
+      }`}
+    >
+      <div className="flex items-start gap-3">
+        <span
+          className={`mt-1.5 w-2 h-2 rounded-full transition-colors ${
+            selected ? "bg-white" : "bg-white/20"
+          }`}
+        />
+        <div>
+          <p className="text-[15px] sm:text-[16px] text-white font-light tracking-wider">
+            {title}
+          </p>
+          <p className="text-[13px] text-white/50 font-light mt-1 leading-relaxed">
+            {description}
+          </p>
         </div>
-        </main>
-      </>
-    );
-  }
-  
+      </div>
+    </button>
+  );
+}
+
+function PrivacyConsent({
+  agreed,
+  onChange,
+}: {
+  agreed: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="space-y-3 pt-4">
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-1 w-3.5 h-3.5 accent-white"
+          required
+        />
+        <span className="text-[14px] sm:text-[15px] text-white/75 font-light leading-relaxed">
+          개인정보 수집 및 이용에 동의합니다 (필수)
+        </span>
+      </label>
+      <p className="ml-7 text-[12px] sm:text-[13px] text-white/45 font-light leading-relaxed">
+        입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,{" "}
+        <a
+          href="/privacy-policy"
+          className="underline underline-offset-2 hover:text-white/80 transition-colors"
+        >
+          개인정보 처리방침
+        </a>
+        에 따라 안전하게 관리됩니다.
+      </p>
+    </div>
+  );
+}

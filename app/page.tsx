@@ -22,26 +22,15 @@ export default function HomePage() {
   return (
     <>
       <Splash />
-      {/* 히어로 배경: SHIRBAND 이미지 (오버레이 없이 원본 색감 유지) */}
-      <BackgroundVideo overlayOpacity={0} />
+      {/* 히어로 배경: SHIRBAND 이미지 (오버레이 없이 원본 색감 유지, 모바일에서는 텍스트 잘리지 않도록 contain) */}
+      <BackgroundVideo
+        overlayOpacity={0}
+        mobileFit="contain"
+        bgColor="#E63329"
+      />
       <main className="relative">
-        {/* HERO 섹션 - 한 화면 가득 (버튼만 노출) */}
-        <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] text-white flex items-end justify-center pb-12 sm:pb-20">
-          <div className="relative z-10 w-full flex flex-col gap-3 items-center justify-center max-w-md mx-auto px-3 sm:px-6">
-            <a
-              href="/about"
-              className="w-full border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm sm:text-base rounded-lg hover:bg-white/20 hover:border-white/50 transition-all text-center"
-            >
-              About Us
-            </a>
-            <a
-              href="/events"
-              className="w-full border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm sm:text-base rounded-lg hover:bg-white/20 hover:border-white/50 transition-all text-center"
-            >
-              Ministry
-            </a>
-          </div>
-        </section>
+        {/* HERO 섹션 - 한 화면 가득 (배경만 노출) */}
+        <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)]" />
 
       {/* 히어로 아래 섹션 - ETERNAL PRAISE 배너 */}
       <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] bg-black overflow-hidden">

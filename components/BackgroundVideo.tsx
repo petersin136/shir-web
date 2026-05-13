@@ -13,14 +13,23 @@ const HERO_BG_MOBILE =
 interface BackgroundVideoProps {
   overlayOpacity?: number;
   className?: string;
+  /** 모바일 이미지가 화면을 벗어날 때 자르지 않고 전체를 보여주려면 'contain' 사용. */
+  mobileFit?: 'cover' | 'contain';
+  /** 컨테이너 기본 배경색 (object-contain 사용 시 레터박스 영역에 보임). */
+  bgColor?: string;
 }
 
 export function BackgroundVideo({
   overlayOpacity = 0.5,
   className = 'fixed inset-0 -z-10',
+  mobileFit = 'contain',
+  bgColor = '#000000',
 }: BackgroundVideoProps) {
+  const mobileFitClass =
+    mobileFit === 'contain' ? 'object-contain' : 'object-cover';
+
   return (
-    <div className={`${className} bg-black`}>
+    <div className={className} style={{ backgroundColor: bgColor }}>
       <Image
         src={HERO_BG_PC}
         alt=""
@@ -35,7 +44,7 @@ export function BackgroundVideo({
         fill
         priority
         sizes="100vw"
-        className="block md:hidden object-cover"
+        className={`block md:hidden ${mobileFitClass}`}
       />
       {overlayOpacity > 0 && (
         <div

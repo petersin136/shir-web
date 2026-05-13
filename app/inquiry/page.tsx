@@ -49,174 +49,220 @@ export default function InquiryPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "서버 오류");
-      setOk("문의가 전송되었습니다. 감사합니다!");
+      setOk("문의가 전송되었습니다. 감사합니다.");
       form.reset();
       setPrivacyAgreed(false);
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : "전송에 실패했습니다.";
+      const errorMessage =
+        e instanceof Error ? e.message : "전송에 실패했습니다.";
       setErr(errorMessage);
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <>
       <BackgroundVideo overlayOpacity={0.85} />
-      <main className="relative mx-auto max-w-4xl px-6 py-16">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-10">
-          문의하기
-        </h1>
-
-        {/* 쉬르밴드 소개 */}
-        <div className="space-y-6 mb-12">
-          <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium">
-            &lsquo;쉬르밴드&rsquo;는 길이요 진리이며 영원한 왕이신 예수그리스도만을 높이고 주님의 교회와 개인의 삶에 예배가 회복되길(행 15:16) 기도하며 나아갑니다.
+      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+        <header className="mb-14 sm:mb-16">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
+            Inquiry
+          </h1>
+          <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
+          <p className="text-[16px] text-white/70 font-light leading-loose mt-6 sm:mt-8">
+            쉬르밴드 사역에 대해 궁금한 점이나 사역요청이 있으시면 아래로
+            연락 바랍니다.
           </p>
-          
-          <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium">
-            복음의 능력을 믿으며(롬1:16) 영원토록 예배받으실 분은 한 분이시며(계5:12-13) 다시 오실 영원한 왕을 바라보며(계22:20) 예수그리스도 안에서 모든 민족이 하나님께로 돌아오고 진정한 예배가 회복 될 것을 믿음으로 바라보고 참된 복음 안에서 삼위일체 하나님을 예배하며 선포하는 사역을 합니다.
-          </p>
-          
-          <p className="text-base sm:text-lg md:text-xl leading-relaxed text-white font-medium">
-            쉬르밴드 사역에 대해 궁금한 점이 있으시거나<br />
-            사역요청이 필요하시면 아래를 통해 연락 바랍니다.
-          </p>
-        </div>
+        </header>
 
-        <div className="grid md:grid-cols-2 gap-12">
-          {/* 연락처 정보 */}
-          <section className="space-y-8">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-normal mb-6">
-              연락처 정보
-            </h2>
-            
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-bold text-white mb-2">이메일</h3>
-                <p className="text-base text-white/90">
-                  <a href="mailto:shirband2025@gmail.com" className="hover:text-white transition-colors">
-                    shirband2025@gmail.com
-                  </a>
-                </p>
-              </div>
-
-
-              <div>
-                <h3 className="text-lg font-bold text-white mb-2">소셜미디어</h3>
-                <div className="space-y-2">
-                  <p className="text-base text-white/90">
-                    Instagram: <a href="https://www.instagram.com/shirband_official/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline">@shirband_official</a>
-                  </p>
-                  <p className="text-base text-white/90">
-                    YouTube: <a href="https://www.youtube.com/@SHIRBAND" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline">@SHIRBAND</a>
-                  </p>
-                </div>
-              </div>
+        {/* 연락처 정보 */}
+        <section className="mb-14 sm:mb-16">
+          <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-6">
+            Contact
+          </h2>
+          <dl className="space-y-5">
+            <div className="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-[13px] uppercase pt-0.5">
+                Email
+              </dt>
+              <dd>
+                <a
+                  href="mailto:shirband2025@gmail.com"
+                  className="text-[16px] text-white/85 font-light hover:text-white transition-colors"
+                >
+                  shirband2025@gmail.com
+                </a>
+              </dd>
             </div>
-          </section>
+            <div className="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-[13px] uppercase pt-0.5">
+                Instagram
+              </dt>
+              <dd>
+                <a
+                  href="https://www.instagram.com/shirband.official"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[16px] text-white/85 font-light hover:text-white transition-colors"
+                >
+                  @shirband.official
+                </a>
+              </dd>
+            </div>
+            <div className="grid grid-cols-[90px_1fr] sm:grid-cols-[110px_1fr] gap-x-4 sm:gap-x-6">
+              <dt className="text-white/45 font-light tracking-wider text-[13px] uppercase pt-0.5">
+                YouTube
+              </dt>
+              <dd>
+                <a
+                  href="https://www.youtube.com/@SHIRBAND"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[16px] text-white/85 font-light hover:text-white transition-colors"
+                >
+                  @SHIRBAND
+                </a>
+              </dd>
+            </div>
+          </dl>
+        </section>
 
-          {/* 문의 양식 */}
-          <section>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-normal mb-6">
-              문의 양식
-            </h2>
-            
-            <form onSubmit={onSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-white mb-2">
-                  이름 *
-                </label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  required
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                  placeholder="성함을 입력해 주세요"
-                />
-              </div>
+        <div className="w-10 h-px bg-white/15 mb-14 sm:mb-16" />
 
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
-                  이메일 *
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                  placeholder="이메일을 입력해 주세요"
-                />
-              </div>
+        {/* 문의 양식 */}
+        <section>
+          <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-8">
+            Send a Message
+          </h2>
 
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-white mb-2">
-                  제목 *
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  required
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent"
-                  placeholder="문의 제목을 입력해 주세요"
-                />
-              </div>
+          <form onSubmit={onSubmit} className="space-y-10">
+            <Field label="Name" htmlFor="name">
+              <input
+                id="name"
+                name="name"
+                type="text"
+                required
+                placeholder="성함을 입력해 주세요"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+              />
+            </Field>
 
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-white mb-2">
-                  메시지 *
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  required
-                  className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent resize-none"
-                  placeholder="문의 내용을 자세히 적어 주세요"
-                ></textarea>
-              </div>
+            <Field label="Email" htmlFor="email">
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="이메일을 입력해 주세요"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+              />
+            </Field>
 
-              <div className="space-y-4">
-                <label className="flex items-start space-x-3">
-                  <input
-                    type="checkbox"
-                    checked={privacyAgreed}
-                    onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                    className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
-                    required
-                  />
-                  <span className="text-sm sm:text-base text-white font-medium">
-                    개인정보 수집 및 이용에 동의합니다 (필수)
-                  </span>
-                </label>
-                
-                <div className="ml-7 text-xs sm:text-sm text-white/70">
-                  <p>
-                    입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
-                    <a href="/privacy-policy" className="underline hover:text-white transition-colors">
-                      개인정보 처리방침
-                    </a>에 따라 안전하게 관리됩니다.
-                  </p>
-                </div>
-              </div>
+            <Field label="Subject" htmlFor="subject">
+              <input
+                id="subject"
+                name="subject"
+                type="text"
+                required
+                placeholder="문의 제목을 입력해 주세요"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+              />
+            </Field>
 
+            <Field label="Message" htmlFor="message">
+              <textarea
+                id="message"
+                name="message"
+                rows={6}
+                required
+                placeholder="문의 내용을 자세히 적어 주세요"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light leading-loose focus:border-white/60 focus:outline-none transition-colors resize-none"
+              />
+            </Field>
+
+            <PrivacyConsent agreed={privacyAgreed} onChange={setPrivacyAgreed} />
+
+            <div className="pt-2">
               <button
                 type="submit"
                 disabled={loading || !privacyAgreed}
-                className="w-full bg-white text-black font-bold py-3 px-6 rounded-lg hover:bg-white/90 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="border border-white/40 px-8 py-3.5 text-[12px] tracking-[0.3em] uppercase font-light text-white hover:bg-white hover:text-black hover:border-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
               >
-                {loading ? "전송 중..." : "문의하기"}
+                {loading ? "Sending…" : "Send Inquiry"}
               </button>
+            </div>
 
-              {ok && <p className="text-emerald-400 text-base sm:text-lg font-medium mt-4">{ok}</p>}
-              {err && <p className="text-red-400 text-base sm:text-lg font-medium mt-4">{err}</p>}
-            </form>
-          </section>
-        </div>
-
+            {ok && (
+              <p className="text-emerald-300/90 text-[14px] tracking-wider font-light pt-2">
+                {ok}
+              </p>
+            )}
+            {err && (
+              <p className="text-red-300/90 text-[14px] tracking-wider font-light pt-2">
+                {err}
+              </p>
+            )}
+          </form>
+        </section>
       </main>
     </>
+  );
+}
+
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="block text-[12px] text-white/45 tracking-[0.25em] uppercase mb-2"
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function PrivacyConsent({
+  agreed,
+  onChange,
+}: {
+  agreed: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="space-y-3 pt-4">
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-1 w-3.5 h-3.5 accent-white"
+          required
+        />
+        <span className="text-[14px] sm:text-[15px] text-white/75 font-light leading-relaxed">
+          개인정보 수집 및 이용에 동의합니다 (필수)
+        </span>
+      </label>
+      <p className="ml-7 text-[12px] sm:text-[13px] text-white/45 font-light leading-relaxed">
+        입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,{" "}
+        <a
+          href="/privacy-policy"
+          className="underline underline-offset-2 hover:text-white/80 transition-colors"
+        >
+          개인정보 처리방침
+        </a>
+        에 따라 안전하게 관리됩니다.
+      </p>
+    </div>
   );
 }

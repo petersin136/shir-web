@@ -32,7 +32,13 @@ export default function ApplyPage() {
       reason: String(formData.get("reason") || "").trim(),
     };
 
-    if (!payload.name || !payload.phone || !payload.email || !payload.church || !payload.reason) {
+    if (
+      !payload.name ||
+      !payload.phone ||
+      !payload.email ||
+      !payload.church ||
+      !payload.reason
+    ) {
       setErr("모든 필수 항목을 입력해주세요.");
       setLoading(false);
       return;
@@ -46,11 +52,12 @@ export default function ApplyPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "서버 오류");
-      setOk("사역 신청이 완료되었습니다. 감사합니다!");
+      setOk("사역 신청이 완료되었습니다. 감사합니다.");
       form.reset();
       setPrivacyAgreed(false);
     } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : "신청에 실패했습니다.";
+      const errorMessage =
+        e instanceof Error ? e.message : "신청에 실패했습니다.";
       setErr(errorMessage);
     } finally {
       setLoading(false);
@@ -60,109 +67,156 @@ export default function ApplyPage() {
   return (
     <>
       <BackgroundVideo overlayOpacity={0.85} />
-      <main className="relative mx-auto max-w-3xl px-6 py-16">
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-wide uppercase mb-10">
-          사역 신청
-        </h1>
+      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+        <header className="mb-14 sm:mb-16">
+          <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
+            Ministry Invitation
+          </p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
+            Apply
+          </h1>
+          <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
+          <p className="text-[16px] text-white/70 font-light leading-loose mt-6 sm:mt-8">
+            SHIR BAND 사역초청을 원하신다면 아래 양식을 작성해주세요.
+          </p>
+        </header>
 
-        <p className="text-base sm:text-lg md:text-xl text-white font-medium mb-10">
-          SHIR BAND 사역초청을 원하신다면 아래 양식을 작성해주세요.
-        </p>
-
-        <form onSubmit={onSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <label className="block">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">이름 *</span>
+        <form onSubmit={onSubmit} className="space-y-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-10">
+            <Field label="Name" htmlFor="name">
               <input
+                id="name"
                 name="name"
                 type="text"
                 required
-                className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                 placeholder="홍길동"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
               />
-            </label>
-            <label className="block">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">연락처 *</span>
+            </Field>
+            <Field label="Phone" htmlFor="phone">
               <input
+                id="phone"
                 name="phone"
                 type="tel"
                 required
-                className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                 placeholder="010-1234-5678"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
               />
-            </label>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <label className="block">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">이메일 *</span>
+            </Field>
+            <Field label="Email" htmlFor="email">
               <input
+                id="email"
                 name="email"
                 type="email"
                 required
-                className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                 placeholder="you@example.com"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
               />
-            </label>
-            <label className="block">
-              <span className="text-sm sm:text-base md:text-lg text-white font-medium">소속교회 *</span>
+            </Field>
+            <Field label="Church" htmlFor="church">
               <input
+                id="church"
                 name="church"
                 type="text"
                 required
-                className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
                 placeholder="○○교회"
+                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
               />
-            </label>
+            </Field>
           </div>
 
-          <label className="block">
-            <span className="text-sm sm:text-base md:text-lg text-white font-medium">사역 초청 내용 *</span>
+          <Field label="Invitation Details" htmlFor="reason">
             <textarea
+              id="reason"
               name="reason"
-              rows={5}
+              rows={6}
               required
-              className="mt-2 w-full rounded-md bg-white/5 ring-1 ring-white/10 px-4 py-3 outline-none focus:ring-white/30 text-base sm:text-lg"
               placeholder="SHIR BAND 사역초청을 원하는 이유와 상세 내용을 적어주세요."
+              className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light leading-loose focus:border-white/60 focus:outline-none transition-colors resize-none"
             />
-          </label>
+          </Field>
 
-          <div className="space-y-4">
-            <label className="flex items-start space-x-3">
-              <input
-                type="checkbox"
-                checked={privacyAgreed}
-                onChange={(e) => setPrivacyAgreed(e.target.checked)}
-                className="mt-1 w-4 h-4 text-white bg-white/5 border-white/20 rounded focus:ring-white/30 focus:ring-2"
-                required
-              />
-              <span className="text-sm sm:text-base text-white font-medium">
-                개인정보 수집 및 이용에 동의합니다 (필수)
-              </span>
-            </label>
-            
-            <div className="ml-7 text-xs sm:text-sm text-white/70">
-              <p>
-                입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,<br />
-                <a href="/privacy-policy" className="underline hover:text-white transition-colors">
-                  개인정보 처리방침
-                </a>에 따라 안전하게 관리됩니다.
-              </p>
-            </div>
+          <PrivacyConsent agreed={privacyAgreed} onChange={setPrivacyAgreed} />
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={loading || !privacyAgreed}
+              className="border border-white/40 px-8 py-3.5 text-[12px] tracking-[0.3em] uppercase font-light text-white hover:bg-white hover:text-black hover:border-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
+            >
+              {loading ? "Sending…" : "Submit Application"}
+            </button>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading || !privacyAgreed}
-            className="mt-6 inline-flex items-center justify-center rounded border border-white px-8 py-4 text-base sm:text-lg md:text-xl font-medium hover:bg-white hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "신청 중..." : "사역 신청하기"}
-          </button>
-
-          {ok && <p className="text-emerald-400 text-base sm:text-lg font-medium mt-4">{ok}</p>}
-          {err && <p className="text-red-400 text-base sm:text-lg font-medium mt-4">{err}</p>}
+          {ok && (
+            <p className="text-emerald-300/90 text-[14px] tracking-wider font-light pt-2">
+              {ok}
+            </p>
+          )}
+          {err && (
+            <p className="text-red-300/90 text-[14px] tracking-wider font-light pt-2">
+              {err}
+            </p>
+          )}
         </form>
       </main>
     </>
+  );
+}
+
+function Field({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label
+        htmlFor={htmlFor}
+        className="block text-[12px] text-white/45 tracking-[0.25em] uppercase mb-2"
+      >
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+function PrivacyConsent({
+  agreed,
+  onChange,
+}: {
+  agreed: boolean;
+  onChange: (value: boolean) => void;
+}) {
+  return (
+    <div className="space-y-3 pt-4">
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-1 w-3.5 h-3.5 accent-white"
+          required
+        />
+        <span className="text-[14px] sm:text-[15px] text-white/75 font-light leading-relaxed">
+          개인정보 수집 및 이용에 동의합니다 (필수)
+        </span>
+      </label>
+      <p className="ml-7 text-[12px] sm:text-[13px] text-white/45 font-light leading-relaxed">
+        입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,{" "}
+        <a
+          href="/privacy-policy"
+          className="underline underline-offset-2 hover:text-white/80 transition-colors"
+        >
+          개인정보 처리방침
+        </a>
+        에 따라 안전하게 관리됩니다.
+      </p>
+    </div>
   );
 }
