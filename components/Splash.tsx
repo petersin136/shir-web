@@ -26,19 +26,13 @@ export function Splash() {
           style={{ backgroundColor: SPLASH_BG }}
           onClick={endSplash}
         >
-          {/* 데스크탑: 매끈한 가속 → 피크 → 부드러운 안착 (cinematic 3-phase) */}
+          {/* 데스크탑: 부드러운 정면 클로즈업 (iOS 스타일 자연 이징) */}
           <motion.div
-            initial={{ scale: 1, x: 0, y: 0, rotate: 0 }}
-            animate={{
-              scale: [1, 1.16, 1.88, 1.62],
-              x: [0, -6, -38, -26],
-              y: [0, 3, 16, 10],
-              rotate: [0, -1, -5, -3],
-            }}
+            initial={{ scale: 1 }}
+            animate={{ scale: 1.5 }}
             transition={{
-              duration: 2.4,
-              times: [0, 0.42, 0.78, 1],
-              ease: ['easeOut', 'circIn', 'easeOut'],
+              duration: 1.9,
+              ease: [0.32, 0.72, 0, 1],
             }}
             className="hidden md:block absolute inset-0"
             style={{
@@ -57,17 +51,13 @@ export function Splash() {
             />
           </motion.div>
 
-          {/* 모바일: 잔잔한 클로즈업 → 반시계 90° 회전 + 글씨 꽉 차게 확대 */}
+          {/* 모바일: 연속 회전 + 줌 (단일 transition으로 부드럽게) */}
           <motion.div
             initial={{ scale: 1, rotate: 0 }}
-            animate={{
-              scale: [1, 1.15, 2.2],
-              rotate: [0, 0, -90],
-            }}
+            animate={{ scale: 2.05, rotate: -90 }}
             transition={{
-              duration: 3.0,
-              times: [0, 0.5, 1],
-              ease: [0.45, 0, 0.2, 1],
+              duration: 2.1,
+              ease: [0.32, 0.72, 0, 1],
             }}
             className="block md:hidden absolute inset-0"
             style={{
