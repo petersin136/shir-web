@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 
 @tailwind base;
 @tailwind components;
@@ -147,4 +148,57 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* SHIR BAND Admin Theme — ETERNAL PRAISE 무드 (토큰만 추가; 기존 :root 키는 변경 없음) */
+:root {
+  --admin-bg: #0a0a0a;
+  --admin-surface: #141414;
+  --admin-surface-hover: #1c1c1c;
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-border-strong: rgba(255, 255, 255, 0.16);
+  --admin-text: #fafafa;
+  --admin-text-muted: rgba(255, 255, 255, 0.6);
+  --admin-text-disabled: rgba(255, 255, 255, 0.3);
+  --admin-accent: #ffffff;
+  --admin-success: #4ade80;
+  --admin-danger: #ef4444;
+  --admin-info: #60a5fa;
+  --admin-warning: #fbbf24;
+  --admin-dot-red: #ff3030;
+}
+
+@keyframes admin-live-dot-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.admin-live-dot {
+  animation: admin-live-dot-blink 1.2s ease-in-out infinite;
+}
+
+/* 관리자 루트: 한글 Pretendard · 전역 * Noto !important 보다 우선 */
+.admin-console-root * {
+  font-family:
+    "Pretendard Variable",
+    Pretendard,
+    "Noto Sans KR",
+    "Apple SD Gothic Neo",
+    "Malgun Gothic",
+    "맑은 고딕",
+    sans-serif !important;
+}
+
+.admin-console-root .admin-console-mono {
+  font-family: var(--font-admin-mono), "JetBrains Mono", ui-monospace, monospace !important;
+}
+
+.admin-console-root header.admin-console-mono,
+.admin-console-root header.admin-console-mono * {
+  font-family: var(--font-admin-mono), "JetBrains Mono", ui-monospace, monospace !important;
 }

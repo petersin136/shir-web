@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import { Noto_Serif_KR, EB_Garamond } from "next/font/google";
 import "./globals.css";
-import MainNav from "@/components/MainNav";
-import Footer from "@/components/Footer";
+import { AppChrome } from "@/components/AppChrome";
 
 const notoSerifKr = Noto_Serif_KR({
   subsets: ["latin"],
@@ -98,18 +96,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body suppressHydrationWarning className={`antialiased bg-black text-white`} style={{fontFamily: '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif'}}>
-        <MainNav />   {/* ✅ 네비게이션 추가 */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="min-h-screen flex flex-col">
-            <div className="flex-1 pt-12 sm:pt-14">{children}</div>
-            <Footer />
-          </div>
-        </ThemeProvider>
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );
