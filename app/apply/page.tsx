@@ -10,6 +10,9 @@ export default function ApplyPage() {
   const [err, setErr] = useState<string | null>(null);
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
 
+  const inputFieldClass =
+    "w-full bg-transparent border-b border-white/40 px-0 py-3 text-[16px] text-white caret-white placeholder:text-white/60 font-light shadow-none focus:border-white focus:outline-none transition-colors selection:bg-white/25 selection:text-white [&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#000000] [&:-webkit-autofill]:[-webkit-text-fill-color:#ffffff]";
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setOk(null);
@@ -82,7 +85,7 @@ export default function ApplyPage() {
       <BackgroundVideo overlayOpacity={0.85} />
       <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
         <header className="mb-14 sm:mb-16">
-          <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
+          <p className="text-[12px] sm:text-[13px] text-white/60 tracking-[0.25em] uppercase mb-3">
             Ministry Invitation
           </p>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
@@ -103,7 +106,7 @@ export default function ApplyPage() {
                 type="text"
                 required
                 placeholder="홍길동"
-                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+                className={inputFieldClass}
               />
             </Field>
             <Field label="Phone" htmlFor="phone">
@@ -113,7 +116,7 @@ export default function ApplyPage() {
                 type="tel"
                 required
                 placeholder="010-1234-5678"
-                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+                className={inputFieldClass}
               />
             </Field>
             <Field label="Email" htmlFor="email">
@@ -123,7 +126,7 @@ export default function ApplyPage() {
                 type="email"
                 required
                 placeholder="you@example.com"
-                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+                className={inputFieldClass}
               />
             </Field>
             <Field label="Church" htmlFor="church">
@@ -133,7 +136,7 @@ export default function ApplyPage() {
                 type="text"
                 required
                 placeholder="○○교회"
-                className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors"
+                className={inputFieldClass}
               />
             </Field>
           </div>
@@ -145,7 +148,7 @@ export default function ApplyPage() {
               rows={6}
               required
               placeholder="SHIR BAND 사역초청을 원하는 이유와 상세 내용을 적어주세요."
-              className="w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light leading-loose focus:border-white/60 focus:outline-none transition-colors resize-none"
+              className={`${inputFieldClass} leading-loose resize-none`}
             />
           </Field>
 
@@ -155,7 +158,7 @@ export default function ApplyPage() {
             <button
               type="submit"
               disabled={loading || !privacyAgreed}
-              className="border border-white/40 px-8 py-3.5 text-[12px] tracking-[0.3em] uppercase font-light text-white hover:bg-white hover:text-black hover:border-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
+              className="border border-white/55 px-8 py-3.5 text-[12px] tracking-[0.3em] uppercase font-light text-white hover:bg-white hover:text-black hover:border-white transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
             >
               {loading ? "Sending…" : "Submit Application"}
             </button>
@@ -190,7 +193,7 @@ function Field({
     <div>
       <label
         htmlFor={htmlFor}
-        className="block text-[12px] text-white/45 tracking-[0.25em] uppercase mb-2"
+        className="block text-[12px] text-white/70 tracking-[0.25em] uppercase mb-2"
       >
         {label}
       </label>
@@ -216,11 +219,11 @@ function PrivacyConsent({
           className="mt-1 w-3.5 h-3.5 accent-white"
           required
         />
-        <span className="text-[14px] sm:text-[15px] text-white/75 font-light leading-relaxed">
+        <span className="text-[14px] sm:text-[15px] text-white/90 font-light leading-relaxed">
           개인정보 수집 및 이용에 동의합니다 (필수)
         </span>
       </label>
-      <p className="ml-7 text-[12px] sm:text-[13px] text-white/45 font-light leading-relaxed">
+      <p className="ml-7 text-[12px] sm:text-[13px] text-white/60 font-light leading-relaxed">
         입력하신 정보는 사역 신청 및 안내 목적으로 사용되며,{" "}
         <a
           href="/privacy-policy"

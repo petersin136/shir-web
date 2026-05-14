@@ -81,6 +81,28 @@
   }
 }
 
+/* 홈 SPLIT About 우측 — 전역 Noto !important보다 라틴 태그·헤드라인 우선 */
+.split-about-panel .split-about-headline {
+  font-family: var(--font-split-headline), "Impact", "Arial Narrow", sans-serif !important;
+}
+/* Bebas 단일 웨이트 보완: 더 묵직하게 보이게 */
+.split-about-panel .split-about-headline.split-about-headline-heavy {
+  -webkit-text-stroke: 0.032em #000000;
+  paint-order: stroke fill;
+  text-shadow:
+    0.02em 0 0 #000000,
+    -0.02em 0 0 #000000,
+    0 0.015em 0 #000000,
+    0 -0.015em 0 #000000;
+}
+.split-about-panel .split-about-latin {
+  font-family: var(--font-split-latin), ui-sans-serif, system-ui, sans-serif !important;
+}
+.split-about-panel .split-about-body,
+.split-about-panel .split-about-body p {
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif !important;
+}
+
 /* 관리자 페이지 슬라이더 스타일 */
 .slider::-webkit-slider-thumb {
   appearance: none;

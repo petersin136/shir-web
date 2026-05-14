@@ -2,6 +2,26 @@
 import { Splash } from "@/components/Splash";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import Image from "next/image";
+import { Bebas_Neue, Inter } from "next/font/google";
+import { HomeSplitAboutRight } from "@/components/HomeSplitAboutRight";
+import { HomeSplitPromoLeft } from "@/components/HomeSplitPromoLeft";
+import { HomeSplitInvitationRight } from "@/components/HomeSplitInvitationRight";
+
+/** SPLIT 헤드라인 — 레퍼런스: 각진 콘덴스드(Bebas, Rubik보다 덜 둥글게) */
+const splitHeadlineFont = Bebas_Neue({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-split-headline",
+  display: "swap",
+});
+
+/** 태그라인·MORE 등 라틴 소제 */
+const splitLatinFont = Inter({
+  subsets: ["latin"],
+  weight: ["500", "600"],
+  variable: "--font-split-latin",
+  display: "swap",
+});
 
 const ETERNAL_PRAISE_BG_PC =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/A_cinematic_hero_banner_image_in_ultra_high_resolu-1778660492592.png";
@@ -11,13 +31,7 @@ const ETERNAL_PRAISE_BG_MOBILE =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/Remove_all_text_from_the_bottom_center_area_of_thi-1778661394284.png";
 
 const SHIRBAND_WHITE_LOGO =
-  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND%20Sub%20Logotype%2003_WHITE(500).png";
-
-// 푸터 직전 마지막 섹션 - SONG TO SING FOREVER 그래픽
-const SONG_TO_SING_IMAGE =
-  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/9.12.17.png";
-// 이미지의 크림톤 배경과 동일한 색 (이미지에서 직접 샘플링)
-const SONG_TO_SING_BG = "#F8F4E9";
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND%20Sub%20Logotype%2002_WHITE(1000X1000).png";
 
 // 데스크탑 이미지에 박혀있는 "ETERNAL PRAISE" 타이포와 동일한 인상을 내는 폰트 스택
 // (Impact / Bebas Neue / Anton 계열 — 헤비 + 컨덴스드 디스플레이)
@@ -28,15 +42,75 @@ export default function HomePage() {
   return (
     <>
       <Splash />
-      {/* 히어로 배경: SHIRBAND 이미지 (오버레이 없이 원본 색감 유지, 모바일에서는 텍스트 잘리지 않도록 contain) */}
+      {/* 히어로 배경: 모바일은 헤더 아래부터 채워 상단 검정 여백 제거, contain + object-top */}
       <BackgroundVideo
         overlayOpacity={0}
         mobileFit="contain"
-        bgColor="#E63329"
+        bgColor="#000000"
+        mobileObjectClass="object-top"
+        className="fixed -z-10 left-0 right-0 top-12 bottom-0 sm:top-14 md:inset-0"
       />
       <main className="relative">
         {/* HERO 섹션 - 한 화면 가득 (배경만 노출) */}
         <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)]" />
+
+        {/* 메인 배너 바로 아래 여백 (세로 140px, #FFFFFF) — 모바일·데스크탑 동일 스펙 */}
+        <div
+          className="h-[140px] w-full shrink-0 bg-white"
+          aria-hidden
+        />
+
+        {/* SPLIT: 55:45 = minmax(0,55fr):minmax(0,45fr) — 컬럼이 넘칠 때도 비율 유지 */}
+        <section className="relative w-full bg-white">
+          <div
+            className="grid w-full grid-cols-1 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
+          >
+            <div
+              className="min-h-[200px] w-full min-w-0 bg-black md:min-h-0"
+              aria-hidden
+            />
+            {/* 우측: 순백, 텍스트 블록은 열 안에서 가로·세로 중앙에 가깝게(본문은 좌측 정렬) */}
+            <div
+              className={`split-about-panel ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex min-h-[min(90vw,420px)] w-full min-w-0 flex-col items-center justify-center bg-white px-6 py-14 sm:px-8 sm:py-16 md:min-h-0 md:px-6 md:py-10 lg:px-10`}
+            >
+              <HomeSplitAboutRight />
+            </div>
+          </div>
+        </section>
+
+        {/* SPLIT 2: 지그재그 — 흰 45% | 검 55% (첫 스플릿과 동일 비중, 좌우만 반전) */}
+        <section className="relative w-full bg-white">
+          <div
+            className="grid w-full grid-cols-1 md:grid-cols-[minmax(0,45fr)_minmax(0,55fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
+          >
+            <div
+              className={`split-about-panel ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex min-h-[min(90vw,420px)] w-full min-w-0 flex-col items-center justify-center bg-white px-6 py-14 sm:px-8 sm:py-16 md:min-h-0 md:px-6 md:py-10 lg:px-10`}
+            >
+              <HomeSplitPromoLeft />
+            </div>
+            <div
+              className="min-h-[200px] w-full min-w-0 bg-black md:min-h-0"
+              aria-hidden
+            />
+          </div>
+        </section>
+
+        {/* SPLIT 3: 지그재그 — 검 55% | 흰 45% (첫 스플릿과 동일 비중·행 높이) */}
+        <section className="relative w-full bg-white">
+          <div
+            className="grid w-full grid-cols-1 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
+          >
+            <div
+              className="order-2 min-h-[200px] w-full min-w-0 bg-black md:order-1 md:min-h-0"
+              aria-hidden
+            />
+            <div
+              className={`split-about-panel order-1 ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex min-h-[min(90vw,420px)] w-full min-w-0 flex-col items-center justify-center bg-white px-6 py-14 sm:px-8 sm:py-16 md:order-2 md:min-h-0 md:px-6 md:py-10 lg:px-10`}
+            >
+              <HomeSplitInvitationRight />
+            </div>
+          </div>
+        </section>
 
       {/* 히어로 아래 섹션 - ETERNAL PRAISE 배너 */}
       <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] bg-black overflow-hidden">
@@ -100,8 +174,8 @@ export default function HomePage() {
           <Image
             src={SHIRBAND_WHITE_LOGO}
             alt="SHIR BAND"
-            width={500}
-            height={130}
+            width={1000}
+            height={1000}
             className="w-28 h-auto"
           />
         </div>
@@ -124,86 +198,10 @@ export default function HomePage() {
           <Image
             src={SHIRBAND_WHITE_LOGO}
             alt="SHIR BAND"
-            width={500}
-            height={130}
+            width={1000}
+            height={1000}
             className="md:w-44 lg:w-48 h-auto"
           />
-        </div>
-      </section>
-
-      {/* 마지막 섹션 - SONG TO SING FOREVER 그래픽 + 카피 (푸터 직전) */}
-      <section
-        className="relative w-full pt-12 md:pt-8 pb-12 md:pb-8"
-        style={{ backgroundColor: SONG_TO_SING_BG }}
-      >
-        <div className="flex flex-col md:flex-row md:items-end gap-y-12 md:gap-x-8 lg:gap-x-14 px-6 sm:px-10 md:pl-12 lg:pl-20 xl:pl-28 md:pr-10 lg:pr-16">
-          {/* 좌측 - 그래픽 이미지 (위아래 거의 꽉, 자연 비율 그대로) */}
-          <div className="w-full md:w-auto md:flex-shrink-0">
-            <Image
-              src={SONG_TO_SING_IMAGE}
-              alt="SHIRBAND — Song to Sing Forever"
-              width={2048}
-              height={1448}
-              sizes="(max-width: 768px) 100vw, 80vh"
-              className="block w-full h-auto md:w-auto md:h-[calc(100dvh-3.5rem-4rem)]"
-              priority={false}
-            />
-          </div>
-
-          {/* 우측 - 타이포 카피 (이미지 하단보다 약 3cm 위로 올림) */}
-          <div className="w-full md:flex-1 flex flex-col text-neutral-900 md:mb-[120px]">
-          {/* 아이브로우 (영문 — 세리프 small caps 느낌) */}
-          <p
-            className="text-[11px] sm:text-[12px] tracking-[0.45em] uppercase font-light text-neutral-500/80 mb-7 sm:mb-8"
-            style={{ fontFamily: "var(--font-serif-en), 'EB Garamond', Georgia, serif" }}
-          >
-            Song to Sing Forever
-          </p>
-
-          {/* 메인 카피 (국문 — 노토 세리프 KR 라이트) */}
-          <h2
-            className="leading-[1.35] tracking-[-0.01em] text-neutral-900"
-            style={{
-              fontFamily:
-                "var(--font-serif-kr), 'Noto Serif KR', 'Nanum Myeongjo', serif",
-              fontWeight: 300,
-              fontSize: "clamp(1.75rem, 3vw, 2.625rem)",
-            }}
-          >
-            영원히 부를
-            <br />
-            구원의 노래
-            <span className="text-neutral-400 font-light">…</span>
-          </h2>
-
-          {/* 디바이더 */}
-          <div className="w-12 h-px bg-neutral-400/60 my-8 sm:my-10" />
-
-          {/* 영문 부카피 (EB Garamond Italic) */}
-          <p
-            className="leading-[1.7] text-neutral-600 max-w-md"
-            style={{
-              fontFamily:
-                "var(--font-serif-en), 'EB Garamond', Georgia, serif",
-              fontStyle: "italic",
-              fontWeight: 400,
-              fontSize: "clamp(0.95rem, 1.1vw, 1.0625rem)",
-              letterSpacing: "0.01em",
-            }}
-          >
-            A song of salvation,
-            <br />
-            to be sung for eternity.
-          </p>
-
-          {/* 푸트노트 (메타 라인) */}
-          <p
-            className="mt-10 sm:mt-14 text-[10.5px] sm:text-[11px] tracking-[0.4em] uppercase text-neutral-400"
-            style={{ fontFamily: "var(--font-serif-en), 'EB Garamond', Georgia, serif" }}
-          >
-            SHIRBAND · ID 01 / ETERNITY
-          </p>
-          </div>
         </div>
       </section>
       </main>

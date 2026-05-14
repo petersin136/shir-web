@@ -24,9 +24,17 @@ const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-// 파비콘 (브라우저 탭) — 기존 Apple Touch Icon 그대로 사용
+// 파비콘 (브라우저 탭 · 바로가기)
 const FAVICON_URL =
-  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_APPLE%20TOUCH%20ICON_180.png";
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_FAVICON_32.png";
+
+// iOS 홈 화면 — 180×180
+const APPLE_TOUCH_ICON_URL =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_APPLE%20TOUCH%20ICON_180.jpg";
+
+// Android 홈 화면 / PWA — 192×192
+const ANDROID_TOUCH_ICON_URL =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_ANDROID%20TOUCH%20ICON_192.jpg";
 
 // 검색엔진 · SNS 링크 미리보기용 이미지 (빨강 SHIRBAND 로고)
 const OG_IMAGE_URL =
@@ -37,9 +45,22 @@ export const metadata: Metadata = {
   title: "SHIR BAND | Spirit & Truth Worship",
   description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
   icons: {
-    icon: [{ url: FAVICON_URL, type: "image/png", sizes: "180x180" }],
+    icon: [
+      { url: FAVICON_URL, type: "image/png", sizes: "32x32" },
+      {
+        url: ANDROID_TOUCH_ICON_URL,
+        type: "image/jpeg",
+        sizes: "192x192",
+      },
+    ],
     shortcut: [{ url: FAVICON_URL, type: "image/png" }],
-    apple: [{ url: FAVICON_URL, sizes: "180x180", type: "image/png" }],
+    apple: [
+      {
+        url: APPLE_TOUCH_ICON_URL,
+        sizes: "180x180",
+        type: "image/jpeg",
+      },
+    ],
   },
   openGraph: {
     title: "SHIR BAND | Spirit & Truth Worship",
@@ -76,7 +97,7 @@ export default function RootLayout({
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
-      <body className={`antialiased bg-black text-white`} style={{fontFamily: '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif'}}>
+      <body suppressHydrationWarning className={`antialiased bg-black text-white`} style={{fontFamily: '"Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif'}}>
         <MainNav />   {/* ✅ 네비게이션 추가 */}
         <ThemeProvider
           attribute="class"

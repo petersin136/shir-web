@@ -6,9 +6,9 @@
 import Image from 'next/image';
 
 const HERO_BG_PC =
-  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_PC%20MERGED.jpg';
+  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_MAIN%20BANNER_PC.jpg';
 const HERO_BG_MOBILE =
-  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_M%20MERGED.jpg';
+  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_MAIN%20BANNER_M.jpg';
 
 interface BackgroundVideoProps {
   overlayOpacity?: number;
@@ -17,6 +17,8 @@ interface BackgroundVideoProps {
   mobileFit?: 'cover' | 'contain';
   /** 컨테이너 기본 배경색 (object-contain 사용 시 레터박스 영역에 보임). */
   bgColor?: string;
+  /** 모바일 <Image> object-position (Tailwind), 예: object-top */
+  mobileObjectClass?: string;
 }
 
 export function BackgroundVideo({
@@ -24,6 +26,7 @@ export function BackgroundVideo({
   className = 'fixed inset-0 -z-10',
   mobileFit = 'contain',
   bgColor = '#000000',
+  mobileObjectClass = 'object-center',
 }: BackgroundVideoProps) {
   const mobileFitClass =
     mobileFit === 'contain' ? 'object-contain' : 'object-cover';
@@ -35,7 +38,7 @@ export function BackgroundVideo({
         alt=""
         fill
         priority
-        sizes="100vw"
+        sizes="(min-width: 768px) 100vw, 0px"
         className="hidden md:block object-cover"
       />
       <Image
@@ -43,8 +46,8 @@ export function BackgroundVideo({
         alt=""
         fill
         priority
-        sizes="100vw"
-        className={`block md:hidden ${mobileFitClass}`}
+        sizes="(max-width: 767px) 100vw, 0px"
+        className={`block md:hidden ${mobileFitClass} ${mobileObjectClass}`}
       />
       {overlayOpacity > 0 && (
         <div
