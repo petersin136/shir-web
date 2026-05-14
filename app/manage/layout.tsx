@@ -21,9 +21,13 @@ export default function ManageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [now, setNow] = useState(() => new Date());
+  /** 하이드레이션: 서버·클라 첫 페인트 시각이 달라지지 않도록 마운트 후에만 실시간 표시 */
+  const [mounted, setMounted] = useState(false);
+  const [now, setNow] = useState(() => new Date(0));
 
   useEffect(() => {
+    setNow(new Date());
+    setMounted(true);
     const id = window.setInterval(() => setNow(new Date()), 1000);
     return () => window.clearInterval(id);
   }, []);
@@ -61,12 +65,21 @@ export default function ManageLayout({
             aria-hidden
           />
           <span className="text-[var(--admin-text)]">● LIVE</span>
-          <time
-            dateTime={now.toISOString()}
-            className="tabular-nums text-[var(--admin-text-muted)]"
-          >
-            {formatClockHms(now)}
-          </time>
+          {mounted ? (
+            <time
+              dateTime={now.toISOString()}
+              className="tabular-nums text-[var(--admin-text-muted)]"
+            >
+              {formatClockHms(now)}
+            </time>
+          ) : (
+            <span
+              className="tabular-nums text-[var(--admin-text-muted)]"
+              aria-hidden
+            >
+              --:--:--
+            </span>
+          )}
         </div>
       </header>
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
