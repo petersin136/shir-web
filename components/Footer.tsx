@@ -4,6 +4,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { Space_Mono } from "next/font/google";
+import LiveIndicator from "@/components/LiveIndicator";
 
 const footerNav = Space_Mono({
   subsets: ["latin"],
@@ -104,19 +105,22 @@ export default function Footer() {
             등록번호: 000-00-0000
           </p>
 
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 md:mt-2 md:gap-x-6 md:gap-y-2">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mt-2 md:gap-x-6 md:gap-y-2">
             <p className="min-w-0 flex-1 text-[9px] font-normal uppercase tracking-[0.14em] text-white/80 sm:text-[10px] md:text-[13px] md:tracking-[0.18em] md:text-white">
               © 2026 SHIRBAND. ALL RIGHTS RESERVED
             </p>
-            <Link
-              href="/manage"
-              prefetch={false}
-              aria-label="관리자 페이지"
-              title="관리자 페이지"
-              className="inline-flex size-6 shrink-0 items-center justify-center rounded border border-white/18 text-white/50 transition-[color,background-color,border-color] duration-200 hover:border-white/45 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/70 md:size-9 md:rounded-md md:border-white/20 md:text-white/55"
-            >
-              <AdminAccessIcon className="size-[10px] md:size-4" />
-            </Link>
+            <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-x-3 gap-y-1.5 sm:w-auto sm:gap-x-4 md:gap-x-5">
+              <Link
+                href="/manage"
+                prefetch={false}
+                aria-label="관리자 페이지"
+                title="관리자 페이지"
+                className="inline-flex size-6 shrink-0 items-center justify-center rounded border border-white/18 text-white/50 transition-[color,background-color,border-color] duration-200 hover:border-white/45 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/70 md:size-9 md:rounded-md md:border-white/20 md:text-white/55"
+              >
+                <AdminAccessIcon className="size-[10px] md:size-4" />
+              </Link>
+              <LiveIndicator variant="onDark" className="opacity-95" />
+            </div>
           </div>
         </div>
       </footer>

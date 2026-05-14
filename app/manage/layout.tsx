@@ -34,31 +34,25 @@ export default function ManageLayout({
 
   return (
     <div
-      className={`admin-console-root ${jetbrainsMono.variable} flex min-h-screen flex-col`}
+      className={`admin-console-root ${jetbrainsMono.variable} flex min-h-0 flex-1 flex-col`}
       style={{
         backgroundColor: "var(--admin-bg)",
         color: "var(--admin-text)",
       }}
     >
       <header
-        className="admin-console-mono flex h-14 shrink-0 items-center justify-between border-b px-4 sm:px-6"
+        className="admin-console-mono flex h-14 shrink-0 items-center justify-between border-b px-4 sm:h-16 sm:px-6"
         style={{
           backgroundColor: "var(--admin-bg)",
           borderColor: "var(--admin-border)",
         }}
       >
-        <div className="flex min-w-0 flex-wrap items-baseline gap-x-3 gap-y-1">
-          <span className="admin-console-mono truncate text-sm font-semibold uppercase tracking-[0.28em]">
-            SHIR BAND
-          </span>
-          <span
-            className="admin-console-mono text-[11px] uppercase tracking-[0.22em] text-[var(--admin-text-muted)]"
-            style={{ opacity: 0.5 }}
-          >
-            / ADMIN CONSOLE
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="admin-console-mono truncate text-sm font-semibold uppercase tracking-[0.22em] text-[var(--admin-text)] sm:text-base">
+            Admin · Console
           </span>
         </div>
-        <div className="admin-console-mono flex shrink-0 items-center gap-2 text-[11px] uppercase tracking-[0.14em]">
+        <div className="admin-console-mono flex shrink-0 items-center gap-2 text-xs uppercase tracking-[0.14em] sm:text-sm">
           <span
             className="admin-live-dot inline-block size-2 shrink-0 rounded-full"
             style={{ backgroundColor: "var(--admin-dot-red)" }}

@@ -17,17 +17,19 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      {isManage ? (
-        children
-      ) : (
-        <>
-          <MainNav />
-          <div className="flex min-h-screen flex-col">
-            <div className="flex-1 pt-12 sm:pt-14">{children}</div>
-            <Footer />
-          </div>
-        </>
-      )}
+      <MainNav />
+      <div className="flex min-h-screen flex-col">
+        <div
+          className={
+            isManage
+              ? "flex min-h-0 flex-1 flex-col pt-12 sm:pt-14"
+              : "flex-1 pt-12 sm:pt-14"
+          }
+        >
+          {children}
+        </div>
+        {!isManage && <Footer />}
+      </div>
     </ThemeProvider>
   );
 }

@@ -167,7 +167,17 @@ export default function MetanoiaPage() {
 
   return (
     <>
-      <BackgroundVideo overlayOpacity={0.85} />
+      <BackgroundVideo
+        overlayOpacity={0}
+        mobileFit="contain"
+        bgColor="#000000"
+        mobileObjectClass="object-top"
+        className="fixed -z-10 left-0 right-0 top-12 bottom-0 sm:top-14 md:inset-0"
+      />
+      <div
+        className="pointer-events-none fixed -z-[9] left-0 right-0 top-12 bottom-0 bg-black/55 sm:top-14 md:inset-0"
+        aria-hidden
+      />
       <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
         {/* Header */}
         <header className="mb-14 sm:mb-16">

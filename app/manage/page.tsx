@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import * as XLSX from "xlsx";
 
 // jspdf와 jspdf-autotable은 클라이언트 사이드에서만 사용
@@ -53,6 +53,15 @@ type Application = {
 };
 
 type TabId = "metanoia" | "oneness" | "inquiry" | "applications";
+
+/** 연도 pill — 데이터 필터는 `activeTab`과 동일 */
+const METANOIA_ARCHIVE: { year: number; tab: TabId }[] = [
+  { year: 2026, tab: "metanoia" },
+];
+
+const ONENESS_ARCHIVE: { year: number; tab: TabId }[] = [
+  { year: 2026, tab: "oneness" },
+];
 
 function isOnenessMessage(msg: string | null): boolean {
   if (!msg) return false;
@@ -196,6 +205,89 @@ function parseContactMessage(message: string | null): ParsedContact {
   return result;
 }
 
+const PAGE_SIZE = 15;
+const MAX_PAGE_NUMBERS = 10;
+
+function getVisiblePageNumbers(current: number, total: number, max = MAX_PAGE_NUMBERS): number[] {
+  if (total <= max) return Array.from({ length: total }, (_, i) => i + 1);
+  let start = Math.max(1, current - Math.floor(max / 2));
+  let end = start + max - 1;
+  if (end > total) {
+    end = total;
+    start = Math.max(1, end - max + 1);
+  }
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+type ConferenceRow = ContactMessage & {
+  index: number;
+  parsed: ParsedContact;
+  attendees: number;
+};
+
+type DetailModalState =
+  | { kind: "conference"; row: ConferenceRow }
+  | { kind: "inquiry"; row: { index: number } & ContactMessage }
+  | { kind: "application"; row: Application; displayIndex: number };
+
+function AdminPagination({
+  page,
+  totalPages,
+  onPageChange,
+}: {
+  page: number;
+  totalPages: number;
+  onPageChange: (p: number) => void;
+}) {
+  if (totalPages <= 1) return null;
+  const pages = getVisiblePageNumbers(page, totalPages);
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+      <button
+        type="button"
+        onClick={() => onPageChange(Math.max(1, page - 1))}
+        disabled={page <= 1}
+        className="rounded border border-white/15 bg-transparent px-2.5 py-1.5 text-xs text-white/65 transition-colors duration-150 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-sm"
+      >
+        Prev
+      </button>
+      {pages.map((p) => (
+        <button
+          key={p}
+          type="button"
+          onClick={() => onPageChange(p)}
+          className={`min-w-[2rem] rounded border px-2 py-1.5 text-xs tabular-nums transition-colors duration-150 sm:min-w-[2.25rem] sm:text-sm ${
+            p === page
+              ? "border-white bg-white font-medium text-black"
+              : "border-white/15 text-white/70 hover:border-white/30 hover:bg-white/5"
+          }`}
+        >
+          {p}
+        </button>
+      ))}
+      <button
+        type="button"
+        onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+        disabled={page >= totalPages}
+        className="rounded border border-white/15 bg-transparent px-2.5 py-1.5 text-xs text-white/65 transition-colors duration-150 hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40 sm:px-3 sm:text-sm"
+      >
+        Next
+      </button>
+    </div>
+  );
+}
+
+function DetailBlock({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div>
+      <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45 sm:text-[11px]">
+        {label}
+      </div>
+      <div className="mt-1.5 text-sm leading-relaxed text-white/90">{children}</div>
+    </div>
+  );
+}
+
 export default function ManagePage() {
   const [data, setData] = useState<ContactMessage[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -209,13 +301,26 @@ export default function ManagePage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [page, setPage] = useState(1);
+  const [detailModal, setDetailModal] = useState<DetailModalState | null>(null);
 
-  const PAGE_SIZE = 20;
   const refreshData = () => setRefreshTrigger((t) => t + 1);
 
   useEffect(() => {
     setPage(1);
   }, [activeTab]);
+
+  useEffect(() => {
+    setDetailModal(null);
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (!detailModal) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDetailModal(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [detailModal]);
 
   useEffect(() => {
     const stored =
@@ -921,48 +1026,56 @@ export default function ManagePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-[90rem] px-4 py-12 sm:py-16 mt-8 sm:mt-12 bg-slate-50 text-slate-900 rounded-xl shadow-lg">
-      <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-        관리자 - 문의/집회 신청 목록
-      </h1>
+    <main className="mx-auto mt-2 w-full max-w-[90rem] rounded-xl bg-[#0A0A0A] px-4 py-10 text-white transition-colors duration-150 sm:mt-4 sm:py-14">
+      <div className="mb-8 border-b border-white/10 pb-8 transition-colors duration-150">
+        <p className="font-mono text-sm font-semibold uppercase tracking-[0.32em] text-white/70 sm:text-base md:text-lg md:tracking-[0.38em] lg:text-xl">
+          SHIR BAND
+        </p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          Admin Console
+        </h1>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/50 sm:text-lg">
+          문의 · 집회 신청 · 사역 지원을 한곳에서 관리합니다.
+        </p>
+      </div>
 
       {/* 로그인 폼 */}
       {!authed && (
-        <section className="max-w-md">
-          <p className="text-base text-slate-600 mb-4">
+        <section className="max-w-md rounded-lg border border-white/10 bg-[#141414] p-4 transition-colors duration-150">
+          <p className="mb-4 text-base text-white/60 transition-colors duration-150">
             관리자 아이디와 비밀번호를 입력하세요.
           </p>
           <form onSubmit={handleLogin} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-white/80 transition-colors duration-150">
                 아이디
               </label>
               <input
                 type="text"
                 value={idInput}
                 onChange={(e) => setIdInput(e.target.value)}
-                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base outline-none focus:ring-2 focus:ring-slate-400"
+                className="mt-1 w-full rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 text-base text-white outline-none transition-colors duration-150 placeholder:text-white/30 focus:border-white/40"
                 autoComplete="username"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-white/80 transition-colors duration-150">
                 비밀번호
               </label>
               <input
                 type="password"
                 value={pwInput}
                 onChange={(e) => setPwInput(e.target.value)}
-                className="mt-1 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-base outline-none focus:ring-2 focus:ring-slate-400"
+                className="mt-1 w-full rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 text-base text-white outline-none transition-colors duration-150 placeholder:text-white/30 focus:border-white/40"
                 autoComplete="current-password"
               />
             </div>
             {loginError && (
-              <p className="text-sm text-red-600">{loginError}</p>
+              <p className="text-sm text-red-400 transition-colors duration-150">{loginError}</p>
             )}
             <button
               type="submit"
-              className="mt-1 inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-base font-medium text-white hover:bg-slate-800"
+              className="mt-1 inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-base font-medium text-black transition-colors duration-150 hover:bg-white/90"
             >
               로그인
             </button>
@@ -971,90 +1084,116 @@ export default function ManagePage() {
       )}
 
       {authed && !loading && !error && (
-        <div className="mb-6">
+        <div className="mb-6 transition-colors duration-150">
           {/* 탭 */}
-          <div className="flex flex-wrap gap-2 mb-6 border-b border-slate-200">
-            <button
-              type="button"
-              onClick={() => setActiveTab("metanoia")}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
-                activeTab === "metanoia"
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              METANOIA 2026
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("oneness")}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
-                activeTab === "oneness"
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              ONENESS Worship 2026
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("inquiry")}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
-                activeTab === "inquiry"
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              문의하기
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveTab("applications")}
-              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors whitespace-nowrap ${
-                activeTab === "applications"
-                  ? "bg-slate-900 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
-            >
-              사역 신청
-            </button>
+          <div className="mb-6 flex flex-col gap-4 border-b border-white/10 pb-6 transition-colors duration-150 lg:flex-row lg:flex-wrap lg:items-center lg:justify-between lg:gap-5">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#141414] px-3 py-2 sm:px-4 sm:py-2.5">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55 sm:text-sm sm:tracking-[0.22em]">
+                  Metanoia Conference
+                </span>
+                <span className="hidden h-4 w-px bg-white/15 sm:block" aria-hidden />
+                <div className="flex flex-wrap gap-1.5">
+                  {METANOIA_ARCHIVE.map((entry) => (
+                    <button
+                      key={entry.year}
+                      type="button"
+                      onClick={() => setActiveTab(entry.tab)}
+                      className={`rounded-md px-3 py-1.5 text-xs font-semibold tabular-nums transition-colors duration-150 sm:text-sm ${
+                        activeTab === entry.tab
+                          ? "bg-white text-black"
+                          : "bg-white/5 text-white/75 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      {entry.year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-white/10 bg-[#141414] px-3 py-2 sm:px-4 sm:py-2.5">
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-white/55 sm:text-sm sm:tracking-[0.22em]">
+                  ONENESS Worship
+                </span>
+                <span className="hidden h-4 w-px bg-white/15 sm:block" aria-hidden />
+                <div className="flex flex-wrap gap-1.5">
+                  {ONENESS_ARCHIVE.map((entry) => (
+                    <button
+                      key={entry.year}
+                      type="button"
+                      onClick={() => setActiveTab(entry.tab)}
+                      className={`rounded-md px-3 py-1.5 text-xs font-semibold tabular-nums transition-colors duration-150 sm:text-sm ${
+                        activeTab === entry.tab
+                          ? "bg-white text-black"
+                          : "bg-white/5 text-white/75 hover:bg-white/10 hover:text-white"
+                      }`}
+                    >
+                      {entry.year}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 lg:ml-auto">
+              <button
+                type="button"
+                onClick={() => setActiveTab("inquiry")}
+                className={`rounded-lg border px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-150 sm:text-sm ${
+                  activeTab === "inquiry"
+                    ? "border-white bg-white text-black"
+                    : "border-white/15 bg-transparent text-white/70 hover:border-white/30 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                Inquiry
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("applications")}
+                className={`rounded-lg border px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-150 sm:text-sm ${
+                  activeTab === "applications"
+                    ? "border-white bg-white text-black"
+                    : "border-white/15 bg-transparent text-white/70 hover:border-white/30 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                Ministry
+              </button>
+            </div>
           </div>
 
-          <div className="mb-4 flex flex-wrap gap-4 text-sm">
+          <div className="mb-4 flex flex-wrap gap-4 text-sm sm:text-base transition-colors duration-150">
             {activeTab === "metanoia" && (
               <>
-                <div className="rounded-md bg-slate-100 px-4 py-2">
-                  <span className="font-semibold">총 신청 건수</span>{" "}
-                  <span className="ml-2 text-slate-700">{metanoiaRows.length}건</span>
+                <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                  <span className="text-sm text-white/50">총 신청 건수</span>{" "}
+                  <span className="ml-2 font-mono font-semibold text-white">{metanoiaRows.length}건</span>
                 </div>
-                <div className="rounded-md bg-slate-100 px-4 py-2">
-                  <span className="font-semibold">총 예상 참석 인원</span>{" "}
-                  <span className="ml-2 text-slate-700">{totalAttendeesMetanoia}명</span>
+                <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                  <span className="text-sm text-white/50">총 예상 참석 인원</span>{" "}
+                  <span className="ml-2 font-mono font-semibold text-white">{totalAttendeesMetanoia}명</span>
                 </div>
               </>
             )}
             {activeTab === "oneness" && (
               <>
-                <div className="rounded-md bg-slate-100 px-4 py-2">
-                  <span className="font-semibold">총 신청 건수</span>{" "}
-                  <span className="ml-2 text-slate-700">{onenessRows.length}건</span>
+                <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                  <span className="text-sm text-white/50">총 신청 건수</span>{" "}
+                  <span className="ml-2 font-mono font-semibold text-white">{onenessRows.length}건</span>
                 </div>
-                <div className="rounded-md bg-slate-100 px-4 py-2">
-                  <span className="font-semibold">총 예상 참석 인원</span>{" "}
-                  <span className="ml-2 text-slate-700">{totalAttendeesOneness}명</span>
+                <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                  <span className="text-sm text-white/50">총 예상 참석 인원</span>{" "}
+                  <span className="ml-2 font-mono font-semibold text-white">{totalAttendeesOneness}명</span>
                 </div>
               </>
             )}
             {activeTab === "inquiry" && (
-              <div className="rounded-md bg-slate-100 px-4 py-2">
-                <span className="font-semibold">총 문의 건수</span>{" "}
-                <span className="ml-2 text-slate-700">{inquiryRows.length}건</span>
+              <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                <span className="text-sm text-white/50">총 문의 건수</span>{" "}
+                <span className="ml-2 font-mono font-semibold text-white">{inquiryRows.length}건</span>
               </div>
             )}
             {activeTab === "applications" && (
-              <div className="rounded-md bg-slate-100 px-4 py-2">
-                <span className="font-semibold">총 사역 신청 건수</span>{" "}
-                <span className="ml-2 text-slate-700">{applications.length}건</span>
+              <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                <span className="text-sm text-white/50">총 사역 신청 건수</span>{" "}
+                <span className="ml-2 font-mono font-semibold text-white">{applications.length}건</span>
               </div>
             )}
           </div>
@@ -1063,23 +1202,23 @@ export default function ManagePage() {
             (activeTab === "oneness" && onenessRows.length > 0) ||
             (activeTab === "inquiry" && inquiryRows.length > 0) ||
             (activeTab === "applications" && applications.length > 0)) && (
-            <div className="flex flex-wrap gap-3 items-center">
+            <div className="flex flex-wrap items-center gap-3 transition-colors duration-150">
               <button
                 onClick={handleExportExcel}
-                className="inline-flex items-center justify-center rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 transition-colors"
+                className="inline-flex items-center justify-center rounded-md border border-[#4ADE80] bg-transparent px-4 py-2.5 text-sm font-medium text-[#4ADE80] transition-colors duration-150 hover:bg-[#4ADE80]/10 sm:px-5 sm:text-base"
               >
                 📊 엑셀 다운로드
               </button>
               <button
                 onClick={handleExportPDF}
-                className="inline-flex items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 transition-colors"
+                className="inline-flex items-center justify-center rounded-md border border-[#EF4444] bg-transparent px-4 py-2.5 text-sm font-medium text-[#EF4444] transition-colors duration-150 hover:bg-[#EF4444]/10 sm:px-5 sm:text-base"
               >
                 📄 PDF 다운로드
               </button>
               <button
                 onClick={handleDeleteAll}
                 disabled={deleting || currentTabIds.length === 0}
-                className="inline-flex items-center justify-center rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-white hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center justify-center rounded-md border border-white/20 bg-transparent px-4 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:text-base"
               >
                 {deleting ? "삭제 중..." : "🗑️ 전체 삭제"}
               </button>
@@ -1089,11 +1228,11 @@ export default function ManagePage() {
       )}
 
       {authed && loading && (
-        <div className="text-sm text-slate-600">불러오는 중입니다...</div>
+        <div className="text-sm text-white/60 transition-colors duration-150">불러오는 중입니다...</div>
       )}
 
       {authed && error && (
-        <div className="mb-4 rounded-md border border-red-500/40 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mb-4 rounded-md border border-red-500/40 bg-red-950/30 px-4 py-3 text-sm text-red-300 transition-colors duration-150">
           {error}
         </div>
       )}
@@ -1103,7 +1242,7 @@ export default function ManagePage() {
           (activeTab === "oneness" && onenessRows.length === 0) ||
           (activeTab === "inquiry" && inquiryRows.length === 0) ||
           (activeTab === "applications" && applications.length === 0)) && (
-        <div className="text-lg text-slate-600">
+        <div className="text-lg text-white/60 transition-colors duration-150">
           {activeTab === "applications" ? "사역 신청 데이터가 없습니다." : activeTab === "inquiry" ? "문의 데이터가 없습니다." : "해당 탭에 데이터가 없습니다."}
         </div>
       )}
@@ -1115,54 +1254,66 @@ export default function ManagePage() {
             {currentPaginatedRows.map((row) => (
               <div
                 key={row.id}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
+                role="button"
+                tabIndex={0}
+                onClick={() => setDetailModal({ kind: "conference", row })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setDetailModal({ kind: "conference", row });
+                  }
+                }}
+                className="cursor-pointer rounded-lg border border-white/10 bg-[#141414] p-4 transition-colors duration-150 hover:border-white/20"
               >
-                <div className="flex items-center justify-between text-sm text-slate-500">
-                  <span>No. {row.index}</span>
+                <div className="flex items-center justify-between text-sm text-white/50 transition-colors duration-150">
+                  <span className="font-mono">No. {row.index}</span>
                   <div className="flex items-center gap-2">
-                    <span>
+                    <span className="font-mono">
                       {row.created_at
                         ? new Date(row.created_at).toLocaleDateString("ko-KR")
                         : "-"}
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleDelete([row.id])}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete([row.id]);
+                      }}
                       disabled={deleting}
-                      className="text-red-600 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                      className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                     >
                       삭제
                     </button>
                   </div>
                 </div>
-                <div className="mt-1 text-lg font-semibold">
+                <div className="mt-1 text-lg font-semibold text-white transition-colors duration-150">
                   {row.parsed.name || row.name || "-"}
                 </div>
                 {row.parsed.phone && (
-                  <div className="mt-0.5 text-sm text-slate-600">
+                  <div className="mt-0.5 text-sm font-mono text-white/70 transition-colors duration-150">
                     연락처: {row.parsed.phone}
                   </div>
                 )}
                 {(row.parsed.expectedText || row.parsed.church || row.parsed.role || row.parsed.sessions) && (
-                  <div className="mt-1 text-sm text-slate-600 space-y-0.5">
+                  <div className="mt-1 space-y-0.5 text-sm text-white/60 transition-colors duration-150">
                     {row.parsed.expectedText && (
-                      <div>참석: {row.parsed.expectedText}</div>
+                      <div className="font-mono">참석: {row.parsed.expectedText}</div>
                     )}
                     {row.parsed.church && (
-                      <div>교회: {row.parsed.church}</div>
+                      <div className="font-medium">교회: {row.parsed.church}</div>
                     )}
                     {row.parsed.role && (
                       <div>직분: {row.parsed.role}</div>
                     )}
                     {row.parsed.sessions && (
-                      <div className="text-xs bg-blue-50 text-blue-700 p-2 rounded mt-1">
+                      <div className="mt-1 rounded bg-blue-950/40 p-2 text-xs text-blue-300 transition-colors duration-150">
                         세션: {row.parsed.sessions}
                       </div>
                     )}
                   </div>
                 )}
                 {row.parsed.extraMessage && (
-                  <div className="mt-1 text-sm text-slate-500 whitespace-pre-wrap">
+                  <div className="mt-1 whitespace-pre-wrap text-sm text-white/50 transition-colors duration-150">
                     {row.parsed.extraMessage}
                   </div>
                 )}
@@ -1172,66 +1323,91 @@ export default function ManagePage() {
 
           {/* 데스크톱: 전체 정보 테이블 */}
           <div className="hidden sm:block">
-            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-              <table className="min-w-full text-left text-base">
-                <thead className="bg-slate-100">
+            <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
+              <table className="min-w-full text-left text-base transition-colors duration-150">
+                <thead className="bg-[#1C1C1C] transition-colors duration-150">
                   <tr>
-                    <th className="px-4 py-3 font-semibold text-sm w-12">No.</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap min-w-[4rem]">이름</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">연락처</th>
-                    <th className="px-4 py-3 font-semibold text-sm min-w-[120px]">소속교회</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">직책/역할</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap w-24">참석 예상 인원</th>
-                    <th className="px-4 py-3 font-semibold text-sm min-w-[220px]">참석 세션</th>
-                    <th className="px-4 py-3 font-semibold text-sm max-w-[120px]">추가 메시지</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">받은 시간</th>
-                    <th className="px-4 py-3 font-semibold text-sm w-16">삭제</th>
+                    <th className="w-12 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      No.
+                    </th>
+                    <th className="min-w-[4rem] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Name
+                    </th>
+                    <th className="px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Phone
+                    </th>
+                    <th className="min-w-[100px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Church
+                    </th>
+                    <th className="px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Role
+                    </th>
+                    <th className="w-24 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Attendees
+                    </th>
+                    <th className="min-w-[120px] max-w-[200px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Sessions
+                    </th>
+                    <th className="min-w-[100px] max-w-[140px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Note
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Received
+                    </th>
+                    <th className="min-w-[4.5rem] whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Delete
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/5 transition-colors duration-150">
                   {currentPaginatedRows.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 align-top text-sm text-slate-500">
+                    <tr
+                      key={row.id}
+                      onClick={() => setDetailModal({ kind: "conference", row })}
+                      className="cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
+                    >
+                      <td className="px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.index}
                       </td>
-                      <td className="px-4 py-3 align-top text-base font-medium whitespace-nowrap">
+                      <td className="max-w-[8rem] truncate px-4 py-3 align-middle text-base font-medium text-white/90 transition-colors duration-150">
                         {row.parsed.name || row.name || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
+                      <td className="max-w-[7rem] truncate px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.parsed.phone || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 min-w-[120px]">
-                        <span className="break-words">{row.parsed.church || "-"}</span>
+                      <td className="max-w-[10rem] truncate px-4 py-3 align-middle text-sm font-medium text-white/90 transition-colors duration-150" title={row.parsed.church || ""}>
+                        {row.parsed.church || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
+                      <td className="max-w-[6rem] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150">
                         {row.parsed.role || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-700 whitespace-nowrap">
+                      <td className="max-w-[5rem] truncate px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.parsed.expectedText
                           ? row.parsed.expectedText
                           : row.attendees > 0
                             ? `${row.attendees}명`
                             : "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
+                      <td className="max-w-[200px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.parsed.sessions || ""}>
                         {row.parsed.sessions || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-[120px]">
-                        <div className="break-words" title={row.parsed.extraMessage || ""}>
-                          {row.parsed.extraMessage || "-"}
-                        </div>
+                      <td className="max-w-[140px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.parsed.extraMessage || ""}>
+                        {row.parsed.extraMessage || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-500 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
-                      <td className="px-4 py-3 align-top">
+                      <td className="px-4 py-3 align-middle transition-colors duration-150">
                         <button
                           type="button"
-                          onClick={() => handleDelete([row.id])}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete([row.id]);
+                          }}
                           disabled={deleting}
-                          className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                          className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                         >
                           삭제
                         </button>
@@ -1242,29 +1418,7 @@ export default function ManagePage() {
               </table>
             </div>
           </div>
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
-              >
-                이전
-              </button>
-              <span className="text-sm text-slate-600">
-                {page} / {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
-              >
-                다음
-              </button>
-            </div>
-          )}
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
 
@@ -1274,29 +1428,41 @@ export default function ManagePage() {
             {paginatedInquiry.map((row) => (
               <div
                 key={row.id}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
+                role="button"
+                tabIndex={0}
+                onClick={() => setDetailModal({ kind: "inquiry", row })}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setDetailModal({ kind: "inquiry", row });
+                  }
+                }}
+                className="cursor-pointer rounded-lg border border-white/10 bg-[#141414] p-4 transition-colors duration-150 hover:border-white/20"
               >
-                <div className="flex items-center justify-between text-sm text-slate-500">
-                  <span>No. {row.index}</span>
+                <div className="flex items-center justify-between text-sm text-white/50 transition-colors duration-150">
+                  <span className="font-mono">No. {row.index}</span>
                   <div className="flex items-center gap-2">
-                    <span>
+                    <span className="font-mono">
                       {row.created_at
                         ? new Date(row.created_at).toLocaleDateString("ko-KR")
                         : "-"}
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleDelete([row.id])}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete([row.id]);
+                      }}
                       disabled={deleting}
-                      className="text-red-600 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                      className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                     >
                       삭제
                     </button>
                   </div>
                 </div>
-                <div className="mt-1 text-lg font-semibold">{row.name || "-"}</div>
+                <div className="mt-1 text-lg font-semibold text-white transition-colors duration-150">{row.name || "-"}</div>
                 {row.message && (
-                  <div className="mt-2 text-sm text-slate-600 whitespace-pre-wrap border-t border-slate-100 pt-2">
+                  <div className="mt-2 whitespace-pre-wrap border-t border-white/10 pt-2 text-sm text-white/60 transition-colors duration-150">
                     {row.message}
                   </div>
                 )}
@@ -1304,38 +1470,53 @@ export default function ManagePage() {
             ))}
           </div>
           <div className="hidden sm:block">
-            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-              <table className="min-w-full text-left text-base">
-                <thead className="bg-slate-100">
+            <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
+              <table className="min-w-full text-left text-base transition-colors duration-150">
+                <thead className="bg-[#1C1C1C] transition-colors duration-150">
                   <tr>
-                    <th className="px-4 py-3 font-semibold text-sm w-12">No.</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">이름</th>
-                    <th className="px-4 py-3 font-semibold text-sm min-w-[200px]">메시지</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">받은 시간</th>
-                    <th className="px-4 py-3 font-semibold text-sm w-16">삭제</th>
+                    <th className="w-12 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      No.
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Name
+                    </th>
+                    <th className="min-w-[160px] max-w-[240px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Message
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Received
+                    </th>
+                    <th className="min-w-[4.5rem] whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Delete
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/5 transition-colors duration-150">
                   {paginatedInquiry.map((row) => (
-                    <tr key={row.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 align-top text-sm text-slate-500">{row.index}</td>
-                      <td className="px-4 py-3 align-top text-base font-medium whitespace-nowrap">{row.name || "-"}</td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600">
-                        <div className="whitespace-pre-wrap break-words line-clamp-3 max-w-md">
-                          {row.message || "-"}
-                        </div>
+                    <tr
+                      key={row.id}
+                      onClick={() => setDetailModal({ kind: "inquiry", row })}
+                      className="cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
+                    >
+                      <td className="px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">{row.index}</td>
+                      <td className="max-w-[10rem] truncate px-4 py-3 align-middle text-base font-medium text-white/90 transition-colors duration-150">{row.name || "-"}</td>
+                      <td className="max-w-[240px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.message || ""}>
+                        {row.message || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-500 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
-                      <td className="px-4 py-3 align-top">
+                      <td className="px-4 py-3 align-middle transition-colors duration-150">
                         <button
                           type="button"
-                          onClick={() => handleDelete([row.id])}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete([row.id]);
+                          }}
                           disabled={deleting}
-                          className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                          className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                         >
                           삭제
                         </button>
@@ -1346,29 +1527,7 @@ export default function ManagePage() {
               </table>
             </div>
           </div>
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
-              >
-                이전
-              </button>
-              <span className="text-sm text-slate-600">
-                {page} / {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
-              >
-                다음
-              </button>
-            </div>
-          )}
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
 
@@ -1379,35 +1538,57 @@ export default function ManagePage() {
             {paginatedApplications.map((row, idx) => (
               <div
                 key={row.id}
-                className="rounded-lg border border-slate-200 bg-white px-4 py-4 shadow-sm"
+                role="button"
+                tabIndex={0}
+                onClick={() =>
+                  setDetailModal({
+                    kind: "application",
+                    row,
+                    displayIndex: (page - 1) * PAGE_SIZE + idx + 1,
+                  })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setDetailModal({
+                      kind: "application",
+                      row,
+                      displayIndex: (page - 1) * PAGE_SIZE + idx + 1,
+                    });
+                  }
+                }}
+                className="cursor-pointer rounded-lg border border-white/10 bg-[#141414] p-4 transition-colors duration-150 hover:border-white/20"
               >
-                <div className="flex items-center justify-between text-sm text-slate-500">
-                  <span>No. {(page - 1) * PAGE_SIZE + idx + 1}</span>
+                <div className="flex items-center justify-between text-sm text-white/50 transition-colors duration-150">
+                  <span className="font-mono">No. {(page - 1) * PAGE_SIZE + idx + 1}</span>
                   <div className="flex items-center gap-2">
-                    <span>
+                    <span className="font-mono">
                       {row.created_at
                         ? new Date(row.created_at).toLocaleDateString("ko-KR")
                         : "-"}
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleDelete([row.id])}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete([row.id]);
+                      }}
                       disabled={deleting}
-                      className="text-red-600 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                      className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                     >
                       삭제
                     </button>
                   </div>
                 </div>
-                <div className="mt-1 text-lg font-semibold">{row.name || "-"}</div>
+                <div className="mt-1 text-lg font-semibold text-white transition-colors duration-150">{row.name || "-"}</div>
                 {row.phone && (
-                  <div className="mt-0.5 text-sm text-slate-600">연락처: {row.phone}</div>
+                  <div className="mt-0.5 text-sm font-mono text-white/70 transition-colors duration-150">연락처: {row.phone}</div>
                 )}
                 {row.church && (
-                  <div className="mt-0.5 text-sm text-slate-600">소속교회: {row.church}</div>
+                  <div className="mt-0.5 text-sm font-medium text-white/90 transition-colors duration-150">소속교회: {row.church}</div>
                 )}
                 {row.reason && (
-                  <div className="mt-2 text-sm text-slate-600 whitespace-pre-wrap border-t border-slate-100 pt-2">
+                  <div className="mt-2 whitespace-pre-wrap border-t border-white/10 pt-2 text-sm text-white/60 transition-colors duration-150">
                     {row.reason}
                   </div>
                 )}
@@ -1417,44 +1598,71 @@ export default function ManagePage() {
 
           {/* 데스크톱: 사역 신청 테이블 */}
           <div className="hidden sm:block">
-            <div className="overflow-x-auto rounded-lg border border-slate-200 bg-white">
-              <table className="min-w-full text-left text-base">
-                <thead className="bg-slate-100">
+            <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
+              <table className="min-w-full text-left text-base transition-colors duration-150">
+                <thead className="bg-[#1C1C1C] transition-colors duration-150">
                   <tr>
-                    <th className="px-4 py-3 font-semibold text-sm w-12">No.</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">이름</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">연락처</th>
-                    <th className="px-4 py-3 font-semibold text-sm min-w-[100px]">소속교회</th>
-                    <th className="px-4 py-3 font-semibold text-sm min-w-[180px]">사역 초청 내용</th>
-                    <th className="px-4 py-3 font-semibold text-sm whitespace-nowrap">받은 시간</th>
-                    <th className="px-4 py-3 font-semibold text-sm w-16">삭제</th>
+                    <th className="w-12 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      No.
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Name
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Phone
+                    </th>
+                    <th className="min-w-[100px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Church
+                    </th>
+                    <th className="min-w-[120px] max-w-[200px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Request
+                    </th>
+                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Received
+                    </th>
+                    <th className="min-w-[4.5rem] whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                      Delete
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-white/5 transition-colors duration-150">
                   {paginatedApplications.map((row, idx) => (
-                    <tr key={row.id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3 align-top text-sm text-slate-500">{(page - 1) * PAGE_SIZE + idx + 1}</td>
-                      <td className="px-4 py-3 align-top text-base font-medium whitespace-nowrap">{row.name || "-"}</td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 whitespace-nowrap">
+                    <tr
+                      key={row.id}
+                      onClick={() =>
+                        setDetailModal({
+                          kind: "application",
+                          row,
+                          displayIndex: (page - 1) * PAGE_SIZE + idx + 1,
+                        })
+                      }
+                      className="cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
+                    >
+                      <td className="px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">{(page - 1) * PAGE_SIZE + idx + 1}</td>
+                      <td className="max-w-[8rem] truncate px-4 py-3 align-middle text-base font-medium text-white/90 transition-colors duration-150">{row.name || "-"}</td>
+                      <td className="max-w-[7rem] truncate px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.phone || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 min-w-[100px]">
-                        <span className="break-words">{row.church || "-"}</span>
+                      <td className="max-w-[8rem] truncate px-4 py-3 align-middle text-sm font-medium text-white/90 transition-colors duration-150" title={row.church || ""}>
+                        {row.church || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-600 max-w-xs">
-                        <div className="whitespace-pre-wrap break-words">{row.reason || "-"}</div>
+                      <td className="max-w-[200px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.reason || ""}>
+                        {row.reason || "-"}
                       </td>
-                      <td className="px-4 py-3 align-top text-sm text-slate-500 whitespace-nowrap">
+                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
-                      <td className="px-4 py-3 align-top">
+                      <td className="px-4 py-3 align-middle transition-colors duration-150">
                         <button
                           type="button"
-                          onClick={() => handleDelete([row.id])}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete([row.id]);
+                          }}
                           disabled={deleting}
-                          className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50"
+                          className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                         >
                           삭제
                         </button>
@@ -1465,30 +1673,101 @@ export default function ManagePage() {
               </table>
             </div>
           </div>
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-4">
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
+        </>
+      )}
+
+      {detailModal && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="admin-detail-title"
+          onClick={() => setDetailModal(null)}
+        >
+          <div
+            className="max-h-[88vh] w-full max-w-lg overflow-y-auto rounded-xl border border-white/10 bg-[#141414] shadow-2xl sm:max-w-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="sticky top-0 z-[1] flex items-start justify-between gap-4 border-b border-white/10 bg-[#141414] px-5 py-4">
+              <h2 id="admin-detail-title" className="text-lg font-semibold tracking-tight text-white">
+                {detailModal.kind === "conference" && "Registration"}
+                {detailModal.kind === "inquiry" && "Inquiry"}
+                {detailModal.kind === "application" && "Ministry application"}
+              </h2>
               <button
                 type="button"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
+                onClick={() => setDetailModal(null)}
+                className="shrink-0 rounded border border-white/15 px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white/70 transition-colors hover:border-white/35 hover:text-white"
               >
-                이전
-              </button>
-              <span className="text-sm text-slate-600">
-                {page} / {totalPages}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                disabled={page >= totalPages}
-                className="px-3 py-1 rounded bg-slate-200 text-slate-700 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-300"
-              >
-                다음
+                Close
               </button>
             </div>
-          )}
-        </>
+            <div className="space-y-4 px-5 py-5 text-sm text-white/85">
+              {detailModal.kind === "conference" && (
+                <>
+                  <DetailBlock label="No.">{detailModal.row.index}</DetailBlock>
+                  <DetailBlock label="Name">{detailModal.row.parsed.name || detailModal.row.name || "—"}</DetailBlock>
+                  <DetailBlock label="Phone">{detailModal.row.parsed.phone || "—"}</DetailBlock>
+                  <DetailBlock label="Church">{detailModal.row.parsed.church || "—"}</DetailBlock>
+                  <DetailBlock label="Role">{detailModal.row.parsed.role || "—"}</DetailBlock>
+                  <DetailBlock label="Expected attendees">
+                    {detailModal.row.parsed.expectedText
+                      ? detailModal.row.parsed.expectedText
+                      : detailModal.row.attendees > 0
+                        ? `${detailModal.row.attendees}명`
+                        : "—"}
+                  </DetailBlock>
+                  <DetailBlock label="Sessions">{detailModal.row.parsed.sessions || "—"}</DetailBlock>
+                  <DetailBlock label="Additional message">{detailModal.row.parsed.extraMessage || "—"}</DetailBlock>
+                  <DetailBlock label="Received">
+                    {detailModal.row.created_at
+                      ? new Date(detailModal.row.created_at).toLocaleString("ko-KR")
+                      : "—"}
+                  </DetailBlock>
+                  {detailModal.row.message && (
+                    <DetailBlock label="Raw message">
+                      <span className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-white/70">
+                        {detailModal.row.message}
+                      </span>
+                    </DetailBlock>
+                  )}
+                </>
+              )}
+              {detailModal.kind === "inquiry" && (
+                <>
+                  <DetailBlock label="No.">{detailModal.row.index}</DetailBlock>
+                  <DetailBlock label="Name">{detailModal.row.name || "—"}</DetailBlock>
+                  <DetailBlock label="Message">
+                    <span className="whitespace-pre-wrap">{detailModal.row.message || "—"}</span>
+                  </DetailBlock>
+                  <DetailBlock label="Received">
+                    {detailModal.row.created_at
+                      ? new Date(detailModal.row.created_at).toLocaleString("ko-KR")
+                      : "—"}
+                  </DetailBlock>
+                </>
+              )}
+              {detailModal.kind === "application" && (
+                <>
+                  <DetailBlock label="No.">{detailModal.displayIndex}</DetailBlock>
+                  <DetailBlock label="Name">{detailModal.row.name || "—"}</DetailBlock>
+                  <DetailBlock label="Phone">{detailModal.row.phone || "—"}</DetailBlock>
+                  <DetailBlock label="Email">{detailModal.row.email || "—"}</DetailBlock>
+                  <DetailBlock label="Church">{detailModal.row.church || "—"}</DetailBlock>
+                  <DetailBlock label="Request">
+                    <span className="whitespace-pre-wrap">{detailModal.row.reason || "—"}</span>
+                  </DetailBlock>
+                  <DetailBlock label="Received">
+                    {detailModal.row.created_at
+                      ? new Date(detailModal.row.created_at).toLocaleString("ko-KR")
+                      : "—"}
+                  </DetailBlock>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </main>
   );

@@ -5,9 +5,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 
-const projectChildren = [
-  { href: "/metanoia-2026", label: "Metanoia Conference" },
-  { href: "/oneness", label: "Oneness Worship" },
+/** 연도별 아카이브 — 매년 항목 추가 */
+const projectArchive = [
+  {
+    year: "2026",
+    items: [
+      { href: "/metanoia-2026", label: "Metanoia Conference 2026" },
+      { href: "/oneness", label: "ONENESS Worship 2026" },
+    ],
+  },
 ] as const;
 
 const newsChildren = [
@@ -54,6 +60,45 @@ function DesktopDropdown({
   );
 }
 
+function DesktopProjectArchive() {
+  return (
+    <li className="relative flex-shrink-0 group">
+      <button
+        type="button"
+        className="flex items-center gap-1 whitespace-nowrap py-1 text-sm font-bold uppercase tracking-wider text-neutral-900 transition-colors group-hover:text-neutral-600"
+        aria-haspopup="menu"
+      >
+        PROJECT
+        <span className="text-[10px] opacity-60" aria-hidden>
+          ▾
+        </span>
+      </button>
+      <ul className={dropdownPanelClass} role="menu">
+        {projectArchive.map((block) => (
+          <li key={block.year} role="presentation">
+            <div className="px-4 pb-1 pt-2.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-500">
+              {block.year}
+            </div>
+            <ul className="pb-1">
+              {block.items.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    role="menuitem"
+                    className="block py-2 pl-6 pr-4 text-[13px] font-medium tracking-wide text-neutral-800 transition-colors hover:bg-neutral-50 hover:text-neutral-950"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
+    </li>
+  );
+}
+
 export default function MainNav() {
   const [isOpen, setIsOpen] = useState(false);
   const [projectOpen, setProjectOpen] = useState(false);
@@ -90,7 +135,7 @@ export default function MainNav() {
                 ABOUT
               </Link>
             </li>
-            <DesktopDropdown label="PROJECT" items={projectChildren} />
+            <DesktopProjectArchive />
             <li className="flex-shrink-0">
               <Link
                 href="/ticket"
@@ -175,15 +220,24 @@ export default function MainNav() {
                 </button>
                 {projectOpen && (
                   <ul className="border-t border-neutral-100 bg-neutral-50/80">
-                    {projectChildren.map((item) => (
-                      <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className="block pl-10 pr-6 py-2.5 text-[13px] tracking-wide text-neutral-700 hover:text-neutral-950 hover:bg-neutral-100 transition-colors"
-                          onClick={closeMobile}
-                        >
-                          {item.label}
-                        </Link>
+                    {projectArchive.map((block) => (
+                      <li key={block.year}>
+                        <div className="px-6 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
+                          {block.year}
+                        </div>
+                        <ul>
+                          {block.items.map((item) => (
+                            <li key={item.href}>
+                              <Link
+                                href={item.href}
+                                className="block py-2.5 pl-12 pr-6 text-[13px] tracking-wide text-neutral-700 transition-colors hover:bg-neutral-100 hover:text-neutral-950"
+                                onClick={closeMobile}
+                              >
+                                {item.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
                       </li>
                     ))}
                   </ul>
