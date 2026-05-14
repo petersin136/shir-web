@@ -230,6 +230,26 @@ type DetailModalState =
   | { kind: "inquiry"; row: { index: number } & ContactMessage }
   | { kind: "application"; row: Application; displayIndex: number };
 
+/** 페이지마다 행 수가 달라져도 페이지네이션 위치가 흔들리지 않도록 tbody 하단에 빈 행을 채웁니다. */
+function AdminTablePadRows({ colSpan, padCount }: { colSpan: number; padCount: number }) {
+  if (padCount <= 0) return null;
+  return (
+    <>
+      {Array.from({ length: padCount }, (_, i) => (
+        <tr
+          key={`admin-table-pad-${i}`}
+          aria-hidden
+          className="pointer-events-none select-none border-b border-white/5"
+        >
+          {Array.from({ length: colSpan }, (_, j) => (
+            <td key={j} className="h-[3.5rem] bg-[#141414]/40 px-4 py-0 align-middle" />
+          ))}
+        </tr>
+      ))}
+    </>
+  );
+}
+
 function AdminPagination({
   page,
   totalPages,
@@ -242,7 +262,7 @@ function AdminPagination({
   if (totalPages <= 1) return null;
   const pages = getVisiblePageNumbers(page, totalPages);
   return (
-    <div className="mt-4 flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+    <div className="flex flex-wrap items-center justify-center gap-1.5 pt-4 sm:gap-2">
       <button
         type="button"
         onClick={() => onPageChange(Math.max(1, page - 1))}
@@ -280,10 +300,10 @@ function AdminPagination({
 function DetailBlock({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div>
-      <div className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/45 sm:text-[11px]">
+      <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/50 sm:text-sm">
         {label}
       </div>
-      <div className="mt-1.5 text-sm leading-relaxed text-white/90">{children}</div>
+      <div className="mt-2 text-base leading-relaxed text-white sm:text-lg">{children}</div>
     </div>
   );
 }
@@ -1324,37 +1344,49 @@ export default function ManagePage() {
           {/* 데스크톱: 전체 정보 테이블 */}
           <div className="hidden sm:block">
             <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
-              <table className="min-w-full text-left text-base transition-colors duration-150">
+              <table className="w-full min-w-[1040px] table-fixed border-collapse text-left text-base transition-colors duration-150">
+                <colgroup>
+                  <col className="w-14" />
+                  <col className="w-[11%]" />
+                  <col className="w-[11%]" />
+                  <col className="w-[15%]" />
+                  <col className="w-[9%]" />
+                  <col className="w-[8%]" />
+                  <col className="w-[7%]" />
+                  <col className="w-[7%]" />
+                  <col className="w-[20%]" />
+                  <col className="w-[88px]" />
+                </colgroup>
                 <thead className="bg-[#1C1C1C] transition-colors duration-150">
                   <tr>
-                    <th className="w-12 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       No.
                     </th>
-                    <th className="min-w-[4rem] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Name
                     </th>
-                    <th className="px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Phone
                     </th>
-                    <th className="min-w-[100px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Church
                     </th>
-                    <th className="px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Role
                     </th>
-                    <th className="w-24 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Attendees
                     </th>
-                    <th className="min-w-[120px] max-w-[200px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Sessions
                     </th>
-                    <th className="min-w-[100px] max-w-[140px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Note
                     </th>
-                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Received
                     </th>
-                    <th className="min-w-[4.5rem] whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:text-sm">
                       Delete
                     </th>
                   </tr>
@@ -1364,42 +1396,50 @@ export default function ManagePage() {
                     <tr
                       key={row.id}
                       onClick={() => setDetailModal({ kind: "conference", row })}
-                      className="cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
+                      className="h-[3.5rem] cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
                     >
-                      <td className="px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden px-3 py-2 align-middle font-mono text-sm text-white/70 sm:px-4">
                         {row.index}
                       </td>
-                      <td className="max-w-[8rem] truncate px-4 py-3 align-middle text-base font-medium text-white/90 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle text-sm font-medium text-white/90 sm:px-4 sm:text-base">
                         {row.parsed.name || row.name || "-"}
                       </td>
-                      <td className="max-w-[7rem] truncate px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle font-mono text-sm text-white/70 sm:px-4">
                         {row.parsed.phone || "-"}
                       </td>
-                      <td className="max-w-[10rem] truncate px-4 py-3 align-middle text-sm font-medium text-white/90 transition-colors duration-150" title={row.parsed.church || ""}>
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle text-sm font-medium text-white/90 sm:px-4">
                         {row.parsed.church || "-"}
                       </td>
-                      <td className="max-w-[6rem] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle text-sm text-white/90 sm:px-4">
                         {row.parsed.role || "-"}
                       </td>
-                      <td className="max-w-[5rem] truncate px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle font-mono text-sm text-white/70 sm:px-4">
                         {row.parsed.expectedText
                           ? row.parsed.expectedText
                           : row.attendees > 0
                             ? `${row.attendees}명`
                             : "-"}
                       </td>
-                      <td className="max-w-[200px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.parsed.sessions || ""}>
-                        {row.parsed.sessions || "-"}
+                      <td className="overflow-hidden px-3 py-2 align-middle text-sm text-white/90 sm:px-4">
+                        {row.parsed.sessions ? (
+                          <span className="text-white/55 underline decoration-white/25 underline-offset-2">내용 보기</span>
+                        ) : (
+                          "—"
+                        )}
                       </td>
-                      <td className="max-w-[140px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.parsed.extraMessage || ""}>
-                        {row.parsed.extraMessage || "-"}
+                      <td className="overflow-hidden px-3 py-2 align-middle text-sm text-white/90 sm:px-4">
+                        {row.parsed.extraMessage ? (
+                          <span className="text-white/55 underline decoration-white/25 underline-offset-2">내용 보기</span>
+                        ) : (
+                          "—"
+                        )}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle font-mono text-xs text-white/70 sm:px-4 sm:text-sm">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
-                      <td className="px-4 py-3 align-middle transition-colors duration-150">
+                      <td className="px-2 py-2 align-middle sm:px-3">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1407,13 +1447,14 @@ export default function ManagePage() {
                             handleDelete([row.id]);
                           }}
                           disabled={deleting}
-                          className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
+                          className="inline-flex w-full max-w-[4.5rem] shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-2 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                         >
                           삭제
                         </button>
                       </td>
                     </tr>
                   ))}
+                  <AdminTablePadRows colSpan={10} padCount={PAGE_SIZE - currentPaginatedRows.length} />
                 </tbody>
               </table>
             </div>
@@ -1471,22 +1512,29 @@ export default function ManagePage() {
           </div>
           <div className="hidden sm:block">
             <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
-              <table className="min-w-full text-left text-base transition-colors duration-150">
+              <table className="w-full min-w-[720px] table-fixed border-collapse text-left text-base transition-colors duration-150">
+                <colgroup>
+                  <col className="w-14" />
+                  <col className="w-[18%]" />
+                  <col className="w-[46%]" />
+                  <col className="w-[26%]" />
+                  <col className="w-[88px]" />
+                </colgroup>
                 <thead className="bg-[#1C1C1C] transition-colors duration-150">
                   <tr>
-                    <th className="w-12 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       No.
                     </th>
-                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Name
                     </th>
-                    <th className="min-w-[160px] max-w-[240px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Message
                     </th>
-                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Received
                     </th>
-                    <th className="min-w-[4.5rem] whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:text-sm">
                       Delete
                     </th>
                   </tr>
@@ -1496,19 +1544,23 @@ export default function ManagePage() {
                     <tr
                       key={row.id}
                       onClick={() => setDetailModal({ kind: "inquiry", row })}
-                      className="cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
+                      className="h-[3.5rem] cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
                     >
-                      <td className="px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">{row.index}</td>
-                      <td className="max-w-[10rem] truncate px-4 py-3 align-middle text-base font-medium text-white/90 transition-colors duration-150">{row.name || "-"}</td>
-                      <td className="max-w-[240px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.message || ""}>
-                        {row.message || "-"}
+                      <td className="overflow-hidden px-3 py-2 align-middle font-mono text-sm text-white/70 sm:px-4">{row.index}</td>
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle text-sm font-medium text-white/90 sm:px-4 sm:text-base">{row.name || "-"}</td>
+                      <td className="overflow-hidden px-3 py-2 align-middle text-sm text-white/90 sm:px-4">
+                        {row.message ? (
+                          <span className="text-white/55 underline decoration-white/25 underline-offset-2">내용 보기</span>
+                        ) : (
+                          "—"
+                        )}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle font-mono text-xs text-white/70 sm:px-4 sm:text-sm">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
-                      <td className="px-4 py-3 align-middle transition-colors duration-150">
+                      <td className="px-2 py-2 align-middle sm:px-3">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1516,13 +1568,14 @@ export default function ManagePage() {
                             handleDelete([row.id]);
                           }}
                           disabled={deleting}
-                          className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
+                          className="inline-flex w-full max-w-[4.5rem] shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-2 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                         >
                           삭제
                         </button>
                       </td>
                     </tr>
                   ))}
+                  <AdminTablePadRows colSpan={5} padCount={PAGE_SIZE - paginatedInquiry.length} />
                 </tbody>
               </table>
             </div>
@@ -1599,28 +1652,37 @@ export default function ManagePage() {
           {/* 데스크톱: 사역 신청 테이블 */}
           <div className="hidden sm:block">
             <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
-              <table className="min-w-full text-left text-base transition-colors duration-150">
+              <table className="w-full min-w-[900px] table-fixed border-collapse text-left text-base transition-colors duration-150">
+                <colgroup>
+                  <col className="w-14" />
+                  <col className="w-[14%]" />
+                  <col className="w-[12%]" />
+                  <col className="w-[16%]" />
+                  <col className="w-[30%]" />
+                  <col className="w-[20%]" />
+                  <col className="w-[88px]" />
+                </colgroup>
                 <thead className="bg-[#1C1C1C] transition-colors duration-150">
                   <tr>
-                    <th className="w-12 px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       No.
                     </th>
-                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Name
                     </th>
-                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Phone
                     </th>
-                    <th className="min-w-[100px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Church
                     </th>
-                    <th className="min-w-[120px] max-w-[200px] px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Request
                     </th>
-                    <th className="whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Received
                     </th>
-                    <th className="min-w-[4.5rem] whitespace-nowrap px-4 py-3 text-xs sm:text-sm font-medium uppercase tracking-[0.15em] text-white/40">
+                    <th className="px-2 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:text-sm">
                       Delete
                     </th>
                   </tr>
@@ -1636,25 +1698,29 @@ export default function ManagePage() {
                           displayIndex: (page - 1) * PAGE_SIZE + idx + 1,
                         })
                       }
-                      className="cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
+                      className="h-[3.5rem] cursor-pointer border-b border-white/5 transition-colors duration-150 hover:bg-[#1C1C1C]"
                     >
-                      <td className="px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">{(page - 1) * PAGE_SIZE + idx + 1}</td>
-                      <td className="max-w-[8rem] truncate px-4 py-3 align-middle text-base font-medium text-white/90 transition-colors duration-150">{row.name || "-"}</td>
-                      <td className="max-w-[7rem] truncate px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden px-3 py-2 align-middle font-mono text-sm text-white/70 sm:px-4">{(page - 1) * PAGE_SIZE + idx + 1}</td>
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle text-sm font-medium text-white/90 sm:px-4 sm:text-base">{row.name || "-"}</td>
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle font-mono text-sm text-white/70 sm:px-4">
                         {row.phone || "-"}
                       </td>
-                      <td className="max-w-[8rem] truncate px-4 py-3 align-middle text-sm font-medium text-white/90 transition-colors duration-150" title={row.church || ""}>
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle text-sm font-medium text-white/90 sm:px-4">
                         {row.church || "-"}
                       </td>
-                      <td className="max-w-[200px] truncate px-4 py-3 align-middle text-sm text-white/90 transition-colors duration-150" title={row.reason || ""}>
-                        {row.reason || "-"}
+                      <td className="overflow-hidden px-3 py-2 align-middle text-sm text-white/90 sm:px-4">
+                        {row.reason ? (
+                          <span className="text-white/55 underline decoration-white/25 underline-offset-2">내용 보기</span>
+                        ) : (
+                          "—"
+                        )}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 align-middle font-mono text-sm text-white/70 transition-colors duration-150">
+                      <td className="overflow-hidden truncate px-3 py-2 align-middle font-mono text-xs text-white/70 sm:px-4 sm:text-sm">
                         {row.created_at
                           ? new Date(row.created_at).toLocaleString("ko-KR")
                           : "-"}
                       </td>
-                      <td className="px-4 py-3 align-middle transition-colors duration-150">
+                      <td className="px-2 py-2 align-middle sm:px-3">
                         <button
                           type="button"
                           onClick={(e) => {
@@ -1662,13 +1728,14 @@ export default function ManagePage() {
                             handleDelete([row.id]);
                           }}
                           disabled={deleting}
-                          className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-3 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
+                          className="inline-flex w-full max-w-[4.5rem] shrink-0 items-center justify-center whitespace-nowrap rounded border border-white/15 bg-transparent px-2 py-1.5 text-xs font-medium text-white/70 transition-colors duration-150 hover:border-[#EF4444] hover:text-[#EF4444] disabled:opacity-50"
                         >
                           삭제
                         </button>
                       </td>
                     </tr>
                   ))}
+                  <AdminTablePadRows colSpan={7} padCount={PAGE_SIZE - paginatedApplications.length} />
                 </tbody>
               </table>
             </div>
@@ -1686,11 +1753,11 @@ export default function ManagePage() {
           onClick={() => setDetailModal(null)}
         >
           <div
-            className="max-h-[88vh] w-full max-w-lg overflow-y-auto rounded-xl border border-white/10 bg-[#141414] shadow-2xl sm:max-w-xl"
+            className="max-h-[88vh] w-full max-w-lg overflow-y-auto rounded-xl border border-white/10 bg-[#141414] shadow-2xl sm:max-w-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 z-[1] flex items-start justify-between gap-4 border-b border-white/10 bg-[#141414] px-5 py-4">
-              <h2 id="admin-detail-title" className="text-lg font-semibold tracking-tight text-white">
+              <h2 id="admin-detail-title" className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
                 {detailModal.kind === "conference" && "Registration"}
                 {detailModal.kind === "inquiry" && "Inquiry"}
                 {detailModal.kind === "application" && "Ministry application"}
@@ -1698,12 +1765,12 @@ export default function ManagePage() {
               <button
                 type="button"
                 onClick={() => setDetailModal(null)}
-                className="shrink-0 rounded border border-white/15 px-2.5 py-1 text-xs font-medium uppercase tracking-wider text-white/70 transition-colors hover:border-white/35 hover:text-white"
+                className="shrink-0 rounded border border-white/15 px-3 py-1.5 text-sm font-medium uppercase tracking-wider text-white/70 transition-colors hover:border-white/35 hover:text-white"
               >
                 Close
               </button>
             </div>
-            <div className="space-y-4 px-5 py-5 text-sm text-white/85">
+            <div className="space-y-5 px-5 py-6 text-base text-white/90 sm:space-y-6 sm:px-6 sm:py-7 sm:text-lg">
               {detailModal.kind === "conference" && (
                 <>
                   <DetailBlock label="No.">{detailModal.row.index}</DetailBlock>
@@ -1727,7 +1794,7 @@ export default function ManagePage() {
                   </DetailBlock>
                   {detailModal.row.message && (
                     <DetailBlock label="Raw message">
-                      <span className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-white/70">
+                      <span className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-white/80 sm:text-base">
                         {detailModal.row.message}
                       </span>
                     </DetailBlock>
