@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useIntroSplash } from '@/hooks/useIntroSplash';
 
@@ -32,7 +33,21 @@ export function Splash() {
         />
       </div>
 
-      <div className="block md:hidden absolute inset-0">
+      {/* 모바일만: 줌 + -90° 회전 (가로형 스플래시 에셋용) */}
+      <motion.div
+        initial={{ scale: 1, rotate: 0 }}
+        animate={{ scale: 2.05, rotate: -90 }}
+        transition={{
+          duration: 2.1,
+          ease: [0.32, 0.72, 0, 1],
+        }}
+        className="block md:hidden absolute inset-0"
+        style={{
+          transformOrigin: 'center center',
+          willChange: 'transform',
+          backfaceVisibility: 'hidden',
+        }}
+      >
         <Image
           src={SPLASH_MOBILE}
           alt="SHIR BAND"
@@ -41,7 +56,7 @@ export function Splash() {
           sizes="100vw"
           className="object-contain"
         />
-      </div>
+      </motion.div>
 
       {showSkip && (
         <button

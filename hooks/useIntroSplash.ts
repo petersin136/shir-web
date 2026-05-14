@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 
 const SPLASH_SESSION_KEY = 'shir-splash-shown';
-/** 모션 없음 — 데스크탑·모바일 동일한 정적 표시 시간 후 자동 종료 */
-const SPLASH_DURATION_MS = 1500;
+/** 정적 표시(또는 모바일 모션) 후 자동 종료 */
+const SPLASH_DURATION_MS = 3000;
 
 export function useIntroSplash() {
   const [showSplash, setShowSplash] = useState(false);
