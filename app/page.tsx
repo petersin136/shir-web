@@ -1,4 +1,5 @@
 // app/page.tsx - Home page component
+import type { CSSProperties } from "react";
 import { Splash } from "@/components/Splash";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import Image from "next/image";
@@ -38,6 +39,13 @@ const SHIRBAND_WHITE_LOGO =
 const DISPLAY_FONT_STACK =
   '"Impact", "Bebas Neue", "Anton", "Helvetica Neue Condensed Bold", "Arial Narrow Bold", sans-serif';
 
+/** PC(md+) 구간 사이 세로 여백 — 디자인 스펙: 140px, #FFFFFF (Tailwind 이슈 방지용 인라인) */
+const PC_SECTION_GAP: CSSProperties = {
+  height: 140,
+  minHeight: 140,
+  backgroundColor: "#ffffff",
+};
+
 export default function HomePage() {
   return (
     <>
@@ -50,7 +58,7 @@ export default function HomePage() {
         mobileObjectClass="object-top"
         className="fixed -z-10 left-0 right-0 top-12 bottom-0 sm:top-14 md:inset-0"
       />
-      <main className="relative">
+      <main className="relative z-10">
         {/* HERO 섹션 - 한 화면 가득 (배경만 노출) */}
         <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)]" />
 
@@ -69,7 +77,7 @@ export default function HomePage() {
               className="min-h-[200px] w-full min-w-0 bg-black md:min-h-0"
               aria-hidden
             />
-            {/* 우측: 순백, 텍스트 블록은 열 안에서 가로·세로 중앙에 가깝게(본문은 좌측 정렬) */}
+            {/* 우측: 순백 */}
             <div
               className={`split-about-panel ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex min-h-[min(90vw,420px)] w-full min-w-0 flex-col items-center justify-center bg-white px-6 py-14 sm:px-8 sm:py-16 md:min-h-0 md:px-6 md:py-10 lg:px-10`}
             >
@@ -77,6 +85,13 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* PC: 구간 사이 세로 여백 140px #FFFFFF */}
+        <div
+          className="hidden w-full shrink-0 md:block"
+          style={PC_SECTION_GAP}
+          aria-hidden
+        />
 
         {/* SPLIT 2: 지그재그 — 흰 45% | 검 55% (첫 스플릿과 동일 비중, 좌우만 반전) */}
         <section className="relative w-full bg-white">
@@ -95,6 +110,12 @@ export default function HomePage() {
           </div>
         </section>
 
+        <div
+          className="hidden w-full shrink-0 md:block"
+          style={PC_SECTION_GAP}
+          aria-hidden
+        />
+
         {/* SPLIT 3: 지그재그 — 검 55% | 흰 45% (첫 스플릿과 동일 비중·행 높이) */}
         <section className="relative w-full bg-white">
           <div
@@ -111,6 +132,12 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        <div
+          className="hidden w-full shrink-0 md:block"
+          style={PC_SECTION_GAP}
+          aria-hidden
+        />
 
       {/* 히어로 아래 섹션 - ETERNAL PRAISE 배너 */}
       <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)] bg-black overflow-hidden">
