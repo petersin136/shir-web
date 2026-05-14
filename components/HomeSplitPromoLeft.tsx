@@ -41,23 +41,23 @@ export function HomeSplitPromoLeft() {
           </filter>
         </defs>
       </svg>
-      <div className="w-full max-w-[min(28rem,calc(100%-1rem))] text-left md:max-w-[min(32rem,88%)]">
+      <div className="w-full max-w-full text-left md:max-w-[min(28rem,calc(100%-1rem))] lg:max-w-[min(32rem,88%)]">
         <p
-          className="split-about-latin text-[15px] font-medium uppercase tracking-[0.12em] md:text-[17px]"
+          className="split-about-latin text-[11px] font-medium uppercase tracking-[0.1em] md:text-[17px] md:tracking-[0.12em]"
           style={{ color: PROMO_TAG_COLOR }}
         >
           [PROMO 05.18-05.24]
         </p>
-        <p className="split-about-latin mt-1.5 text-[14px] font-medium uppercase tracking-[0.32em] text-black md:mt-2 md:text-[16px]">
+        <p className="split-about-latin mt-1 text-[10px] font-medium uppercase tracking-[0.22em] text-black md:mt-2 md:text-[16px] md:tracking-[0.32em]">
           2026 ONENESS WORSHIP
         </p>
         <h2
-          className="split-about-headline split-about-headline-heavy mt-[clamp(3rem,10vw,5.5rem)] max-w-full text-[clamp(2.35rem,5.8vw,3.15rem)] uppercase leading-none tracking-[0.04em] text-black md:mt-[clamp(4.25rem,14vw,7.5rem)] md:text-[clamp(2.75rem,min(3.45vw+1.2rem),3.5rem)] md:whitespace-nowrap"
+          className="split-about-headline split-about-headline-heavy mt-4 max-w-full text-[clamp(1.15rem,3.6vw,1.45rem)] uppercase leading-[0.95] tracking-[0.03em] text-black md:mt-[clamp(4.25rem,14vw,7.5rem)] md:text-[clamp(2.75rem,min(3.45vw+1.2rem),3.5rem)] md:leading-none md:tracking-[0.04em] md:whitespace-nowrap"
           style={{ filter: `url(#${grainFilterId})` }}
         >
           ONE HEART, ONE SOUND
         </h2>
-        <div className="split-about-body mt-8 max-w-[36rem] text-[17px] font-normal leading-[1.55] text-black md:mt-10 md:text-[20px] md:leading-[1.58]">
+        <div className="split-about-body mt-5 max-w-[36rem] text-[12px] font-normal leading-[1.5] text-black md:mt-10 md:text-[20px] md:leading-[1.58]">
           <p>
             하나 된 마음과 하나의 소리로 높여드리는 시간,
             <br />
@@ -72,9 +72,9 @@ export function HomeSplitPromoLeft() {
         <Link
           href="/ticket"
           aria-label="티켓 페이지로 이동"
-          className="split-about-latin group mt-14 inline-flex flex-col items-start gap-1.5 text-black md:mt-16"
+          className="split-about-latin group mt-8 inline-flex flex-col items-start gap-1 text-black md:mt-16 md:gap-1.5"
         >
-          <span className="text-[12px] font-semibold uppercase tracking-[0.28em] transition-opacity group-hover:opacity-55 md:text-[13px]">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.22em] transition-opacity group-hover:opacity-55 md:text-[13px] md:tracking-[0.28em]">
             GET TICKET
           </span>
           <svg

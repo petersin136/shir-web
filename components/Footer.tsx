@@ -56,52 +56,56 @@ export default function Footer() {
   return (
     <>
       <footer className="bg-black text-white">
-        <div className="mx-auto w-full max-w-[1920px] px-6 pb-10 pt-10 sm:px-10 sm:pb-12 sm:pt-11 md:px-14 md:pb-14 md:pt-12 lg:pl-24 lg:pr-20">
+        <div className="mx-auto w-full max-w-[1920px] px-4 pb-7 pt-7 sm:px-8 sm:pb-9 sm:pt-8 md:px-14 md:pb-14 md:pt-12 lg:pl-24 lg:pr-20">
           <nav
-            className={`${footerNav.className} flex flex-wrap items-baseline gap-x-7 gap-y-3 text-[17px] uppercase leading-none tracking-[0.14em] sm:gap-x-10 sm:text-[18px] md:gap-x-12 md:text-[19px]`}
+            className={`${footerNav.className} flex flex-col gap-y-2 text-[10px] uppercase leading-tight tracking-[0.08em] sm:gap-y-2.5 sm:text-[11px] md:flex-row md:flex-wrap md:items-baseline md:gap-x-12 md:gap-y-3 md:text-[19px] md:leading-none md:tracking-[0.14em]`}
             aria-label="푸터 링크"
           >
-            <button
-              type="button"
-              onClick={() => setShowPrivacyModal(true)}
-              className={`${navLinkClass} border-0 bg-transparent p-0 text-left uppercase`}
-            >
-              Privacy Policy
-            </button>
-            <Link href="/terms-and-conditions" className={navLinkClass}>
-              Terms and Conditions
-            </Link>
-            <a
-              href="https://www.youtube.com/@SHIRBAND"
-              className={navLinkClass}
-              {...externalLinkProps}
-            >
-              YouTube
-            </a>
-            <a
-              href="https://www.instagram.com/shirband.official"
-              className={navLinkClass}
-              {...externalLinkProps}
-            >
-              Instagram
-            </a>
-            <a
-              href="https://www.facebook.com/"
-              className={navLinkClass}
-              {...externalLinkProps}
-              aria-label="Facebook (공식 페이지 연결 예정)"
-            >
-              Facebook
-            </a>
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5 sm:gap-x-5 md:gap-x-12">
+              <button
+                type="button"
+                onClick={() => setShowPrivacyModal(true)}
+                className={`${navLinkClass} border-0 bg-transparent p-0 text-left uppercase`}
+              >
+                Privacy Policy
+              </button>
+              <Link href="/terms-and-conditions" className={navLinkClass}>
+                Terms and Conditions
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5 sm:gap-x-5 md:contents">
+              <a
+                href="https://www.youtube.com/@SHIRBAND"
+                className={navLinkClass}
+                {...externalLinkProps}
+              >
+                YouTube
+              </a>
+              <a
+                href="https://www.instagram.com/shirband.official"
+                className={navLinkClass}
+                {...externalLinkProps}
+              >
+                Instagram
+              </a>
+              <a
+                href="https://www.facebook.com/"
+                className={navLinkClass}
+                {...externalLinkProps}
+                aria-label="Facebook (공식 페이지 연결 예정)"
+              >
+                Facebook
+              </a>
+            </div>
           </nav>
 
-          <p className="mt-4 max-w-4xl text-[12px] font-normal leading-[1.65] text-white sm:mt-5 sm:text-[13px] md:mt-5 md:text-[13px]">
+          <p className="mt-3 max-w-4xl text-[10px] font-normal leading-relaxed text-white/90 sm:mt-4 sm:text-[11px] md:mt-5 md:text-[13px] md:leading-[1.65]">
             쉬르밴드 | 이메일: shirband2025@gmail.com | 주소: 경기도 포천시 중앙로105번길 23-2 |
             등록번호: 000-00-0000
           </p>
 
-          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
-            <p className="min-w-0 flex-1 text-[12px] font-normal uppercase tracking-[0.18em] text-white sm:text-[13px]">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5 md:mt-2 md:gap-x-6 md:gap-y-2">
+            <p className="min-w-0 flex-1 text-[9px] font-normal uppercase tracking-[0.14em] text-white/80 sm:text-[10px] md:text-[13px] md:tracking-[0.18em] md:text-white">
               © 2026 SHIRBAND. ALL RIGHTS RESERVED
             </p>
             <Link
@@ -109,9 +113,9 @@ export default function Footer() {
               prefetch={false}
               aria-label="관리자 페이지"
               title="관리자 페이지"
-              className="inline-flex size-8 shrink-0 items-center justify-center rounded-md border border-white/20 text-white/55 transition-[color,background-color,border-color] duration-200 hover:border-white/45 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/70 sm:size-9"
+              className="inline-flex size-6 shrink-0 items-center justify-center rounded border border-white/18 text-white/50 transition-[color,background-color,border-color] duration-200 hover:border-white/45 hover:bg-white/[0.06] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/70 md:size-9 md:rounded-md md:border-white/20 md:text-white/55"
             >
-              <AdminAccessIcon className="size-[15px] sm:size-4" />
+              <AdminAccessIcon className="size-[10px] md:size-4" />
             </Link>
           </div>
         </div>
