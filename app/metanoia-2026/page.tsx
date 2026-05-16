@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BackgroundVideo } from "@/components/BackgroundVideo";
+import { PageSplitLayout } from "@/components/PageSplitLayout";
 
 export default function MetanoiaPage() {
   const [loading, setLoading] = useState(false);
@@ -166,19 +166,7 @@ export default function MetanoiaPage() {
   }
 
   return (
-    <>
-      <BackgroundVideo
-        overlayOpacity={0}
-        mobileFit="contain"
-        bgColor="#000000"
-        mobileObjectClass="object-top"
-        className="fixed -z-10 left-0 right-0 top-12 bottom-0 sm:top-14 md:inset-0"
-      />
-      <div
-        className="pointer-events-none fixed -z-[9] left-0 right-0 top-12 bottom-0 bg-black/55 sm:top-14 md:inset-0"
-        aria-hidden
-      />
-      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+    <PageSplitLayout backgroundVariant="contained" mainClassName="max-w-2xl">
         {/* Header */}
         <header className="mb-14 sm:mb-16">
           <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
@@ -480,8 +468,7 @@ export default function MetanoiaPage() {
             )}
           </form>
         </section>
-      </main>
-    </>
+    </PageSplitLayout>
   );
 }
 

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { BackgroundVideo } from "@/components/BackgroundVideo";
+import { PageSplitLayout } from "@/components/PageSplitLayout";
 
 export default function InquiryPage() {
   const [loading, setLoading] = useState(false);
@@ -62,9 +62,7 @@ export default function InquiryPage() {
   }
 
   return (
-    <>
-      <BackgroundVideo overlayOpacity={0.85} />
-      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+    <PageSplitLayout mainClassName="max-w-2xl">
         <header className="mb-14 sm:mb-16">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
             Inquiry
@@ -205,8 +203,7 @@ export default function InquiryPage() {
             )}
           </form>
         </section>
-      </main>
-    </>
+    </PageSplitLayout>
   );
 }
 

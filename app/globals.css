@@ -202,3 +202,162 @@
 .admin-console-root header.admin-console-mono * {
   font-family: var(--font-admin-mono), "JetBrains Mono", ui-monospace, monospace !important;
 }
+
+/* GNB 서브페이지 — 밝은 레이어 위 검정 텍스트 (굵기·대비 보강) */
+.page-content-light {
+  color: #0a0a0a;
+  font-weight: 400;
+}
+
+.page-content-light .font-light {
+  font-weight: 400 !important;
+}
+
+.page-content-light h1,
+.page-content-light h2,
+.page-content-light h3 {
+  color: #0a0a0a !important;
+  font-weight: 500 !important;
+}
+
+.page-content-light p,
+.page-content-light li,
+.page-content-light blockquote {
+  font-weight: 400 !important;
+}
+
+.page-content-light cite {
+  font-weight: 500 !important;
+}
+
+.page-content-light .text-white {
+  color: #0a0a0a !important;
+}
+
+.page-content-light [class*="text-white/30"],
+.page-content-light [class*="text-white/35"] {
+  color: #a3a3a3 !important;
+}
+
+.page-content-light [class*="text-white/40"],
+.page-content-light [class*="text-white/45"] {
+  color: #525252 !important;
+}
+
+.page-content-light [class*="text-white/50"],
+.page-content-light [class*="text-white/55"] {
+  color: #404040 !important;
+}
+
+.page-content-light [class*="text-white/60"],
+.page-content-light [class*="text-white/65"],
+.page-content-light [class*="text-white/70"] {
+  color: #262626 !important;
+}
+
+.page-content-light [class*="text-white/80"],
+.page-content-light [class*="text-white/85"],
+.page-content-light [class*="text-white/90"] {
+  color: #0a0a0a !important;
+}
+
+.page-content-light
+  [class*="bg-white/"]:not(input):not(textarea):not(select):not(button) {
+  background-color: #e5e5e5 !important;
+}
+
+.page-content-light [class*="border-white/"] {
+  border-color: #d4d4d4 !important;
+}
+
+.page-content-light [class*="divide-white/"] > :not([hidden]) ~ :not([hidden]) {
+  border-color: #e5e5e5 !important;
+}
+
+.page-content-light input,
+.page-content-light textarea,
+.page-content-light select {
+  color: #171717 !important;
+  caret-color: #171717;
+  -webkit-text-fill-color: #171717 !important;
+  background-color: transparent !important;
+}
+
+.page-content-light input:-webkit-autofill,
+.page-content-light input:-webkit-autofill:hover,
+.page-content-light input:-webkit-autofill:focus,
+.page-content-light textarea:-webkit-autofill,
+.page-content-light textarea:-webkit-autofill:hover,
+.page-content-light textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: #171717 !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.page-content-light input::placeholder,
+.page-content-light textarea::placeholder {
+  color: #737373 !important;
+}
+
+.page-content-light input[type="checkbox"] {
+  accent-color: #171717;
+}
+
+.page-content-light [class*="text-emerald-300"] {
+  color: #047857 !important;
+}
+
+.page-content-light [class*="text-red-300"] {
+  color: #b91c1c !important;
+}
+
+.page-content-light .text-blue-300 {
+  color: #1d4ed8 !important;
+}
+
+.page-content-light [class*="bg-blue-950"] {
+  background-color: #eff6ff !important;
+}
+
+.page-content-light button[class*="border-white/55"] {
+  border-color: #404040 !important;
+  color: #171717 !important;
+}
+
+.page-content-light button[class*="border-white/55"]:hover:not(:disabled) {
+  background-color: #171717 !important;
+  color: #fafafa !important;
+  border-color: #171717 !important;
+}
+
+.page-content-light .group:hover[class*="bg-white/[0.02]"] {
+  background-color: #f5f5f5 !important;
+}
+
+.page-content-light a.underline {
+  color: #404040;
+}
+
+.page-content-light a.underline:hover {
+  color: #0a0a0a;
+}
+
+/* 티켓 CTA — 밝은 패널에서도 대비 유지 */
+.page-content-light .ticket-cta-primary {
+  background-color: #171717 !important;
+  color: #fafafa !important;
+  border-color: #171717 !important;
+}
+
+.page-content-light .ticket-cta-primary:hover:not(:disabled) {
+  background-color: #404040 !important;
+  color: #ffffff !important;
+  border-color: #404040 !important;
+}
+
+.page-content-light .ticket-cta-primary:disabled {
+  background-color: #a3a3a3 !important;
+  border-color: #a3a3a3 !important;
+  color: #fafafa !important;
+}

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { BackgroundVideo } from "@/components/BackgroundVideo";
+import { PageSplitLayout } from "@/components/PageSplitLayout";
 
 export default function OnenessPage() {
   const [loading, setLoading] = useState(false);
@@ -78,19 +78,7 @@ ONENESS Worship 2026 신청 정보:
   }
 
   return (
-    <>
-      <BackgroundVideo
-        overlayOpacity={0}
-        mobileFit="contain"
-        bgColor="#000000"
-        mobileObjectClass="object-top"
-        className="fixed -z-10 left-0 right-0 top-12 bottom-0 sm:top-14 md:inset-0"
-      />
-      <div
-        className="pointer-events-none fixed -z-[9] left-0 right-0 top-12 bottom-0 bg-black/55 sm:top-14 md:inset-0"
-        aria-hidden
-      />
-      <main className="relative max-w-2xl px-6 sm:px-10 md:pl-24 md:pr-16 lg:pl-48 lg:pr-20 py-20 sm:py-24 md:py-28 min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]">
+    <PageSplitLayout backgroundVariant="contained" mainClassName="max-w-2xl">
         {/* Header */}
         <header className="mb-14 sm:mb-16">
           <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
@@ -144,9 +132,9 @@ ONENESS Worship 2026 신청 정보:
                 Date
               </dt>
               <dd className="text-white/85 font-light leading-relaxed">
-                2026년 6월 27일 1시
+                2026년 6월 27일(토) 13:00 — 21:00
                 <span className="block text-white/50 text-sm mt-0.5">
-                  7시간 연속 예배
+                  8시간 연속 예배
                 </span>
               </dd>
             </div>
@@ -155,7 +143,7 @@ ONENESS Worship 2026 신청 정보:
                 Venue
               </dt>
               <dd className="text-white/85 font-light leading-relaxed">
-                장소 미정
+                포천중앙침례교회
               </dd>
             </div>
             <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 sm:gap-x-6">
@@ -182,7 +170,7 @@ ONENESS Worship 2026 신청 정보:
           </dl>
 
           <p className="text-[14px] sm:text-[15px] text-white/55 font-light mt-6 leading-relaxed">
-            6월 27일 1시부터 7시간 연속 자율 금식집회입니다.
+            6월 27일 13시부터 21시까지 8시간 연속 예배입니다.
           </p>
         </section>
 
@@ -308,8 +296,7 @@ ONENESS Worship 2026 신청 정보:
             )}
           </form>
         </section>
-      </main>
-    </>
+    </PageSplitLayout>
   );
 }
 
