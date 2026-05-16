@@ -42,7 +42,7 @@ export const TICKET_EVENTS: TicketEvent[] = [
     earlyBird: {
       start: new Date("2026-05-18T11:00:00+09:00"),
       end: new Date("2026-05-24T12:00:00+09:00"),
-      label: "2026년 5월 18일(월) 11:00 — 5월 24일(일) 12:00",
+      label: "2026년 5월 18일(월) 11:00부터 — 5월 24일(일) 12:00까지",
     },
     refundDeadlineLabel: "2026년 6월 20일(토) 23:59까지",
     registrationOpen: true,
@@ -110,7 +110,7 @@ export function getTicketPricing(
       tierLabel: "얼리버드",
       isEarlyBird: true,
       phase: "early-bird",
-      currentPriceDetail: `${formatKrw(event.earlyBirdPrice)} / 1매 (${label}까지)`,
+      currentPriceDetail: `${formatKrw(event.earlyBirdPrice)} / 1매 (${label})`,
     };
   }
 

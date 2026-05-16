@@ -300,6 +300,53 @@ function TicketSteps({ current }: { current: number }) {
   );
 }
 
+function EventSelect({
+  value,
+  onChange,
+}: {
+  value: TicketEventId;
+  onChange: (id: TicketEventId) => void;
+}) {
+  return (
+    <div className="relative border-b border-neutral-900/45 focus-within:border-neutral-900 transition-colors">
+        <select
+          id="event-select"
+          aria-label="집회 선택"
+          value={value}
+          onChange={(e) => onChange(e.target.value as TicketEventId)}
+          className={`${selectClass} border-0 pr-8`}
+        >
+          {TICKET_EVENTS.map((ev) => (
+            <option key={ev.id} value={ev.id} className="bg-neutral-900 text-white">
+              {ev.name}
+              {!ev.registrationOpen ? " — 마감" : ""}
+            </option>
+          ))}
+        </select>
+        <span
+          className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-neutral-900/55"
+          aria-hidden
+        >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 14 14"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M3 5.5L7 9.5L11 5.5"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+    </div>
+  );
+}
+
 function StepInfo({
   eventId,
   event,
@@ -321,20 +368,7 @@ function StepInfo({
         집회 선택
       </h2>
 
-      <select
-        id="event-select"
-        aria-label="집회 선택"
-        value={eventId}
-        onChange={(e) => onEventChange(e.target.value as TicketEventId)}
-        className={selectClass}
-      >
-          {TICKET_EVENTS.map((ev) => (
-            <option key={ev.id} value={ev.id} className="bg-neutral-900 text-white">
-              {ev.name}
-              {!ev.registrationOpen ? " — 마감" : ""}
-            </option>
-          ))}
-      </select>
+      <EventSelect value={eventId} onChange={onEventChange} />
 
       {event && (
         <>
@@ -634,7 +668,7 @@ function EventCard({
   pricing: TicketPricing;
 }) {
   const venueDirectionsUrl = event.showPocheonVenueGuide
-    ? POCHEON_CENTRAL_BAPTIST_VENUE.directionUrls.car
+    ? POCHEON_CENTRAL_BAPTIST_VENUE.directionsUrl
     : null;
 
   const rows: {
@@ -681,15 +715,17 @@ function EventCard({
       label: "입금 계좌",
       content: (
         <div className="space-y-2">
-          <p className="tabular-nums">
-            {TICKET_BANK.bankName} {TICKET_BANK.accountNumber}
-          </p>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <p className="tabular-nums">
+              {TICKET_BANK.bankName} {TICKET_BANK.accountNumber}
+            </p>
+            <CopyTextButton
+              text={ticketBankCopyText()}
+              label="복사하기"
+              className="!px-3 !py-1.5 !text-[10px]"
+            />
+          </div>
           <p className="text-[13px] text-white/55">담당자 · {TICKET_BANK.manager}</p>
-          <CopyTextButton
-            text={ticketBankCopyText()}
-            label="복사하기"
-            className="!px-3 !py-1.5 !text-[10px]"
-          />
         </div>
       ),
     },
@@ -765,7 +801,7 @@ function CurrentPricingBlock({
       {pricing.phase === "before-early-bird" && event.earlyBird && (
         <>
           <p className="text-[13px] text-white/55 pt-1">
-            {event.earlyBird.label}부터 얼리버드 적용
+            {event.earlyBird.label} 얼리버드 적용
           </p>
           <p className="text-[13px] text-white/55">
             이후 정가 {formatKrw(event.regularPrice)} / 1매
@@ -773,7 +809,7 @@ function CurrentPricingBlock({
         </>
       )}
       {pricing.phase === "early-bird" && event.earlyBird && (
-        <p className="text-[13px] text-white/55 pt-1">{event.earlyBird.label}까지</p>
+        <p className="text-[13px] text-white/55 pt-1">{event.earlyBird.label}</p>
       )}
       {pricing.phase === "regular" && (
         <p className="text-[13px] text-white/55 pt-1">얼리버드 종료 · 정가 적용</p>
