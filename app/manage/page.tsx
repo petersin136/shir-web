@@ -119,8 +119,37 @@ function parseContactMessage(message: string | null): ParsedContact {
       result.phone = clean.replace("연락처:", "").trim();
       continue;
     }
-    if (clean.startsWith("소속교회:")) {
-      result.church = clean.replace("소속교회:", "").trim();
+    if (clean.startsWith("소속교회:") || clean.startsWith("소속 교회:")) {
+      result.church = clean.replace(/^소속\s*교회:\s*/, "").trim();
+      continue;
+    }
+    if (clean.startsWith("티켓 매수:")) {
+      const text = clean.replace("티켓 매수:", "").trim();
+      result.expectedText = text;
+      const numMatch = text.match(/(\d+)/);
+      if (numMatch) {
+        const count = Number(numMatch[1]);
+        if (!Number.isNaN(count) && count > 0) result.expectedCount = count;
+      }
+      continue;
+    }
+    if (clean.startsWith("요금 구분:")) {
+      result.role = clean.replace("요금 구분:", "").trim();
+      continue;
+    }
+    if (
+      clean.startsWith("신청번호:") ||
+      clean.startsWith("집회:") ||
+      clean.startsWith("일시:") ||
+      clean.startsWith("장소:") ||
+      clean.startsWith("1매 단가:") ||
+      clean.startsWith("입금 금액:") ||
+      clean.startsWith("입금 계좌:") ||
+      clean.startsWith("담당자:") ||
+      clean.startsWith("입금자명:") ||
+      clean.includes("[SHIR BAND 티켓 신청]")
+    ) {
+      extraMessageLines.push(clean);
       continue;
     }
     if (clean.startsWith("직책/역할:")) {

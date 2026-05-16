@@ -129,7 +129,7 @@ export default function TicketPage() {
       "",
       `이름: ${name}`,
       `연락처: ${phone}`,
-      `소속 교회: ${church}`,
+      `소속교회: ${church}`,
       "",
       `입금 계좌: ${TICKET_BANK.bankName} ${TICKET_BANK.accountNumber}`,
       `담당자: ${TICKET_BANK.manager}`,
@@ -176,7 +176,9 @@ export default function TicketPage() {
         </h1>
         <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
         <p className="text-[16px] text-white/70 font-light leading-loose mt-6 sm:mt-8">
-          SHIR BAND 집회 참가 티켓을 신청합니다. 계좌 입금 후 참가가 확정됩니다.
+          <span className="text-white/90">{event?.name ?? "집회"}</span> 참가 티켓을
+          신청합니다. 입금이 확인되면 정식 예약이 확정되며, 확인 후 문자로
+          안내드립니다.
         </p>
       </header>
 
@@ -241,8 +243,9 @@ export default function TicketPage() {
         />
       )}
 
-      {step === 4 && (
+      {step === 4 && event && (
         <StepComplete
+          event={event}
           orderId={orderId}
           onReset={resetFlow}
         />
@@ -318,21 +321,20 @@ function StepInfo({
         집회 선택
       </h2>
 
-      <Field label="집회" htmlFor="event-select">
-        <select
-          id="event-select"
-          value={eventId}
-          onChange={(e) => onEventChange(e.target.value as TicketEventId)}
-          className={selectClass}
-        >
+      <select
+        id="event-select"
+        aria-label="집회 선택"
+        value={eventId}
+        onChange={(e) => onEventChange(e.target.value as TicketEventId)}
+        className={selectClass}
+      >
           {TICKET_EVENTS.map((ev) => (
             <option key={ev.id} value={ev.id} className="bg-neutral-900 text-white">
               {ev.name}
               {!ev.registrationOpen ? " — 마감" : ""}
             </option>
           ))}
-        </select>
-      </Field>
+      </select>
 
       {event && (
         <>
@@ -525,8 +527,8 @@ function StepPayment({
       </div>
       <ul className="space-y-3 text-[14px] text-white/70 font-light leading-relaxed">
         <InfoLine>
-          입금자명은 반드시 <strong className="font-normal text-white/90">{form.name}</strong>
-          으로 입금해 주세요.
+          입금자명은 신청 시 입력하신 <strong className="font-normal text-white/90">신청자 본인 이름</strong>
+          과 동일하게 입금해 주세요.
         </InfoLine>
         <InfoLine>입금 마감 · 신청 후 3일 이내</InfoLine>
         <InfoLine>미입금 시 신청은 자동 취소될 수 있습니다.</InfoLine>
@@ -555,7 +557,7 @@ function StepPayment({
           이전
         </SecondaryButton>
         <PrimaryButton type="button" onClick={onComplete}>
-          입금 완료
+          안내 확인
         </PrimaryButton>
       </div>
     </section>
@@ -563,9 +565,11 @@ function StepPayment({
 }
 
 function StepComplete({
+  event,
   orderId,
   onReset,
 }: {
+  event: TicketEvent;
   orderId: string;
   onReset: () => void;
 }) {
@@ -576,10 +580,13 @@ function StepComplete({
       </div>
       <div>
         <h2 className="text-xl sm:text-2xl font-light tracking-wider text-white mb-3">
-          신청이 접수되었습니다
+          신청 정보가 접수되었습니다
         </h2>
         <p className="text-[16px] text-white/70 font-light leading-loose">
-          입금 확인 후 연락처로 안내드립니다.
+          아직 예약이 확정된 상태는 아닙니다.{" "}
+          <span className="text-white/90">{event.name}</span> 참가를 위해 안내드린
+          계좌로 입금해 주시면, 입금 확인 후 정식 예약 확정 안내를 문자로 보내
+          드립니다.
         </p>
       </div>
 
@@ -593,7 +600,10 @@ function StepComplete({
       <ul className="space-y-3 text-[14px] text-white/65 font-light leading-relaxed text-left">
         <InfoLine>입금 확인까지 1~2일이 소요될 수 있습니다.</InfoLine>
         <InfoLine>
-          입금 후에도 안내가 없으면{" "}
+          입금 확인 문자를 받기 전까지는 예약이 확정되지 않습니다.
+        </InfoLine>
+        <InfoLine>
+          입금 후에도 안내 문자가 없으면{" "}
           <Link
             href="/inquiry"
             className="underline underline-offset-2 hover:text-white/90"
@@ -632,8 +642,6 @@ function EventCard({
     content: React.ReactNode;
     highlight?: boolean;
   }[] = [
-    { label: "집회명", content: event.name },
-    { label: "구분", content: event.eyebrow },
     {
       label: "일시",
       content: (

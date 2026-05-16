@@ -59,29 +59,51 @@ function validateSupabaseServiceRoleKey(key: string): { ok: true } | { ok: false
   return { ok: true };
 }
 
+/** service_role 우선, 없으면 예전처럼 anon 키로 시도 (Vercel에 service 키 없을 때) */
+function resolveAdminSupabaseKey():
+  | { ok: true; key: string; usingAnonFallback: boolean }
+  | { ok: false; message: string } {
+  const serviceKeyRaw = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey =
+    typeof serviceKeyRaw === "string" ? serviceKeyRaw.trim() : "";
+
+  if (serviceKey) {
+    const keyCheck = validateSupabaseServiceRoleKey(serviceKey);
+    if (!keyCheck.ok) {
+      return { ok: false, message: keyCheck.message };
+    }
+    return { ok: true, key: serviceKey, usingAnonFallback: false };
+  }
+
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
+  if (anonKey) {
+    return { ok: true, key: anonKey, usingAnonFallback: true };
+  }
+
+  return {
+    ok: false,
+    message:
+      "서버 환경 변수 NEXT_PUBLIC_SUPABASE_URL 및 (SUPABASE_SERVICE_ROLE_KEY 또는 NEXT_PUBLIC_SUPABASE_ANON_KEY)가 필요합니다. " +
+      "삭제가 안 되면 Supabase → Settings → API → service_role secret을 SUPABASE_SERVICE_ROLE_KEY로 Vercel에 추가하세요.",
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-    const serviceKeyRaw = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    const serviceKey = typeof serviceKeyRaw === "string" ? serviceKeyRaw.trim() : "";
-
-    if (!url || !serviceKey) {
+    if (!url) {
       return NextResponse.json(
-        {
-          error:
-            "서버 환경 변수 NEXT_PUBLIC_SUPABASE_URL 및 SUPABASE_SERVICE_ROLE_KEY가 필요합니다. " +
-            "Supabase → Project Settings → API → **service_role** secret을 복사해 .env.local(로컬) 또는 Vercel 환경 변수에 넣으세요. (anon 키로는 삭제할 수 없습니다.)",
-        },
+        { error: "NEXT_PUBLIC_SUPABASE_URL 환경 변수가 필요합니다." },
         { status: 503 },
       );
     }
 
-    const keyCheck = validateSupabaseServiceRoleKey(serviceKey);
-    if (!keyCheck.ok) {
-      return NextResponse.json({ error: keyCheck.message }, { status: 503 });
+    const keyResult = resolveAdminSupabaseKey();
+    if (!keyResult.ok) {
+      return NextResponse.json({ error: keyResult.message }, { status: 503 });
     }
 
-    const supabase = createClient(url, serviceKey, {
+    const supabase = createClient(url, keyResult.key, {
       auth: { persistSession: false, autoRefreshToken: false },
     });
 
@@ -141,10 +163,13 @@ export async function POST(request: NextRequest) {
 
     const deletedCount = data?.length ?? 0;
     if (deletedCount === 0) {
+      const anonHint = keyResult.usingAnonFallback
+        ? " Vercel에 SUPABASE_SERVICE_ROLE_KEY(service_role)를 설정한 뒤 재배포해 주세요. anon 키만으로는 DB 정책(RLS) 때문에 삭제가 막힐 수 있습니다."
+        : "";
       return NextResponse.json(
         {
           error:
-            "삭제된 행이 없습니다. id가 DB와 일치하는지, 테이블 이름이 올바른지 확인하세요.",
+            "삭제된 행이 없습니다. id가 DB와 일치하는지 확인하세요." + anonHint,
         },
         { status: 400 }
       );
