@@ -24,7 +24,7 @@ export type TicketEvent = {
 };
 
 export const ONENESS_2026_POSTER_URL =
-  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/KakaoTalk_Photo_2026-05-17-00-09-35.jpeg";
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/KakaoTalk_Photo_2026-05-18-00-14-29.jpeg";
 
 export const TICKET_PAYMENT_DEADLINE_NOTICE =
   "계좌 입금 후 신청이 확정됩니다. 신청 후 3일 이내 미입금 시 자동 취소될 수 있으니 유의해 주세요.";
@@ -127,6 +127,58 @@ function formatKrw(amount: number) {
   return `${amount.toLocaleString("ko-KR")}원`;
 }
 
+const KST = "Asia/Seoul";
+
+/** 모바일 티켓 표 — 얼리버드 예매 기간 (레퍼런스 줄바꿈) */
+export function formatEarlyBirdPeriodMobileLines(start: Date, end: Date) {
+  const line = (d: Date, suffix: "부터" | "까지") => {
+    const parts = new Intl.DateTimeFormat("ko-KR", {
+      timeZone: KST,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(d);
+
+    const pick = (type: Intl.DateTimeFormatPartTypes) =>
+      parts.find((p) => p.type === type)?.value ?? "";
+
+    const year = pick("year");
+    const month = pick("month");
+    const day = pick("day");
+    const weekday = pick("weekday");
+    const hour = pick("hour");
+    const minute = pick("minute");
+
+    return `${year}. ${month}. ${day}. ${weekday} ${hour}:${minute}${suffix}`;
+  };
+
+  return {
+    startLine: line(start, "부터"),
+    endLine: line(end, "까지"),
+  };
+}
+
+/** 모바일 티켓 표 — 현재 요금 (레퍼런스: 얼리버드 특가 / 성인 N원) */
+export function getMobileCurrentFeeDisplay(
+  event: TicketEvent,
+  pricing: TicketPricing,
+) {
+  if (pricing.phase === "regular") {
+    return {
+      tier: "정가",
+      price: `${formatKrw(pricing.unitPrice)} / 1매`,
+    };
+  }
+  return {
+    tier: "얼리버드 특가",
+    price: `성인 ${formatKrw(pricing.unitPrice)} / 1매`,
+  };
+}
+
 export const TICKET_BANK = {
   bankName: process.env.NEXT_PUBLIC_TICKET_BANK_NAME ?? "IBK기업은행",
   accountNumber:
@@ -139,3 +191,19 @@ export function ticketBankCopyText() {
 }
 
 export const TICKET_CONTACT_EMAIL = "shirband2025@gmail.com";
+
+/** 모바일 2단계 환불 기한 — `2026. 06. 20. 토 23:59까지` */
+export function formatRefundDeadlineMobile(refundDeadlineLabel: string) {
+  const match = refundDeadlineLabel.match(
+    /^(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일\(([^)]+)\)\s*(.+)$/,
+  );
+  if (!match) return refundDeadlineLabel;
+  const [, y, m, d, dow, rest] = match;
+  return `${y}. ${m.padStart(2, "0")}. ${d.padStart(2, "0")}. ${dow} ${rest}`;
+}
+
+/** 모바일 2단계 폼 상단 집회명 */
+export function getMobileTicketFormTitle(event: TicketEvent) {
+  if (event.id === "oneness-2026") return "2026 ONENESS WORSHIP EARLY BIRD";
+  return event.name.toUpperCase();
+}

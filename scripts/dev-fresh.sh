@@ -4,6 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+echo "[shir-web] dev: 기존 Next 종료 + .next 캐시 삭제 (500 Internal Server Error 예방)"
+
 if command -v lsof >/dev/null 2>&1; then
   for port in 3000 3001; do
     pids="$(lsof -ti:"$port" -sTCP:LISTEN 2>/dev/null || true)"
@@ -14,7 +16,7 @@ if command -v lsof >/dev/null 2>&1; then
   done
 fi
 
-rm -rf .next
+rm -rf .next node_modules/.cache
 
 if [[ ! -f "${ROOT}/node_modules/next/dist/bin/next" ]] && [[ ! -x "${ROOT}/node_modules/.bin/next" ]]; then
   echo "next가 없습니다. 프로젝트 루트에서 npm install 을 먼저 실행하세요." >&2

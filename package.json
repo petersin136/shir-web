@@ -1,8 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:turbo": "next dev --turbopack",
+    "dev": "bash scripts/dev-fresh.sh",
+    "dev:fast": "next dev",
+    "dev:turbo": "bash scripts/dev-fresh.sh --turbopack",
     "dev:clean": "rm -rf .next && next dev",
     "dev:fresh": "bash scripts/dev-fresh.sh",
     "build": "next build",

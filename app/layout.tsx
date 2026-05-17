@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Serif_KR, EB_Garamond } from "next/font/google";
+import { Bebas_Neue, EB_Garamond, Noto_Serif_KR } from "next/font/google";
 import "./globals.css";
 import { AppChrome } from "@/components/AppChrome";
 
@@ -15,6 +15,14 @@ const ebGaramond = EB_Garamond({
   weight: ["400", "500"],
   style: ["normal", "italic"],
   variable: "--font-serif-en",
+  display: "swap",
+});
+
+/** 모바일 티켓 TICKET / 집회명 — 레퍼런스 condensed bold */
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-ticket-display",
   display: "swap",
 });
 
@@ -90,7 +98,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning className={`${notoSerifKr.variable} ${ebGaramond.variable}`}>
+    <html
+      lang="ko"
+      suppressHydrationWarning
+      className={`${notoSerifKr.variable} ${ebGaramond.variable} ${bebasNeue.variable}`}
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />

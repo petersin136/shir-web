@@ -54,6 +54,16 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: false,
   },
   poweredByHeader: false,
+  /**
+   * dev HMR 중 .next/server 청크(331.js 등) 누락 → /ticket 500 방지.
+   * 느려질 수 있으나 MODULE_NOT_FOUND 재현을 크게 줄임.
+   */
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

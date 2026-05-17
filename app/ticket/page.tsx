@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PageSplitLayout } from "@/components/PageSplitLayout";
 import { TicketEventPoster } from "@/components/TicketEventPoster";
+import { TicketMobileView } from "@/components/ticket/TicketMobileView";
 import { TicketBankInfo } from "@/components/TicketBankInfo";
 import { CopyTextButton } from "@/components/CopyTextButton";
 import { POCHEON_CENTRAL_BAPTIST_VENUE } from "@/lib/pocheon-venue";
@@ -164,8 +164,39 @@ export default function TicketPage() {
   }
 
   return (
-    <PageSplitLayout mainClassName="max-w-none md:max-w-[40rem] lg:max-w-none">
-      <div className="flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-10">
+    <PageSplitLayout
+      ticketMobileShell
+      mainClassName="max-w-none md:max-w-[40rem] lg:max-w-none"
+    >
+      <TicketMobileView
+        step={step}
+        event={event}
+        pricing={pricing}
+        eventId={eventId}
+        form={form}
+        privacyAgreed={privacyAgreed}
+        loading={loading}
+        error={err}
+        orderId={orderId}
+        totalAmount={totalAmount}
+        onEventChange={setEventId}
+        onFormChange={setForm}
+        onPrivacyChange={setPrivacyAgreed}
+        onStep1Next={() => {
+          if (!event?.registrationOpen) {
+            setErr(event?.registrationNote ?? "신청이 마감된 집회입니다.");
+            return;
+          }
+          goStep(2);
+        }}
+        onStep2Back={() => goStep(1)}
+        onStep2Next={submitApplication}
+        onStep3Back={() => goStep(2)}
+        onStep3Complete={() => goStep(4)}
+        onReset={resetFlow}
+      />
+
+      <div className="hidden md:flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-10">
         <div className="flex-1 min-w-0 lg:max-w-[36rem]">
       <header className="mb-10 sm:mb-12">
         <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
@@ -184,20 +215,6 @@ export default function TicketPage() {
 
       <TicketSteps current={step} />
 
-      {event?.posterUrl && (
-        <div className="lg:hidden mb-10 max-w-[220px] mx-auto border border-white/20 shadow-[0_8px_24px_rgba(0,0,0,0.1)]">
-          <div className="relative aspect-[3/4] w-full">
-            <Image
-              src={event.posterUrl}
-              alt={`${event.name} poster`}
-              fill
-              sizes="220px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-      )}
 
       {step === 1 && (
         <StepInfo

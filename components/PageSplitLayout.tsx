@@ -8,6 +8,8 @@ type PageSplitLayoutProps = {
   className?: string;
   /** 본문 영역 추가 클래스 (max-w, 패딩 등) */
   mainClassName?: string;
+  /** 티켓 페이지 모바일 — 흰 배경·전체 너비 (데스크탑 레이아웃 유지) */
+  ticketMobileShell?: boolean;
 };
 
 const HERO_BG_CLASS =
@@ -41,7 +43,10 @@ export function PageSplitLayout({
   backgroundVariant = "default",
   className,
   mainClassName,
+  ticketMobileShell = false,
 }: PageSplitLayoutProps) {
+  const hideMobileHero = ticketMobileShell;
+
   return (
     <>
       {backgroundVariant === "contained" ? (
@@ -50,10 +55,13 @@ export function PageSplitLayout({
           mobileFit="contain"
           bgColor="#000000"
           mobileObjectClass="object-top"
-          className={HERO_BG_CLASS}
+          className={cn(HERO_BG_CLASS, hideMobileHero && "max-md:hidden")}
         />
       ) : (
-        <BackgroundVideo overlayOpacity={0} className={HERO_BG_CLASS} />
+        <BackgroundVideo
+          overlayOpacity={0}
+          className={cn(HERO_BG_CLASS, hideMobileHero && "max-md:hidden")}
+        />
       )}
 
       <div
@@ -63,15 +71,25 @@ export function PageSplitLayout({
         )}
       >
         <div
-          className="pointer-events-none absolute inset-0 top-[38vh] bg-white/65 md:left-1/2 md:top-0"
+          className={cn(
+            "pointer-events-none absolute inset-0 top-[38vh] bg-white/65 md:left-1/2 md:top-0",
+            hideMobileHero && "max-md:hidden",
+          )}
           aria-hidden
         />
 
         {/* 오른쪽 절반 컬럼 — 본문은 컬럼 안 왼쪽(중앙선 쪽) 정렬 */}
-        <div className="relative md:ml-auto md:w-1/2 md:min-h-[inherit]">
+        <div
+          className={cn(
+            "relative md:ml-auto md:w-1/2 md:min-h-[inherit]",
+            hideMobileHero && "max-md:w-full",
+          )}
+        >
           <main
             className={cn(
               "page-content-light relative w-full px-6 py-16 sm:px-10 sm:py-20 md:pl-10 md:pr-14 md:py-24 lg:pl-12 lg:pr-16 lg:py-28 max-md:pt-[38vh]",
+              hideMobileHero &&
+                "max-md:px-0 max-md:pt-0 max-md:pb-0 max-md:bg-white max-md:min-h-[calc(100dvh-3rem)] max-md:overflow-x-hidden",
               mainClassName,
             )}
           >
