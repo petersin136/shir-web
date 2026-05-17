@@ -1,15 +1,12 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { useIntroSplash } from '@/hooks/useIntroSplash';
 
-const SPLASH_PC =
-  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_PC%20BG.jpg';
+/** PC 스플래시 — SHIRBAND_SPLASH SCREEN_PC BG.psd 에서 export (웹은 JPG) */
+const SPLASH_PC = '/assets/SHIRBAND_SPLASH_SCREEN_PC_BG.jpg';
 const SPLASH_MOBILE =
-  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_M%20BG.jpg';
-
-const SPLASH_BG = '#E63329';
+  'https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLASH%20SCREEN_M%20BG%20(1).jpg';
 
 export function Splash() {
   const { showSplash, showSkip, endSplash } = useIntroSplash();
@@ -18,8 +15,7 @@ export function Splash() {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] cursor-pointer overflow-hidden"
-      style={{ backgroundColor: SPLASH_BG }}
+      className="fixed inset-0 z-[9999] cursor-pointer overflow-hidden bg-[#0a0a0a] md:bg-[#E63329]"
       onClick={endSplash}
     >
       <div className="hidden md:block absolute inset-0">
@@ -33,30 +29,16 @@ export function Splash() {
         />
       </div>
 
-      {/* 모바일만: 줌 + -90° 회전 (가로형 스플래시 에셋용) */}
-      <motion.div
-        initial={{ scale: 1, rotate: 0 }}
-        animate={{ scale: 2.05, rotate: -90 }}
-        transition={{
-          duration: 2.1,
-          ease: [0.32, 0.72, 0, 1],
-        }}
-        className="block md:hidden absolute inset-0"
-        style={{
-          transformOrigin: 'center center',
-          willChange: 'transform',
-          backfaceVisibility: 'hidden',
-        }}
-      >
+      <div className="block md:hidden absolute inset-0">
         <Image
           src={SPLASH_MOBILE}
           alt="SHIR BAND"
           fill
           priority
           sizes="100vw"
-          className="object-contain"
+          className="object-cover object-center"
         />
-      </motion.div>
+      </div>
 
       {showSkip && (
         <button

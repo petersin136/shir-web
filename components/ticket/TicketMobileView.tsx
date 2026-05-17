@@ -3,14 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { POCHEON_CENTRAL_BAPTIST_VENUE } from "@/lib/pocheon-venue";
+import { TicketEventSummary } from "@/components/ticket/ticket-flow-ui";
 import {
   TICKET_BANK,
   TICKET_CONTACT_EMAIL,
-  formatEarlyBirdPeriodMobileLines,
   formatRefundDeadlineMobile,
-  getMobileCurrentFeeDisplay,
   getMobileTicketFormTitle,
+  getTicketStep1Title,
   ticketBankCopyText,
   type TicketEvent,
   type TicketPricing,
@@ -35,12 +34,6 @@ function formatPhone(value: string) {
   if (v.length <= 7) return `${v.slice(0, 3)}-${v.slice(3)}`;
   return `${v.slice(0, 3)}-${v.slice(3, 7)}-${v.slice(7, 11)}`;
 }
-
-const mobileLabelClass =
-  "text-left text-[12px] text-neutral-500 font-light leading-none pt-0.5 shrink-0 whitespace-nowrap";
-
-const mobileValueClass =
-  "text-left text-[14px] leading-[1.45] text-neutral-900 font-normal";
 
 function MobileFixedCTA({
   label,
@@ -70,107 +63,6 @@ function MobileFixedCTA({
         {label}
       </button>
     </div>
-  );
-}
-
-function MobileEventSummary({
-  event,
-  pricing,
-}: {
-  event: TicketEvent;
-  pricing: TicketPricing;
-}) {
-  const fee = getMobileCurrentFeeDisplay(event, pricing);
-  const earlyBirdLines = event.earlyBird
-    ? formatEarlyBirdPeriodMobileLines(event.earlyBird.start, event.earlyBird.end)
-    : null;
-
-  const rows: {
-    label: string;
-    labelClass?: string;
-    content: React.ReactNode;
-  }[] = [
-    {
-      label: "일시",
-      content: (
-        <div className={cn(mobileValueClass, "space-y-0.5")}>
-          <p>{event.date}</p>
-          {event.dateNote && (
-            <p className="text-[12px] text-neutral-600">{event.dateNote}</p>
-          )}
-        </div>
-      ),
-    },
-    {
-      label: "장소",
-      content: (
-        <div className={cn(mobileValueClass, "space-y-0.5")}>
-          <p>{event.venue}</p>
-          {event.showPocheonVenueGuide && (
-            <p className="text-[12px] text-neutral-600 leading-relaxed">
-              {POCHEON_CENTRAL_BAPTIST_VENUE.address}
-            </p>
-          )}
-        </div>
-      ),
-    },
-    {
-      label: "참가비",
-      content: (
-        <div className={cn(mobileValueClass, "space-y-0.5")}>
-          <p>성인 {formatKrw(event.regularPrice)} / 1매</p>
-          <p>얼리버드 {formatKrw(event.earlyBirdPrice)} / 1매</p>
-        </div>
-      ),
-    },
-    {
-      label: "현재 요금",
-      content: (
-        <div className={cn(mobileValueClass, "space-y-0.5")}>
-          <p>{fee.tier}</p>
-          <p>{fee.price}</p>
-        </div>
-      ),
-    },
-    ...(earlyBirdLines
-      ? [
-          {
-            label: "얼리버드 예매 기간",
-            labelClass: mobileLabelClass,
-            content: (
-              <div className={cn(mobileValueClass, "space-y-0.5")}>
-                <p>{earlyBirdLines.startLine}</p>
-                <p>{earlyBirdLines.endLine}</p>
-              </div>
-            ),
-          },
-        ]
-      : []),
-    {
-      label: "입금계좌",
-      content: (
-        <div className={cn(mobileValueClass, "space-y-0.5")}>
-          <p>{TICKET_BANK.bankName}</p>
-          <p className="tabular-nums">
-            {TICKET_BANK.accountNumber} {TICKET_BANK.manager}
-          </p>
-        </div>
-      ),
-    },
-  ];
-
-  return (
-    <dl className="border-t border-neutral-300">
-      {rows.map((row) => (
-        <div
-          key={row.label}
-          className="grid grid-cols-[6.75rem_1fr] gap-x-3 gap-y-1 py-3 border-b border-neutral-300 items-start"
-        >
-          <dt className={row.labelClass ?? mobileLabelClass}>{row.label}</dt>
-          <dd className="min-w-0">{row.content}</dd>
-        </div>
-      ))}
-    </dl>
   );
 }
 
@@ -397,7 +289,7 @@ function MobileTicketCopyAccountButton({
       onClick={handleCopy}
       className="ticket-mobile-copy-btn mt-2 block w-[8.75rem] py-2 text-center text-[12px] font-medium tracking-[0.02em]"
     >
-      {copied ? "복사됨" : "계좌 복사하기"}
+      {copied ? "복사 완료" : "계좌 복사하기"}
     </button>
   );
 }
@@ -881,9 +773,9 @@ export function TicketMobileView({
         {showSummary && (
           <>
             <h2 className="mt-5 mb-3 text-[20px] font-extrabold leading-snug tracking-tight text-neutral-900 uppercase">
-              {event.name}
+              {getTicketStep1Title(event)}
             </h2>
-            <MobileEventSummary event={event} pricing={pricing} />
+            <TicketEventSummary event={event} pricing={pricing} />
           </>
         )}
 

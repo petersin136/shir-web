@@ -2,15 +2,26 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { POCHEON_CENTRAL_BAPTIST_VENUE } from "@/lib/pocheon-venue";
 import {
   TICKET_BANK,
   TICKET_CONTACT_EMAIL,
+  formatEarlyBirdPeriodMobileLines,
   formatRefundDeadlineMobile,
+  getMobileCurrentFeeDisplay,
   getMobileTicketFormTitle,
+  getTicketStep1Title,
   ticketBankCopyText,
   type TicketEvent,
+  type TicketPricing,
 } from "@/lib/ticket-events";
 import { cn } from "@/lib/utils";
+
+const summaryLabelClass =
+  "text-left text-[12px] text-neutral-500 font-light leading-none pt-0.5 shrink-0 whitespace-nowrap md:text-[13px]";
+
+const summaryValueClass =
+  "text-left text-[14px] leading-[1.45] text-neutral-900 font-normal md:text-[15px]";
 
 export function formatKrw(amount: number) {
   return `${amount.toLocaleString("ko-KR")}원`;
@@ -31,6 +42,142 @@ export const ticketFormSelectClass =
 
 export function TicketHeadline() {
   return <h1 className="ticket-mobile-headline">TICKET</h1>;
+}
+
+export function TicketEventSummary({
+  event,
+  pricing,
+}: {
+  event: TicketEvent;
+  pricing: TicketPricing;
+}) {
+  const fee = getMobileCurrentFeeDisplay(event, pricing);
+  const earlyBirdLines = event.earlyBird
+    ? formatEarlyBirdPeriodMobileLines(event.earlyBird.start, event.earlyBird.end)
+    : null;
+
+  const rows: {
+    label: string;
+    content: React.ReactNode;
+  }[] = [
+    {
+      label: "일시",
+      content: (
+        <div className={cn(summaryValueClass, "space-y-0.5")}>
+          <p>{event.date}</p>
+          {event.dateNote && (
+            <p className="text-[12px] text-neutral-600 md:text-[13px]">{event.dateNote}</p>
+          )}
+        </div>
+      ),
+    },
+    {
+      label: "장소",
+      content: (
+        <div className={cn(summaryValueClass, "space-y-0.5")}>
+          <p>{event.venue}</p>
+          {event.showPocheonVenueGuide && (
+            <p className="text-[12px] text-neutral-600 leading-relaxed md:text-[13px]">
+              {POCHEON_CENTRAL_BAPTIST_VENUE.address}
+            </p>
+          )}
+        </div>
+      ),
+    },
+    {
+      label: "참가비",
+      content: (
+        <div className={cn(summaryValueClass, "space-y-0.5")}>
+          <p>성인 {formatKrw(event.regularPrice)} / 1매</p>
+          {event.studentPrice != null && (
+            <p>초·중·고 {formatKrw(event.studentPrice)} / 1매</p>
+          )}
+        </div>
+      ),
+    },
+    {
+      label: "현재 요금",
+      content: (
+        <div className={cn(summaryValueClass, "space-y-0.5")}>
+          <p>{fee.tier}</p>
+          <p>{fee.price}</p>
+        </div>
+      ),
+    },
+    ...(earlyBirdLines
+      ? [
+          {
+            label: "얼리버드 예매 기간",
+            content: (
+              <div className={cn(summaryValueClass, "space-y-0.5")}>
+                <p>{earlyBirdLines.startLine}</p>
+                <p>{earlyBirdLines.endLine}</p>
+              </div>
+            ),
+          },
+        ]
+      : []),
+    {
+      label: "입금계좌",
+      content: (
+        <div className={cn(summaryValueClass, "space-y-0.5")}>
+          <p>{TICKET_BANK.bankName}</p>
+          <p className="tabular-nums">
+            {TICKET_BANK.accountNumber} {TICKET_BANK.manager}
+          </p>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <dl className="border-t border-neutral-300">
+      {rows.map((row) => (
+        <div
+          key={row.label}
+          className="grid grid-cols-[6.75rem_1fr] gap-x-3 gap-y-1 border-b border-neutral-300 items-start py-3 md:grid-cols-[7.25rem_1fr] md:gap-x-4 md:py-3.5"
+        >
+          <dt className={summaryLabelClass}>{row.label}</dt>
+          <dd className="min-w-0">{row.content}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** 1단계 신청하기 — 기본 빨강, 호버·누름 시 검정 (PC 레퍼런스) */
+export function TicketStep1ApplyCta({
+  label,
+  onClick,
+  disabled,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}) {
+  const [active, setActive] = useState(false);
+  const showBlack = active && !disabled;
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      onPointerDown={() => !disabled && setActive(true)}
+      onPointerUp={() => setActive(false)}
+      onPointerLeave={() => setActive(false)}
+      onPointerCancel={() => setActive(false)}
+      onMouseEnter={() => !disabled && setActive(true)}
+      onMouseLeave={() => setActive(false)}
+      className={cn(
+        "ticket-mobile-cta ticket-desktop-step1-cta w-full py-4 text-[15px] font-medium tracking-[0.06em] md:py-[1.125rem] md:text-base",
+        showBlack ? "ticket-mobile-cta" : "ticket-mobile-cta-red",
+        disabled && "cursor-not-allowed opacity-45",
+      )}
+    >
+      {label}
+    </button>
+  );
 }
 
 export function TicketPaymentNotices({ event }: { event: TicketEvent }) {
@@ -271,7 +418,11 @@ export function TicketDualNav({
         onPointerCancel={clearPress}
         className={cn(
           "ticket-mobile-cta py-4 text-[15px] font-medium tracking-[0.04em] md:py-[1.125rem] md:text-base",
-          nextRed ? "ticket-mobile-cta-red" : "ticket-mobile-cta",
+          nextRed
+            ? "ticket-mobile-cta-red"
+            : nextEnabled
+              ? "ticket-mobile-cta"
+              : "ticket-mobile-cta-next-idle",
           !nextEnabled && "cursor-not-allowed",
           loading && "cursor-not-allowed",
         )}
@@ -354,4 +505,9 @@ export function TicketPrivacyConsent({
   );
 }
 
-export { TICKET_BANK, TICKET_CONTACT_EMAIL, getMobileTicketFormTitle };
+export {
+  TICKET_BANK,
+  TICKET_CONTACT_EMAIL,
+  getMobileTicketFormTitle,
+  getTicketStep1Title,
+};

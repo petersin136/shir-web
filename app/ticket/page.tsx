@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PageSplitLayout } from "@/components/PageSplitLayout";
-import { TicketEventPoster } from "@/components/TicketEventPoster";
+import { TicketDesktopStep1 } from "@/components/ticket/TicketDesktopStep1";
+import { TicketDesktopView } from "@/components/ticket/TicketDesktopView";
 import { TicketMobileView } from "@/components/ticket/TicketMobileView";
 import { TicketBankInfo } from "@/components/TicketBankInfo";
 import { CopyTextButton } from "@/components/CopyTextButton";
@@ -32,7 +33,7 @@ const inputClass =
   "w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white placeholder-white/25 font-light focus:border-white/60 focus:outline-none transition-colors";
 
 const selectClass =
-  "w-full bg-transparent border-b border-white/20 px-0 py-3 text-[16px] text-white font-light focus:border-white/60 focus:outline-none transition-colors cursor-pointer appearance-none";
+  "w-full bg-transparent border-b border-neutral-300 px-0 py-3 text-[16px] text-neutral-900 font-light focus:border-neutral-900 focus:outline-none transition-colors cursor-pointer appearance-none";
 
 type FormState = {
   name: string;
@@ -196,83 +197,39 @@ export default function TicketPage() {
         onReset={resetFlow}
       />
 
-      <div className="hidden md:flex flex-col lg:flex-row lg:items-start gap-8 lg:gap-10">
-        <div className="flex-1 min-w-0 lg:max-w-[36rem]">
-      <header className="mb-10 sm:mb-12">
-        <p className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase mb-3">
-          Registration
-        </p>
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
-          Ticket
-        </h1>
-        <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
-        <p className="text-[16px] text-white/70 font-light leading-loose mt-6 sm:mt-8">
-          <span className="text-white/90">{event?.name ?? "집회"}</span> 참가 티켓을
-          신청합니다. 입금이 확인되면 정식 예약이 확정되며, 확인 후 문자로
-          안내드립니다.
-        </p>
-      </header>
+      <div className="hidden md:block">
+        {step === 1 && event && pricing && (
+          <TicketDesktopStep1
+            event={event}
+            pricing={pricing}
+            error={err}
+            onNext={() => {
+              if (!event.registrationOpen) {
+                setErr(event.registrationNote ?? "신청이 마감된 집회입니다.");
+                return;
+              }
+              goStep(2);
+            }}
+          />
+        )}
 
-      <TicketSteps current={step} />
-
-
-      {step === 1 && (
-        <StepInfo
-          eventId={eventId}
-          event={event}
-          pricing={pricing}
-          onEventChange={setEventId}
-          onNext={() => {
-            if (!event?.registrationOpen) {
-              setErr(event?.registrationNote ?? "신청이 마감된 집회입니다.");
-              return;
-            }
-            goStep(2);
-          }}
-          error={err}
-        />
-      )}
-
-      {step === 2 && event && pricing && (
-        <StepForm
-          event={event}
-          pricing={pricing}
-          form={form}
-          privacyAgreed={privacyAgreed}
-          loading={loading}
-          error={err}
-          onFormChange={setForm}
-          onPrivacyChange={setPrivacyAgreed}
-          onBack={() => goStep(1)}
-          onNext={submitApplication}
-        />
-      )}
-
-      {step === 3 && event && pricing && (
-        <StepPayment
-          event={event}
-          pricing={pricing}
-          form={form}
-          totalAmount={totalAmount}
-          orderId={orderId}
-          onBack={() => goStep(2)}
-          onComplete={() => goStep(4)}
-        />
-      )}
-
-      {step === 4 && event && (
-        <StepComplete
-          event={event}
-          orderId={orderId}
-          onReset={resetFlow}
-        />
-      )}
-        </div>
-
-        {event?.posterUrl && (
-          <TicketEventPoster
-            src={event.posterUrl}
-            alt={`${event.name} 집회 포스터`}
+        {step >= 2 && event && pricing && (
+          <TicketDesktopView
+            step={step}
+            event={event}
+            pricing={pricing}
+            form={form}
+            privacyAgreed={privacyAgreed}
+            loading={loading}
+            error={err}
+            orderId={orderId}
+            onFormChange={setForm}
+            onPrivacyChange={setPrivacyAgreed}
+            onStep2Back={() => goStep(1)}
+            onStep2Next={submitApplication}
+            onStep3Back={() => goStep(2)}
+            onStep3Complete={() => goStep(4)}
+            onReset={resetFlow}
           />
         )}
       </div>
@@ -283,7 +240,7 @@ export default function TicketPage() {
 function TicketSteps({ current }: { current: number }) {
   return (
     <nav
-      className="mb-12 sm:mb-14 grid grid-cols-4 gap-2 border-b border-white/15 pb-8"
+      className="mb-10 sm:mb-12 grid grid-cols-4 gap-2 border-b border-neutral-300 pb-8"
       aria-label="신청 단계"
     >
       {STEPS.map(({ n, label }) => {
@@ -293,10 +250,10 @@ function TicketSteps({ current }: { current: number }) {
           <div key={n} className="text-center">
             <div
               className={[
-                "mx-auto mb-2 flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-light tracking-wider transition-colors",
+                "mx-auto mb-2 flex h-7 w-7 items-center justify-center rounded-full text-[11px] font-medium tracking-wider transition-colors",
                 done || active
                   ? "bg-neutral-900 text-white"
-                  : "border border-white/25 text-white/45",
+                  : "border border-neutral-400 text-neutral-500",
               ].join(" ")}
               aria-hidden
             >
@@ -305,7 +262,7 @@ function TicketSteps({ current }: { current: number }) {
             <span
               className={[
                 "text-[10px] sm:text-[11px] tracking-[0.12em] uppercase",
-                active ? "text-white/90 font-normal" : "text-white/45 font-light",
+                active ? "font-medium text-neutral-900" : "font-light text-neutral-500",
               ].join(" ")}
             >
               {label}
@@ -380,8 +337,8 @@ function StepInfo({
   error: string | null;
 }) {
   return (
-    <section className="space-y-8">
-      <h2 className="text-[12px] sm:text-[13px] text-white/45 tracking-[0.25em] uppercase">
+    <section className="space-y-8 max-w-xl">
+      <h2 className="text-[12px] sm:text-[13px] text-neutral-500 tracking-[0.25em] uppercase">
         집회 선택
       </h2>
 
@@ -391,14 +348,14 @@ function StepInfo({
         <>
           {pricing && <EventCard event={event} pricing={pricing} />}
           <NoticeBox>{TICKET_PAYMENT_DEADLINE_NOTICE}</NoticeBox>
-          <p className="text-[13px] sm:text-[14px] text-white/60 font-light leading-relaxed">
+          <p className="text-[13px] sm:text-[14px] text-neutral-600 font-light leading-relaxed">
             입금 확인 후, 집회 시작 7일 전(
-            <span className="text-white/75">{event.refundDeadlineLabel}</span>
+            <span className="text-neutral-800">{event.refundDeadlineLabel}</span>
             )까지 신청 취소 및 전액 환불이 가능합니다. 해당 기한 이후에는
             취소·환불이 어려우니 신청 전 일정을 확인해 주세요.
           </p>
           {event.registrationNote && (
-            <p className="text-[14px] text-white/60 font-light leading-relaxed">
+            <p className="text-[14px] text-neutral-600 font-light leading-relaxed">
               {event.registrationNote}
             </p>
           )}
@@ -406,12 +363,12 @@ function StepInfo({
       )}
 
       {error && (
-        <p className="text-red-300/90 text-[14px] tracking-wider font-light">
+        <p className="text-red-600 text-[14px] tracking-wider font-light">
           {error}
         </p>
       )}
 
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-start pt-4">
         <PrimaryButton
           type="button"
           onClick={onNext}
@@ -675,7 +632,7 @@ function StepComplete({
 }
 
 const venueLinkClass =
-  "inline-flex items-center border border-white/35 px-2.5 py-1 text-[10px] tracking-[0.15em] uppercase font-light text-white/80 hover:bg-white hover:text-black transition-all shrink-0";
+  "inline-flex items-center border border-neutral-400 px-2.5 py-1 text-[10px] tracking-[0.15em] uppercase font-light text-neutral-700 hover:bg-neutral-900 hover:text-white transition-all shrink-0";
 
 function EventCard({
   event,
@@ -699,7 +656,7 @@ function EventCard({
         <div className="space-y-1">
           <p>{event.date}</p>
           {event.dateNote && (
-            <p className="text-[13px] text-white/55">{event.dateNote}</p>
+            <p className="text-[13px] text-neutral-600">{event.dateNote}</p>
           )}
         </div>
       ),
@@ -742,7 +699,7 @@ function EventCard({
               className="!px-3 !py-1.5 !text-[10px]"
             />
           </div>
-          <p className="text-[13px] text-white/55">담당자 · {TICKET_BANK.manager}</p>
+            <p className="text-[13px] text-neutral-600">담당자 · {TICKET_BANK.manager}</p>
         </div>
       ),
     },
@@ -764,7 +721,7 @@ function EventCard({
             )}
           </div>
           {event.showPocheonVenueGuide && (
-            <p className="text-[13px] text-white/55 leading-relaxed">
+            <p className="text-[13px] text-neutral-600 leading-relaxed">
               {POCHEON_CENTRAL_BAPTIST_VENUE.address}
             </p>
           )}
@@ -779,19 +736,19 @@ function EventCard({
   ];
 
   return (
-    <dl className="border-t border-white/15">
+    <dl className="border-t border-neutral-300">
       {rows.map((row) => (
         <div
           key={row.label}
-          className="grid grid-cols-[88px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 py-4 border-b border-white/10 text-[15px] sm:text-[16px]"
+          className="grid grid-cols-[88px_1fr] sm:grid-cols-[100px_1fr] gap-x-4 py-4 border-b border-neutral-200 text-[15px] sm:text-[16px]"
         >
-          <dt className="text-white/45 font-light tracking-wider text-[12px] uppercase pt-0.5">
+          <dt className="text-neutral-500 font-light tracking-wider text-[12px] uppercase pt-0.5">
             {row.label}
           </dt>
           <dd
             className={[
               "font-light leading-relaxed",
-              row.highlight ? "text-white/90" : "text-white/80",
+              row.highlight ? "text-neutral-900" : "text-neutral-800",
             ].join(" ")}
           >
             {row.content}
@@ -811,13 +768,13 @@ function CurrentPricingBlock({
 }) {
   return (
     <div className="space-y-2.5 text-[14px] sm:text-[15px] leading-relaxed">
-      <p className="text-white/90">{pricing.tierLabel}</p>
-      <p className="text-white/85 tabular-nums">
+      <p className="text-neutral-900">{pricing.tierLabel}</p>
+      <p className="text-neutral-800 tabular-nums">
         {formatKrw(pricing.unitPrice)} / 1매
       </p>
       {pricing.phase === "before-early-bird" && event.earlyBird && (
         <>
-          <p className="text-[13px] text-white/55 pt-1">
+          <p className="text-[13px] text-neutral-600 pt-1">
             {event.earlyBird.label} 얼리버드 적용
           </p>
           <p className="text-[13px] text-white/55">
@@ -837,8 +794,8 @@ function CurrentPricingBlock({
 
 function NoticeBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="border-l border-white/30 pl-5 py-3 -mr-6 sm:-mr-10 md:-mr-14 lg:-mr-16 overflow-x-auto">
-      <p className="text-[13px] sm:text-[14px] text-white/70 font-light whitespace-nowrap min-w-max">
+    <div className="border-l border-neutral-400 pl-5 py-3 overflow-x-auto">
+      <p className="text-[13px] sm:text-[14px] text-neutral-700 font-light whitespace-nowrap min-w-max">
         {children}
       </p>
     </div>

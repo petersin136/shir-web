@@ -14,6 +14,8 @@ export type TicketEvent = {
   venue: string;
   regularPrice: number;
   earlyBirdPrice: number;
+  /** 참가비 표 — 학생(초·중·고) 정가 (없으면 표시 생략) */
+  studentPrice?: number;
   earlyBird?: { start: Date; end: Date; label: string };
   refundDeadlineLabel: string;
   registrationOpen: boolean;
@@ -34,11 +36,12 @@ export const TICKET_EVENTS: TicketEvent[] = [
     id: "oneness-2026",
     name: "ONENESS Worship 2026",
     eyebrow: "Worship",
-    date: "2026년 6월 27일(토) 13:00 — 21:00",
+    date: "2026. 06. 27. 토요일 13:00 - 21:00",
     dateNote: "8시간 연속 예배",
     venue: "포천중앙침례교회",
     regularPrice: 30_000,
     earlyBirdPrice: 20_000,
+    studentPrice: 15_000,
     earlyBird: {
       start: new Date("2026-05-18T11:00:00+09:00"),
       end: new Date("2026-05-24T12:00:00+09:00"),
@@ -200,6 +203,12 @@ export function formatRefundDeadlineMobile(refundDeadlineLabel: string) {
   if (!match) return refundDeadlineLabel;
   const [, y, m, d, dow, rest] = match;
   return `${y}. ${m.padStart(2, "0")}. ${d.padStart(2, "0")}. ${dow} ${rest}`;
+}
+
+/** 1단계·안내 표 상단 집회명 */
+export function getTicketStep1Title(event: TicketEvent) {
+  if (event.id === "oneness-2026") return "2026 ONENESS WORSHIP";
+  return event.name.toUpperCase();
 }
 
 /** 모바일 2단계 폼 상단 집회명 */

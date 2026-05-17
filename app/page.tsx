@@ -2,7 +2,7 @@
 import { Splash } from "@/components/Splash";
 import { BackgroundVideo } from "@/components/BackgroundVideo";
 import Image from "next/image";
-import { Bebas_Neue, Inter } from "next/font/google";
+import { Bebas_Neue, IBM_Plex_Mono, Inter } from "next/font/google";
 import { HomeSplitAboutRight } from "@/components/HomeSplitAboutRight";
 import { HomeSplitPromoLeft } from "@/components/HomeSplitPromoLeft";
 import { HomeSplitInvitationRight } from "@/components/HomeSplitInvitationRight";
@@ -23,6 +23,23 @@ const splitLatinFont = Inter({
   display: "swap",
 });
 
+/** About 서브타이틀 — [THE SOURCE] / WHERE THE SONG BURSTS FORTH */
+const splitSubtitleFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["500"],
+  variable: "--font-split-subtitle",
+  display: "swap",
+});
+
+const splitPanelClass = [
+  "split-about-panel",
+  splitHeadlineFont.variable,
+  splitLatinFont.variable,
+  splitSubtitleFont.variable,
+  "flex h-full min-h-0 w-full min-w-0 flex-col items-center justify-center bg-[#FAFAFA]",
+  "px-3 py-8 sm:px-5 sm:py-10 md:px-6 md:py-10 lg:px-10",
+].join(" ");
+
 const ETERNAL_PRAISE_BG_PC =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/A_cinematic_hero_banner_image_in_ultra_high_resolu-1778660492592.png";
 
@@ -32,6 +49,16 @@ const ETERNAL_PRAISE_BG_MOBILE =
 
 const SHIRBAND_WHITE_LOGO =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND%20Sub%20Logotype%2002_WHITE(1000X1000).png";
+
+/** SPLIT 레이아웃 좌·우 이미지 */
+const SPLIT_LAYOUT_IMG_1_PC =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLIT%20LAYOUT%20IMG%201_PC.jpg";
+const SPLIT_LAYOUT_IMG_2_PC =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLIT%20LAYOUT%20IMG%202_PC.jpg";
+const SPLIT_LAYOUT_IMG_3_PC =
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLIT%20LAYOUT%20IMG%203_PC.jpg";
+
+const splitImageSizes = "(max-width: 768px) 30vw, 55vw";
 
 // 데스크탑 이미지에 박혀있는 "ETERNAL PRAISE" 타이포와 동일한 인상을 내는 폰트 스택
 // (Impact / Bebas Neue / Anton 계열 — 헤비 + 컨덴스드 디스플레이)
@@ -66,14 +93,16 @@ export default function HomePage() {
           <div
             className="grid w-full grid-cols-[minmax(0,30fr)_minmax(0,70fr)] items-stretch min-h-0 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
           >
-            <div
-              className="min-h-0 w-full min-w-0 self-stretch bg-black"
-              aria-hidden
-            />
-            {/* 우측: 순백 */}
-            <div
-              className={`split-about-panel ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex h-full min-h-0 w-full min-w-0 flex-col items-center justify-center bg-white px-3 py-8 sm:px-5 sm:py-10 md:px-6 md:py-10 lg:px-10`}
-            >
+            <div className="relative min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
+              <Image
+                src={SPLIT_LAYOUT_IMG_1_PC}
+                alt=""
+                fill
+                className="object-cover object-center"
+                sizes={splitImageSizes}
+              />
+            </div>
+            <div className={splitPanelClass}>
               <HomeSplitAboutRight />
             </div>
           </div>
@@ -88,14 +117,19 @@ export default function HomePage() {
             className="grid w-full grid-cols-[minmax(0,70fr)_minmax(0,30fr)] items-stretch min-h-0 md:grid-cols-[minmax(0,45fr)_minmax(0,55fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
           >
             <div
-              className={`split-about-panel ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex h-full min-h-0 w-full min-w-0 flex-col items-center justify-center bg-white px-3 py-8 sm:px-5 sm:py-10 md:px-6 md:py-10 lg:px-10`}
+              className={splitPanelClass}
             >
               <HomeSplitPromoLeft />
             </div>
-            <div
-              className="min-h-0 w-full min-w-0 self-stretch bg-black"
-              aria-hidden
-            />
+            <div className="relative min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
+              <Image
+                src={SPLIT_LAYOUT_IMG_2_PC}
+                alt=""
+                fill
+                className="object-cover object-center"
+                sizes={splitImageSizes}
+              />
+            </div>
           </div>
         </section>
 
@@ -106,13 +140,16 @@ export default function HomePage() {
           <div
             className="grid w-full grid-cols-[minmax(0,30fr)_minmax(0,70fr)] items-stretch min-h-0 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
           >
-            <div
-              className="min-h-0 w-full min-w-0 self-stretch bg-black"
-              aria-hidden
-            />
-            <div
-              className={`split-about-panel ${splitHeadlineFont.variable} ${splitLatinFont.variable} flex h-full min-h-0 w-full min-w-0 flex-col items-center justify-center bg-white px-3 py-8 sm:px-5 sm:py-10 md:px-6 md:py-10 lg:px-10`}
-            >
+            <div className="relative min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
+              <Image
+                src={SPLIT_LAYOUT_IMG_3_PC}
+                alt=""
+                fill
+                className="object-cover object-center"
+                sizes={splitImageSizes}
+              />
+            </div>
+            <div className={splitPanelClass}>
               <HomeSplitInvitationRight />
             </div>
           </div>

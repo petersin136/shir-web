@@ -3,12 +3,13 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Space_Mono } from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 import LiveIndicator from "@/components/LiveIndicator";
 
-const footerNav = Space_Mono({
+const footerNavFont = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: "700",
+  weight: ["400", "500"],
+  variable: "--font-footer-nav",
   display: "swap",
 });
 
@@ -56,26 +57,23 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-black text-white">
+      <footer className={`bg-black text-white ${footerNavFont.variable}`}>
         <div className="mx-auto w-full max-w-[1920px] px-4 pb-7 pt-7 sm:px-8 sm:pb-9 sm:pt-8 md:px-14 md:pb-14 md:pt-12 lg:pl-24 lg:pr-20">
           <nav
-            className={`${footerNav.className} flex flex-col gap-y-2 text-[10px] uppercase leading-tight tracking-[0.08em] sm:gap-y-2.5 sm:text-[11px] md:flex-row md:flex-wrap md:items-baseline md:gap-x-12 md:gap-y-3 md:text-[19px] md:leading-none md:tracking-[0.14em]`}
+            className="footer-nav-menu flex flex-wrap items-baseline uppercase leading-none"
             aria-label="푸터 링크"
           >
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5 sm:gap-x-5 md:gap-x-12">
-              <button
-                type="button"
-                onClick={() => setShowPrivacyModal(true)}
-                className={`${navLinkClass} border-0 bg-transparent p-0 text-left uppercase`}
-              >
-                Privacy Policy
-              </button>
-              <Link href="/terms-and-conditions" className={navLinkClass}>
-                Terms and Conditions
-              </Link>
-            </div>
-            <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5 sm:gap-x-5 md:contents">
-              <a
+            <button
+              type="button"
+              onClick={() => setShowPrivacyModal(true)}
+              className={`${navLinkClass} border-0 bg-transparent p-0 text-left uppercase`}
+            >
+              Privacy Policy
+            </button>
+            <Link href="/terms-and-conditions" className={navLinkClass}>
+              Terms and Conditions
+            </Link>
+            <a
                 href="https://www.youtube.com/@SHIRBAND"
                 className={navLinkClass}
                 {...externalLinkProps}
@@ -96,8 +94,7 @@ export default function Footer() {
                 aria-label="Facebook (공식 페이지 연결 예정)"
               >
                 Facebook
-              </a>
-            </div>
+            </a>
           </nav>
 
           <p className="mt-3 max-w-4xl text-[10px] font-normal leading-relaxed text-white/90 sm:mt-4 sm:text-[11px] md:mt-5 md:text-[13px] md:leading-[1.65]">
@@ -106,8 +103,8 @@ export default function Footer() {
           </p>
 
           <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mt-2 md:gap-x-6 md:gap-y-2">
-            <p className="min-w-0 flex-1 text-[9px] font-normal uppercase tracking-[0.14em] text-white/80 sm:text-[10px] md:text-[13px] md:tracking-[0.18em] md:text-white">
-              © 2026 SHIRBAND. ALL RIGHTS RESERVED
+            <p className="footer-copyright min-w-0 flex-1 uppercase text-white">
+              <span className="footer-copyright-symbol">©</span> 2026 SHIRBAND. ALL RIGHTS RESERVED
             </p>
             <div className="flex w-full shrink-0 flex-wrap items-center justify-end gap-x-3 gap-y-1.5 sm:w-auto sm:gap-x-4 md:gap-x-5">
               <Link

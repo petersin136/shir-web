@@ -86,18 +86,69 @@
 .split-about-panel .split-about-headline {
   font-family: var(--font-split-headline), "Impact", "Arial Narrow", sans-serif !important;
 }
-/* Bebas 단일 웨이트 보완: 더 묵직하게 보이게 */
+/* Bebas Neue — 레퍼런스: 볼드 단색 (stroke 없음) */
 .split-about-panel .split-about-headline.split-about-headline-heavy {
-  -webkit-text-stroke: 0.032em #000000;
-  paint-order: stroke fill;
-  text-shadow:
-    0.02em 0 0 #000000,
-    -0.02em 0 0 #000000,
-    0 0.015em 0 #000000,
-    0 -0.015em 0 #000000;
+  font-weight: 700 !important;
+  -webkit-text-stroke: 0 transparent;
+  paint-order: normal;
+  text-shadow: none;
 }
 .split-about-panel .split-about-latin {
   font-family: var(--font-split-latin), ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* 푸터 상단 메뉴 — IBM Plex Mono (포토샵 스펙) */
+footer .footer-nav-menu,
+footer .footer-nav-menu a,
+footer .footer-nav-menu button {
+  font-family: var(--font-footer-nav), "IBM Plex Mono", monospace !important;
+  font-size: 20px !important;
+  font-weight: 450 !important;
+  letter-spacing: 0 !important;
+  -webkit-font-feature-settings: normal;
+  font-feature-settings: normal;
+}
+
+footer .footer-nav-menu {
+  gap: 4ch;
+}
+
+/* 푸터 저작권 — IBM Plex Mono, © 만 Noto Sans KR */
+footer .footer-copyright {
+  font-family: var(--font-footer-nav), "IBM Plex Mono", monospace !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.6;
+}
+
+footer .footer-copyright-symbol {
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕",
+    sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+}
+
+/* SPLIT 서브타이틀 — IBM Plex Mono (포토샵 스펙) */
+.split-about-panel .split-about-subtitle {
+  font-family: var(--font-split-subtitle), "IBM Plex Mono", monospace !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase;
+}
+
+.split-about-panel .split-about-subtitle-accent {
+  color: #e63525 !important;
+  -webkit-text-fill-color: #e63525 !important;
+}
+
+.split-about-panel .split-about-subtitles {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 .split-about-panel .split-about-body,
 .split-about-panel .split-about-body p {
@@ -562,4 +613,67 @@
   line-height: 1.55 !important;
   color: #171717 !important;
   -webkit-text-fill-color: #171717 !important;
+}
+
+/* 티켓 PC 우측 패널 — 모바일 대비 약간 큰 타이포 */
+@media (min-width: 768px) {
+  .page-content-light .ticket-desktop-panel .ticket-mobile-headline {
+    font-size: 2.375rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-subhead {
+    font-size: 1.125rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-notices {
+    font-size: 0.875rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row label,
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row .ticket-mobile-form-label,
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row .ticket-mobile-form-value,
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row input,
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row select {
+    font-size: 1rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-account-number {
+    font-size: 1rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-step4-title {
+    font-size: 1.0625rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-step4-body {
+    font-size: 1rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-privacy-title {
+    font-size: 0.9375rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-privacy-sub {
+    font-size: 0.8125rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-order-id {
+    font-size: 1rem !important;
+  }
+
+  .page-content-light .ticket-desktop-step1-title {
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.02em !important;
+    line-height: 1.25 !important;
+    color: #171717 !important;
+    text-transform: uppercase;
+  }
+}
+
+.page-content-light .ticket-desktop-step1-cta:not(:disabled):hover {
+  background-color: #171717 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
 }
