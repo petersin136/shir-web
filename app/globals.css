@@ -411,7 +411,7 @@
 /* 모바일 티켓 2단계 — 레퍼런스 타이틀 (Bebas Neue: 굵고 세로로 긴 condensed) */
 .page-content-light .ticket-mobile-headline {
   font-family: var(--font-ticket-display), "Bebas Neue", "Arial Narrow", sans-serif !important;
-  font-size: 2rem !important;
+  font-size: 2.125rem !important;
   font-weight: 400 !important;
   letter-spacing: 0.04em !important;
   line-height: 0.95 !important;
@@ -422,7 +422,7 @@
 
 .page-content-light .ticket-mobile-subhead {
   font-family: var(--font-ticket-display), "Bebas Neue", "Arial Narrow", sans-serif !important;
-  font-size: 0.9375rem !important;
+  font-size: 1.0625rem !important;
   font-weight: 400 !important;
   letter-spacing: 0.035em !important;
   line-height: 1.05 !important;
@@ -433,9 +433,9 @@
 
 .page-content-light .ticket-mobile-notices {
   font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
-  font-size: 0.6875rem !important;
+  font-size: 0.8125rem !important;
   font-weight: 500 !important;
-  line-height: 1.38 !important;
+  line-height: 1.42 !important;
   color: #1a1a1a !important;
   -webkit-text-fill-color: #1a1a1a !important;
   width: 100% !important;
@@ -466,20 +466,28 @@
   outline: none !important;
 }
 
-.page-content-light .ticket-mobile-form-row label {
-  font-size: 0.8125rem !important;
+.page-content-light .ticket-mobile-form-row label,
+.page-content-light .ticket-mobile-form-row .ticket-mobile-form-label {
+  font-size: 0.9375rem !important;
   font-weight: 500 !important;
   color: #171717 !important;
   -webkit-text-fill-color: #171717 !important;
 }
 
+.page-content-light .ticket-mobile-form-row > div:last-child {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+}
+
 .page-content-light .ticket-mobile-form-row .ticket-mobile-form-value,
 .page-content-light .ticket-mobile-form-row input,
 .page-content-light .ticket-mobile-form-row select {
-  font-size: 0.8125rem !important;
+  font-size: 0.9375rem !important;
   font-weight: 500 !important;
   color: #171717 !important;
   -webkit-text-fill-color: #171717 !important;
+  max-width: none !important;
+  width: 100% !important;
 }
 
 .page-content-light .ticket-mobile-form-row input::placeholder {
@@ -496,7 +504,7 @@
 }
 
 .page-content-light .ticket-mobile-account-number {
-  font-size: 0.8125rem !important;
+  font-size: 0.9375rem !important;
   font-weight: 700 !important;
   color: #171717 !important;
   -webkit-text-fill-color: #171717 !important;
@@ -507,16 +515,18 @@
   color: #525252 !important;
   -webkit-text-fill-color: #525252 !important;
   border: none !important;
+  font-size: 0.8125rem !important;
 }
 
 .page-content-light .ticket-mobile-step4-title {
-  font-size: 0.875rem !important;
+  font-size: 1rem !important;
   font-weight: 700 !important;
   color: #171717 !important;
   -webkit-text-fill-color: #171717 !important;
 }
 
 .page-content-light .ticket-mobile-order-id {
+  font-size: 0.9375rem !important;
   color: #e02020 !important;
   font-weight: 700 !important;
   -webkit-text-fill-color: #e02020 !important;
@@ -534,6 +544,22 @@
 }
 
 .page-content-light .ticket-mobile-privacy-sub {
+  font-size: 0.75rem !important;
   color: #737373 !important;
   -webkit-text-fill-color: #737373 !important;
+}
+
+.page-content-light .ticket-mobile-privacy-title {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #171717 !important;
+  -webkit-text-fill-color: #171717 !important;
+}
+
+.page-content-light .ticket-mobile-step4-body {
+  font-size: 0.9375rem !important;
+  font-weight: 500 !important;
+  line-height: 1.55 !important;
+  color: #171717 !important;
+  -webkit-text-fill-color: #171717 !important;
 }

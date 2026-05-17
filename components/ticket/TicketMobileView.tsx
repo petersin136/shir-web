@@ -37,10 +37,10 @@ function formatPhone(value: string) {
 }
 
 const mobileLabelClass =
-  "text-left text-[11px] text-neutral-500 font-light leading-none pt-0.5 shrink-0 whitespace-nowrap";
+  "text-left text-[12px] text-neutral-500 font-light leading-none pt-0.5 shrink-0 whitespace-nowrap";
 
 const mobileValueClass =
-  "text-left text-[13px] leading-[1.45] text-neutral-900 font-normal";
+  "text-left text-[14px] leading-[1.45] text-neutral-900 font-normal";
 
 function MobileFixedCTA({
   label,
@@ -191,10 +191,10 @@ function MobilePoster({ src, alt }: { src: string; alt: string }) {
 }
 
 const mobileFormInputClass =
-  "ticket-mobile-form-value w-full max-w-[11rem] border-0 bg-transparent text-left focus:outline-none";
+  "ticket-mobile-form-value w-full min-w-0 border-0 bg-transparent text-left focus:outline-none";
 
 const mobileFormSelectClass =
-  "ticket-mobile-form-value w-full max-w-[11rem] border-0 bg-transparent text-left focus:outline-none cursor-pointer appearance-none pr-5";
+  "ticket-mobile-form-value w-full min-w-0 border-0 bg-transparent text-left focus:outline-none cursor-pointer appearance-none pr-5";
 
 function useScrollEndCta(active: boolean) {
   const [atEnd, setAtEnd] = useState(false);
@@ -272,11 +272,11 @@ function MobileFormRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="ticket-mobile-form-row flex items-center gap-4 py-2.5">
-      <label htmlFor={htmlFor} className="w-[5.25rem] shrink-0 leading-tight">
+    <div className="ticket-mobile-form-row flex items-center gap-3 py-2.5">
+      <label htmlFor={htmlFor} className="w-[6rem] shrink-0 leading-tight">
         {label}
       </label>
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }
@@ -312,7 +312,7 @@ function MobileTicketQtySelect({
   }, [open]);
 
   return (
-    <div ref={rootRef} className="relative w-[11rem] max-w-full">
+    <div ref={rootRef} className="relative w-full min-w-0">
       <button
         type="button"
         id="m-ticket-qty"
@@ -604,10 +604,10 @@ function TicketMobileStep2({
             className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 accent-neutral-900"
           />
           <span className="min-w-0">
-            <span className="block text-[12px] font-medium leading-snug text-neutral-900">
+            <span className="ticket-mobile-privacy-title block leading-snug">
               개인정보 수집 및 이용에 동의합니다(필수)
             </span>
-            <span className="ticket-mobile-privacy-sub mt-0.5 block text-[10px] font-normal leading-relaxed">
+            <span className="ticket-mobile-privacy-sub mt-0.5 block leading-relaxed">
               <Link href="/privacy-policy">개인정보 처리방침</Link>
               에 따라 안전하게 관리됩니다.
             </span>
@@ -662,18 +662,18 @@ function TicketMobileStep3({
           </h2>
 
           <div className="ticket-mobile-form-fields border-b border-neutral-300">
-            <div className="ticket-mobile-form-row flex items-start gap-4 py-2.5">
-              <span className="w-[5.25rem] shrink-0 text-left text-[11px] text-neutral-500 font-light leading-tight pt-0.5">
+            <div className="ticket-mobile-form-row flex items-start gap-3 py-2.5">
+              <span className="ticket-mobile-form-label w-[6rem] shrink-0 pt-0.5 text-left font-light leading-tight text-neutral-500">
                 입금 계좌
               </span>
               <div className="flex min-w-0 flex-1 flex-col items-start">
-                <p className="ticket-mobile-form-value m-0 text-[13px] font-medium text-neutral-900">
+                <p className="ticket-mobile-form-value m-0 font-medium text-neutral-900">
                   {TICKET_BANK.bankName}
                 </p>
                 <p className="ticket-mobile-account-number m-0 mt-0.5 tabular-nums">
                   {TICKET_BANK.accountNumber}
                 </p>
-                <p className="ticket-mobile-form-value m-0 mt-0.5 text-[13px] font-medium text-neutral-900">
+                <p className="ticket-mobile-form-value m-0 mt-0.5 font-medium text-neutral-900">
                   예금주: {TICKET_BANK.manager}
                 </p>
                 <MobileTicketCopyAccountButton onCopied={() => setAccountCopied(true)} />
@@ -683,7 +683,7 @@ function TicketMobileStep3({
             <MobileFormRow label="입금 금액" htmlFor="m-ticket-deposit-amount">
               <p
                 id="m-ticket-deposit-amount"
-                className="ticket-mobile-form-value m-0 text-[13px] font-medium text-neutral-900"
+                className="ticket-mobile-form-value m-0 font-medium text-neutral-900"
               >
                 {form.quantity}매 / {formatKrw(depositAmount)}
               </p>
@@ -692,7 +692,7 @@ function TicketMobileStep3({
             <MobileFormRow label="문의" htmlFor="m-ticket-inquiry">
               <p
                 id="m-ticket-inquiry"
-                className="ticket-mobile-form-value m-0 break-all text-[13px] font-medium text-neutral-900"
+                className="ticket-mobile-form-value m-0 break-all font-medium text-neutral-900"
               >
                 {TICKET_CONTACT_EMAIL}
               </p>
@@ -733,16 +733,16 @@ function TicketMobileStep4({
           <p className="ticket-mobile-step4-title m-0 leading-snug">
             신청 정보가 접수되었습니다.
           </p>
-          <p className="m-0 mt-3 text-[13px] font-medium leading-[1.55] text-neutral-900">
+          <p className="ticket-mobile-step4-body m-0 mt-3">
             아직 예약이 확정된 상태는 아닙니다.
           </p>
-          <p className="m-0 text-[13px] font-medium leading-[1.55] text-neutral-900">
+          <p className="ticket-mobile-step4-body m-0">
             {event.name} 참가를 위해 안내드린 계좌로
           </p>
-          <p className="m-0 text-[13px] font-medium leading-[1.55] text-neutral-900">
+          <p className="ticket-mobile-step4-body m-0">
             입금해 주시면, 입금 확인 후 정식 예약 확정 안내를
           </p>
-          <p className="m-0 text-[13px] font-medium leading-[1.55] text-neutral-900">
+          <p className="ticket-mobile-step4-body m-0">
             문자로 보내 드립니다.
           </p>
         </div>
@@ -750,11 +750,11 @@ function TicketMobileStep4({
         <h2 className="ticket-mobile-subhead mt-8">{getMobileTicketFormTitle(event)}</h2>
 
         {orderId && (
-          <div className="ticket-mobile-form-row flex items-center gap-4 border-t border-b border-neutral-300 py-2.5">
-            <span className="w-[5.25rem] shrink-0 text-left text-[13px] font-medium leading-tight text-neutral-900">
+          <div className="ticket-mobile-form-row flex items-center gap-3 border-t border-b border-neutral-300 py-2.5">
+            <span className="ticket-mobile-form-label w-[6rem] shrink-0 text-left font-medium leading-tight text-neutral-900">
               신청번호
             </span>
-            <span className="ticket-mobile-order-id min-w-0 text-[13px] tabular-nums tracking-wide">
+            <span className="ticket-mobile-order-id min-w-0 tabular-nums tracking-wide">
               {orderId}
             </span>
           </div>
