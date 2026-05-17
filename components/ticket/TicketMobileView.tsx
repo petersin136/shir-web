@@ -828,6 +828,9 @@ export function TicketMobileView({
   onStep3Complete,
   onReset,
 }: TicketMobileViewProps) {
+  const scrollCtaActive = step === 1;
+  const { atEnd: scrolledToEnd, sentinelRef } = useScrollEndCta(scrollCtaActive);
+
   if (step === 2 && event && pricing) {
     return (
       <TicketMobileStep2
@@ -866,9 +869,6 @@ export function TicketMobileView({
   }
 
   const showSummary = step === 1 && event && pricing;
-  const scrollCtaActive = step === 1;
-  const { atEnd: scrolledToEnd, sentinelRef } = useScrollEndCta(scrollCtaActive);
-
   const ctaVariant: "black" | "red" = scrolledToEnd ? "red" : "black";
 
   return (
