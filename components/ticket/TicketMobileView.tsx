@@ -3,7 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { TicketEventSummary } from "@/components/ticket/ticket-flow-ui";
+import {
+  TicketEventSummary,
+  TicketPrivacyConsent,
+} from "@/components/ticket/ticket-flow-ui";
 import {
   TICKET_BANK,
   TICKET_CONTACT_EMAIL,
@@ -488,23 +491,7 @@ function TicketMobileStep2({
           </div>
         </section>
 
-        <label className="mt-4 flex items-start gap-2.5 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={privacyAgreed}
-            onChange={(e) => onPrivacyChange(e.target.checked)}
-            className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 accent-neutral-900"
-          />
-          <span className="min-w-0">
-            <span className="ticket-mobile-privacy-title block leading-snug">
-              개인정보 수집 및 이용에 동의합니다(필수)
-            </span>
-            <span className="ticket-mobile-privacy-sub mt-0.5 block leading-relaxed">
-              <Link href="/privacy-policy">개인정보 처리방침</Link>
-              에 따라 안전하게 관리됩니다.
-            </span>
-          </span>
-        </label>
+        <TicketPrivacyConsent agreed={privacyAgreed} onChange={onPrivacyChange} />
 
         {error && (
           <p className="mt-4 text-[13px] text-red-600 font-light">{error}</p>

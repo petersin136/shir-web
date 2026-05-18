@@ -569,9 +569,17 @@ footer .footer-copyright-symbol {
   text-decoration: underline !important;
 }
 
-.page-content-light .ticket-mobile-privacy-sub a {
+.page-content-light .ticket-mobile-privacy-sub a,
+.page-content-light .ticket-privacy-policy-trigger {
   text-decoration: underline !important;
   text-underline-offset: 2px;
+  color: inherit !important;
+  -webkit-text-fill-color: inherit !important;
+  font: inherit !important;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer !important;
 }
 
 .page-content-light .ticket-mobile-privacy-sub {

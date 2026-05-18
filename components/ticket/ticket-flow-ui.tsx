@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { PrivacyPolicyModal } from "@/components/PrivacyPolicyModal";
 import { POCHEON_CENTRAL_BAPTIST_VENUE } from "@/lib/pocheon-venue";
 import {
   TICKET_BANK,
@@ -486,24 +486,45 @@ export function TicketPrivacyConsent({
   agreed: boolean;
   onChange: (v: boolean) => void;
 }) {
+  const [privacyOpen, setPrivacyOpen] = useState(false);
+
   return (
-    <label className="mt-4 flex cursor-pointer items-start gap-2.5 md:mt-5 md:gap-3">
-      <input
-        type="checkbox"
-        checked={agreed}
-        onChange={(e) => onChange(e.target.checked)}
-        className="mt-0.5 h-3.5 w-3.5 shrink-0 rounded-sm border border-neutral-500 bg-neutral-800 accent-neutral-900 md:h-4 md:w-4"
+    <>
+      <div className="mt-4 flex items-start gap-2.5 md:mt-5 md:gap-3">
+        <input
+          id="ticket-privacy-consent"
+          type="checkbox"
+          checked={agreed}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-0.5 h-3.5 w-3.5 shrink-0 cursor-pointer rounded-sm border border-neutral-500 bg-neutral-800 accent-neutral-900 md:h-4 md:w-4"
+        />
+        <label htmlFor="ticket-privacy-consent" className="min-w-0 cursor-pointer">
+          <span className="ticket-mobile-privacy-title block leading-snug">
+            개인정보 수집 및 이용에 동의합니다(필수)
+          </span>
+          <span className="ticket-mobile-privacy-sub mt-0.5 block leading-relaxed">
+            <button
+              type="button"
+              className="ticket-privacy-policy-trigger underline underline-offset-2"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setPrivacyOpen(true);
+              }}
+            >
+              개인정보 처리방침
+            </button>
+            에 따라 안전하게 관리됩니다.
+          </span>
+        </label>
+      </div>
+
+      <PrivacyPolicyModal
+        open={privacyOpen}
+        onClose={() => setPrivacyOpen(false)}
+        titleId="ticket-privacy-policy-title"
       />
-      <span className="min-w-0">
-        <span className="ticket-mobile-privacy-title block leading-snug">
-          개인정보 수집 및 이용에 동의합니다(필수)
-        </span>
-        <span className="ticket-mobile-privacy-sub mt-0.5 block leading-relaxed">
-          <Link href="/privacy-policy">개인정보 처리방침</Link>
-          에 따라 안전하게 관리됩니다.
-        </span>
-      </span>
-    </label>
+    </>
   );
 }
 
