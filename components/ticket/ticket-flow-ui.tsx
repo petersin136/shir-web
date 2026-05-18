@@ -135,10 +135,12 @@ export function TicketEventSummary({
       {rows.map((row) => (
         <div
           key={row.label}
-          className="grid grid-cols-[6.75rem_1fr] gap-x-3 gap-y-1 border-b border-neutral-300 items-start py-3 md:grid-cols-[7.25rem_1fr] md:gap-x-4 md:py-3.5"
+          className="ticket-event-summary-row grid grid-cols-2 items-start gap-x-3 gap-y-1 border-b border-neutral-300 py-3 md:gap-x-4 md:py-3.5"
         >
           <dt className={summaryLabelClass}>{row.label}</dt>
-          <dd className="min-w-0">{row.content}</dd>
+          <dd className="ticket-event-summary-value min-w-0 pr-[3cm] text-left">
+            {row.content}
+          </dd>
         </div>
       ))}
     </dl>
