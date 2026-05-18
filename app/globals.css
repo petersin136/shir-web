@@ -130,26 +130,6 @@ footer .footer-copyright-symbol {
   letter-spacing: 0 !important;
 }
 
-/* SPLIT 서브타이틀 — IBM Plex Mono (포토샵 스펙) */
-.split-about-panel .split-about-subtitle {
-  font-family: var(--font-split-subtitle), "IBM Plex Mono", monospace !important;
-  font-size: 15px !important;
-  font-weight: 500 !important;
-  line-height: 1.6 !important;
-  letter-spacing: 0.1em !important;
-  text-transform: uppercase;
-}
-
-.split-about-panel .split-about-subtitle-accent {
-  color: #e63525 !important;
-  -webkit-text-fill-color: #e63525 !important;
-}
-
-.split-about-panel .split-about-subtitles {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
 .split-about-panel .split-about-body,
 .split-about-panel .split-about-body p {
   font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif !important;
