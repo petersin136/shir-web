@@ -167,7 +167,7 @@ export default function TicketPage() {
   return (
     <PageSplitLayout
       ticketMobileShell
-      mainClassName="max-w-none md:max-w-[40rem] lg:max-w-none"
+      mainClassName="max-w-none"
     >
       <TicketMobileView
         step={step}

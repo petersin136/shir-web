@@ -1,6 +1,7 @@
 // app/api/manage/delete-rows/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getSupabaseAnonKey, getSupabaseUrl } from "@/lib/supabase/config";
 
 const ADMIN_ID = "shiradmin";
 const ADMIN_PW = "shir2025!";
@@ -75,29 +76,12 @@ function resolveAdminSupabaseKey():
     return { ok: true, key: serviceKey, usingAnonFallback: false };
   }
 
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
-  if (anonKey) {
-    return { ok: true, key: anonKey, usingAnonFallback: true };
-  }
-
-  return {
-    ok: false,
-    message:
-      "서버 환경 변수 NEXT_PUBLIC_SUPABASE_URL 및 (SUPABASE_SERVICE_ROLE_KEY 또는 NEXT_PUBLIC_SUPABASE_ANON_KEY)가 필요합니다. " +
-      "삭제가 안 되면 Supabase → Settings → API → service_role secret을 SUPABASE_SERVICE_ROLE_KEY로 Vercel에 추가하세요.",
-  };
+  return { ok: true, key: getSupabaseAnonKey(), usingAnonFallback: true };
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-    if (!url) {
-      return NextResponse.json(
-        { error: "NEXT_PUBLIC_SUPABASE_URL 환경 변수가 필요합니다." },
-        { status: 503 },
-      );
-    }
-
+    const url = getSupabaseUrl();
     const keyResult = resolveAdminSupabaseKey();
     if (!keyResult.ok) {
       return NextResponse.json({ error: keyResult.message }, { status: 503 });

@@ -615,19 +615,24 @@ footer .footer-copyright-symbol {
   -webkit-text-fill-color: #171717 !important;
 }
 
-/* 티켓 PC 우측 패널 — 모바일 대비 약간 큰 타이포 */
+/* 티켓 PC 우측 패널 — 컬럼 전체 너비 사용, 타이포·요약표 비율 유지 확대 */
 @media (min-width: 768px) {
   .page-content-light .ticket-desktop-panel .ticket-mobile-headline {
-    font-size: 2.375rem !important;
+    font-size: 3.125rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-subhead {
-    font-size: 1.125rem !important;
+    font-size: 1.75rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-notices {
-    font-size: 0.875rem !important;
+    font-size: 1.0625rem !important;
     line-height: 1.45 !important;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row label,
+  .page-content-light .ticket-desktop-panel .ticket-mobile-form-row .ticket-mobile-form-label {
+    width: 9.5rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-form-row label,
@@ -635,40 +640,67 @@ footer .footer-copyright-symbol {
   .page-content-light .ticket-desktop-panel .ticket-mobile-form-row .ticket-mobile-form-value,
   .page-content-light .ticket-desktop-panel .ticket-mobile-form-row input,
   .page-content-light .ticket-desktop-panel .ticket-mobile-form-row select {
-    font-size: 1rem !important;
+    font-size: 1.1875rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-account-number {
-    font-size: 1rem !important;
+    font-size: 1.1875rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-step4-title {
-    font-size: 1.0625rem !important;
+    font-size: 1.3125rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-step4-body {
-    font-size: 1rem !important;
+    font-size: 1.1875rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-privacy-title {
-    font-size: 0.9375rem !important;
+    font-size: 1.0625rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-privacy-sub {
-    font-size: 0.8125rem !important;
+    font-size: 0.9375rem !important;
   }
 
   .page-content-light .ticket-desktop-panel .ticket-mobile-order-id {
+    font-size: 1.1875rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel dl > div {
+    grid-template-columns: 10.5rem 1fr !important;
+    gap: 1rem 1.25rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel dl dt {
+    font-size: 1.0625rem !important;
+  }
+
+  .page-content-light .ticket-desktop-panel dl dd p {
+    font-size: 1.25rem !important;
+    line-height: 1.45 !important;
+  }
+
+  .page-content-light .ticket-desktop-panel dl dd p.text-neutral-600 {
     font-size: 1rem !important;
   }
 
   .page-content-light .ticket-desktop-step1-title {
-    font-size: 1.25rem !important;
+    font-size: 1.875rem !important;
     font-weight: 800 !important;
     letter-spacing: -0.02em !important;
     line-height: 1.25 !important;
     color: #171717 !important;
     text-transform: uppercase;
+  }
+
+  .page-content-light .ticket-desktop-panel .ticket-desktop-step1-cta,
+  .page-content-light .ticket-desktop-panel .ticket-mobile-cta {
+    font-size: 1.125rem !important;
+    padding-top: 1.125rem !important;
+    padding-bottom: 1.125rem !important;
   }
 }
 

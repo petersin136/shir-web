@@ -23,7 +23,7 @@ export function TicketDesktopStep1({
   onNext,
 }: TicketDesktopStep1Props) {
   return (
-    <div className="ticket-desktop-panel hidden w-full max-w-[32rem] flex-col md:flex">
+    <div className="ticket-desktop-panel hidden w-full max-w-full flex-col md:flex">
       <TicketHeadline />
 
       {event.posterUrl && (
@@ -35,7 +35,7 @@ export function TicketDesktopStep1({
             height={1200}
             className="block h-auto w-full"
             priority
-            sizes="(min-width: 768px) 32rem, 100vw"
+            sizes="(min-width: 768px) 50vw, 100vw"
           />
         </div>
       )}

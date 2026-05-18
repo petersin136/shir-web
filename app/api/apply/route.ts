@@ -1,35 +1,12 @@
 // app/api/apply/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
-function getSupabase() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!url || !anon) {
-    return null;
-  }
-
-  return createClient(url, anon);
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const supabase = getSupabase();
-    if (!supabase) {
-      console.error(
-        "Supabase env vars missing: NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY"
-      );
-      return NextResponse.json(
-        {
-          error:
-            "서버 설정 오류입니다. 잠시 후 다시 시도해 주세요. (env not configured)",
-        },
-        { status: 500 }
-      );
-    }
+    const supabase = createServerSupabaseClient();
 
     let body: unknown;
     try {

@@ -53,7 +53,7 @@ function DesktopPanel({
   footer: React.ReactNode;
 }) {
   return (
-    <div className="ticket-desktop-panel hidden w-full max-w-[32rem] flex-col md:flex">
+    <div className="ticket-desktop-panel hidden w-full max-w-full flex-col md:flex">
       <div className="flex-1">{children}</div>
       <div className="mt-10 shrink-0">{footer}</div>
     </div>
