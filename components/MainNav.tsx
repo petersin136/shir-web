@@ -18,6 +18,10 @@ const newsChildren = [
 const dropdownPanelClass =
   "absolute left-0 top-full pt-1 min-w-[14rem] rounded-md border border-neutral-200/90 bg-white py-1.5 shadow-lg shadow-black/5 opacity-0 pointer-events-none translate-y-0.5 group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 transition-all duration-150 z-50";
 
+/** 데스크톱 GNB 링크 — 로고 축소 후에도 메뉴 가독성 유지 */
+const desktopNavLinkClass =
+  "block whitespace-nowrap py-1 text-base font-bold uppercase tracking-wider text-neutral-900 transition-colors hover:text-neutral-600";
+
 function DesktopDropdown({
   label,
   items,
@@ -29,7 +33,7 @@ function DesktopDropdown({
     <li className="relative flex-shrink-0 group">
       <button
         type="button"
-        className="text-sm uppercase tracking-wider text-neutral-900 group-hover:text-neutral-600 transition-colors font-bold whitespace-nowrap block py-1"
+        className={`${desktopNavLinkClass} group-hover:text-neutral-600`}
         aria-haspopup="menu"
       >
         {label}
@@ -40,7 +44,7 @@ function DesktopDropdown({
             <Link
               href={item.href}
               role="menuitem"
-              className="block px-4 py-2.5 text-[13px] font-medium tracking-wide text-neutral-800 hover:bg-neutral-50 hover:text-neutral-950 transition-colors"
+              className="block px-4 py-2.5 text-sm font-medium tracking-wide text-neutral-800 hover:bg-neutral-50 hover:text-neutral-950 transition-colors"
             >
               {item.label}
             </Link>
@@ -56,7 +60,7 @@ function DesktopProjectArchive() {
     <li className="relative flex-shrink-0 group">
       <button
         type="button"
-        className="whitespace-nowrap py-1 text-sm font-bold uppercase tracking-wider text-neutral-900 transition-colors group-hover:text-neutral-600"
+        className={`${desktopNavLinkClass} group-hover:text-neutral-600`}
         aria-haspopup="menu"
       >
         PROJECT
@@ -67,7 +71,7 @@ function DesktopProjectArchive() {
             <Link
               href={item.href}
               role="menuitem"
-              className="block px-4 py-2.5 text-[13px] font-medium tracking-wide text-neutral-800 transition-colors hover:bg-neutral-50 hover:text-neutral-950"
+              className="block px-4 py-2.5 text-sm font-medium tracking-wide text-neutral-800 transition-colors hover:bg-neutral-50 hover:text-neutral-950"
             >
               {item.label}
             </Link>
@@ -109,7 +113,7 @@ export default function MainNav() {
             <li className="flex-shrink-0">
               <Link
                 href="/about"
-                className="text-sm uppercase tracking-wider text-neutral-900 hover:text-neutral-600 transition-colors font-bold whitespace-nowrap block"
+                className={desktopNavLinkClass}
               >
                 ABOUT
               </Link>
@@ -118,7 +122,7 @@ export default function MainNav() {
             <li className="flex-shrink-0">
               <Link
                 href="/ticket"
-                className="text-sm uppercase tracking-wider text-neutral-900 hover:text-neutral-600 transition-colors font-bold whitespace-nowrap block"
+                className={desktopNavLinkClass}
               >
                 TICKET
               </Link>
@@ -127,7 +131,7 @@ export default function MainNav() {
             <li className="flex-shrink-0">
               <Link
                 href="/apply"
-                className="text-sm uppercase tracking-wider text-neutral-900 hover:text-neutral-600 transition-colors font-bold whitespace-nowrap block"
+                className={desktopNavLinkClass}
               >
                 APPLY
               </Link>
@@ -135,7 +139,7 @@ export default function MainNav() {
             <li className="flex-shrink-0">
               <Link
                 href="/inquiry"
-                className="text-sm uppercase tracking-wider text-neutral-900 hover:text-neutral-600 transition-colors font-bold whitespace-nowrap block"
+                className={desktopNavLinkClass}
               >
                 CONTACT
               </Link>
