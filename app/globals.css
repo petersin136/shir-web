@@ -701,3 +701,27 @@ footer .footer-copyright-symbol {
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
+
+/* 스플릿 레이아웃 탭 — 모바일: 레이아웃 점프·스크롤 모션 방지 */
+@media (max-width: 767px) {
+  .page-split-layout-mobile-stable,
+  .page-split-layout-mobile-stable * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .page-split-layout-mobile-stable {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .page-split-layout-mobile-stable input,
+  .page-split-layout-mobile-stable select,
+  .page-split-layout-mobile-stable textarea {
+    font-size: 16px !important;
+  }
+
+  .page-split-layout-mobile-stable .group-hover\:translate-x-1 {
+    transform: none !important;
+  }
+}

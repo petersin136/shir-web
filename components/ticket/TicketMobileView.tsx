@@ -91,34 +91,6 @@ const mobileFormInputClass =
 const mobileFormSelectClass =
   "ticket-mobile-form-value w-full min-w-0 border-0 bg-transparent text-left focus:outline-none cursor-pointer appearance-none pr-5";
 
-function useScrollEndCta(active: boolean) {
-  const [atEnd, setAtEnd] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!active) {
-      setAtEnd(false);
-      return;
-    }
-
-    const el = sentinelRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setAtEnd(entry.isIntersecting),
-      {
-        threshold: 0,
-        rootMargin: "0px 0px -76px 0px",
-      },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [active]);
-
-  return { atEnd, sentinelRef };
-}
-
 function MobileTicketStep2Notices({ event }: { event: TicketEvent }) {
   const refundUntil = formatRefundDeadlineMobile(event.refundDeadlineLabel);
 
@@ -707,9 +679,6 @@ export function TicketMobileView({
   onStep3Complete,
   onReset,
 }: TicketMobileViewProps) {
-  const scrollCtaActive = step === 1;
-  const { atEnd: scrolledToEnd, sentinelRef } = useScrollEndCta(scrollCtaActive);
-
   if (step === 2 && event && pricing) {
     return (
       <TicketMobileStep2
@@ -748,7 +717,6 @@ export function TicketMobileView({
   }
 
   const showSummary = step === 1 && event && pricing;
-  const ctaVariant: "black" | "red" = scrolledToEnd ? "red" : "black";
 
   return (
     <div className="md:hidden pb-[4.5rem] bg-white">
@@ -771,15 +739,12 @@ export function TicketMobileView({
           <p className="mt-4 text-[14px] text-red-600 font-light">{error}</p>
         )}
 
-        {scrollCtaActive && (
-          <div ref={sentinelRef} className="h-px w-full" aria-hidden />
-        )}
       </div>
 
       {step === 1 && (
         <MobileFixedCTA
           label="신청하기"
-          variant={ctaVariant}
+          variant="red"
           onClick={onStep1Next}
           disabled={!event?.registrationOpen}
         />

@@ -90,7 +90,7 @@ export default function TicketPage() {
   const goStep = useCallback((n: number) => {
     setErr(null);
     setStep(n);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
   async function submitApplication() {

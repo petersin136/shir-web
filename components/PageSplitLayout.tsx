@@ -55,26 +55,27 @@ export function PageSplitLayout({
           mobileFit="contain"
           bgColor="#000000"
           mobileObjectClass="object-top"
-          className={cn(HERO_BG_CLASS, hideMobileHero && "max-md:hidden")}
+          className={cn(HERO_BG_CLASS, "max-md:hidden")}
         />
       ) : (
         <BackgroundVideo
           overlayOpacity={0}
-          className={cn(HERO_BG_CLASS, hideMobileHero && "max-md:hidden")}
+          className={cn(HERO_BG_CLASS, "max-md:hidden")}
         />
       )}
 
       <div
         className={cn(
-          "relative z-[2] min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]",
+          "page-split-layout-mobile-stable relative z-[2] max-md:bg-white",
+          "min-h-[calc(100dvh-3rem)] sm:min-h-[calc(100dvh-3.5rem)]",
+          "max-md:min-h-[calc(100svh-3rem)] sm:max-md:min-h-[calc(100svh-3.5rem)]",
           className,
         )}
       >
         <div
           className={cn(
-            "pointer-events-none absolute inset-0 top-[38vh] md:left-1/2 md:top-0 md:bottom-0",
-            "bg-white",
-            hideMobileHero && "max-md:hidden",
+            "pointer-events-none absolute inset-0 bg-white max-md:inset-0 max-md:top-0",
+            "md:left-1/2 md:top-0 md:bottom-0",
           )}
           aria-hidden
         />
@@ -82,15 +83,18 @@ export function PageSplitLayout({
         {/* 오른쪽 절반 컬럼 — 본문은 컬럼 안 왼쪽(중앙선 쪽) 정렬 */}
         <div
           className={cn(
-            "relative md:ml-auto md:w-1/2 md:min-h-[inherit] md:z-[3] md:bg-white",
-            hideMobileHero && "max-md:w-full",
+            "relative max-md:w-full max-md:bg-white",
+            "md:ml-auto md:w-1/2 md:min-h-[inherit] md:z-[3] md:bg-white",
           )}
         >
           <main
             className={cn(
-              "page-content-light relative w-full bg-white px-6 py-16 sm:px-10 sm:py-20 md:pl-10 md:pr-14 md:py-24 lg:pl-12 lg:pr-16 lg:py-28 max-md:pt-[38vh]",
-              hideMobileHero &&
-                "max-md:px-0 max-md:pt-0 max-md:pb-0 max-md:bg-white max-md:min-h-[calc(100dvh-3rem)] max-md:overflow-x-hidden",
+              "page-content-light relative w-full bg-white",
+              "px-6 py-16 sm:px-10 sm:py-20 md:pl-10 md:pr-14 md:py-24 lg:pl-12 lg:pr-16 lg:py-28",
+              "max-md:min-h-[calc(100svh-3rem)] max-md:overflow-x-hidden max-md:bg-white",
+              hideMobileHero
+                ? "max-md:px-0 max-md:py-0 max-md:pt-0 max-md:pb-0"
+                : "max-md:px-5 max-md:py-8",
               mainClassName,
             )}
           >
