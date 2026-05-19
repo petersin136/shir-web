@@ -73,7 +73,7 @@ export function PageSplitLayout({
         <div
           className={cn(
             "pointer-events-none absolute inset-0 top-[38vh] md:left-1/2 md:top-0 md:bottom-0",
-            ticketMobileShell ? "bg-white" : "bg-white/65",
+            "bg-white",
             hideMobileHero && "max-md:hidden",
           )}
           aria-hidden
@@ -82,17 +82,15 @@ export function PageSplitLayout({
         {/* 오른쪽 절반 컬럼 — 본문은 컬럼 안 왼쪽(중앙선 쪽) 정렬 */}
         <div
           className={cn(
-            "relative md:ml-auto md:w-1/2 md:min-h-[inherit]",
+            "relative md:ml-auto md:w-1/2 md:min-h-[inherit] md:z-[3] md:bg-white",
             hideMobileHero && "max-md:w-full",
-            ticketMobileShell && "md:z-[3] md:bg-white",
           )}
         >
           <main
             className={cn(
-              "page-content-light relative w-full px-6 py-16 sm:px-10 sm:py-20 md:pl-10 md:pr-14 md:py-24 lg:pl-12 lg:pr-16 lg:py-28 max-md:pt-[38vh]",
+              "page-content-light relative w-full bg-white px-6 py-16 sm:px-10 sm:py-20 md:pl-10 md:pr-14 md:py-24 lg:pl-12 lg:pr-16 lg:py-28 max-md:pt-[38vh]",
               hideMobileHero &&
                 "max-md:px-0 max-md:pt-0 max-md:pb-0 max-md:bg-white max-md:min-h-[calc(100dvh-3rem)] max-md:overflow-x-hidden",
-              ticketMobileShell && "md:bg-white",
               mainClassName,
             )}
           >
