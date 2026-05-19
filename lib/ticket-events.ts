@@ -26,7 +26,7 @@ export type TicketEvent = {
 };
 
 export const ONENESS_2026_POSTER_URL =
-  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/KakaoTalk_Photo_2026-05-18-00-14-29.jpeg";
+  "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/ONENESS%20WORSHIP%20POSTER%20.jpg";
 
 export const TICKET_PAYMENT_DEADLINE_NOTICE =
   "계좌 입금 후 신청이 확정됩니다. 신청 후 3일 이내 미입금 시 자동 취소될 수 있으니 유의해 주세요.";
