@@ -5,9 +5,9 @@ const ANDROID_TOUCH_ICON_URL =
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "SHIR BAND | Spirit & Truth Worship",
-    short_name: "SHIR BAND",
-    description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+    name: "SHIRBAND | SONG TO SING FOREVER",
+    short_name: "SHIRBAND",
+    description: "SHIRBAND - SONG TO SING FOREVER",
     start_url: "/",
     display: "standalone",
     background_color: "#000000",

@@ -48,8 +48,8 @@ const OG_IMAGE_URL =
 
 export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
-  title: "SHIR BAND | Spirit & Truth Worship",
-  description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+  title: "SHIRBAND | SONG TO SING FOREVER",
+  description: "SHIRBAND - SONG TO SING FOREVER",
   icons: {
     icon: [
       { url: FAVICON_URL, type: "image/png", sizes: "32x32" },
@@ -69,16 +69,16 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "SHIR BAND | Spirit & Truth Worship",
-    description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+    title: "SHIRBAND | SONG TO SING FOREVER",
+    description: "SHIRBAND - SONG TO SING FOREVER",
     url: defaultUrl,
-    siteName: "SHIR BAND",
+    siteName: "SHIRBAND",
     images: [
       {
         url: OG_IMAGE_URL,
         width: 1000,
         height: 1000,
-        alt: "SHIR BAND",
+        alt: "SHIRBAND",
       },
     ],
     locale: "ko_KR",
@@ -86,8 +86,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SHIR BAND | Spirit & Truth Worship",
-    description: "SHIR BAND - Spirit & Truth Worship 찬양 사역",
+    title: "SHIRBAND | SONG TO SING FOREVER",
+    description: "SHIRBAND - SONG TO SING FOREVER",
     images: [OG_IMAGE_URL],
   },
 };
