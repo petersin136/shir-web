@@ -80,13 +80,12 @@ export default function Footer() {
                 Instagram
               </a>
               <a
-                href="https://www.facebook.com/"
+                href="https://www.facebook.com/photo/?fbid=122111866724810449&set=a.122093386124810449"
                 className={navLinkClass}
                 {...externalLinkProps}
-                aria-label="Facebook (공식 페이지 연결 예정)"
               >
                 Facebook
-            </a>
+              </a>
           </nav>
 
           <p className="mt-3 max-w-4xl text-[10px] font-normal leading-relaxed text-white/90 sm:mt-4 sm:text-[11px] md:mt-5 md:text-[13px] md:leading-[1.65]">
