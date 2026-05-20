@@ -80,7 +80,7 @@ export default function Footer() {
                 Instagram
               </a>
               <a
-                href="https://www.facebook.com/photo/?fbid=122111866724810449&set=a.122093386124810449"
+                href="https://www.facebook.com/shirband.official"
                 className={navLinkClass}
                 {...externalLinkProps}
               >
