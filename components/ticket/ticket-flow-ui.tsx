@@ -64,9 +64,10 @@ export function TicketEventSummary({
   }[] = [
     {
       label: "일시",
+      stackOnMobile: true,
       content: (
         <div className={cn(summaryValueClass, "space-y-0.5")}>
-          <p>{event.date}</p>
+          <p className="whitespace-nowrap">{event.date}</p>
           {event.dateNote && (
             <p className="text-[12px] text-neutral-600 md:text-[13px]">{event.dateNote}</p>
           )}

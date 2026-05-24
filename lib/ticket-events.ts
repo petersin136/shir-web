@@ -36,7 +36,7 @@ export const TICKET_EVENTS: TicketEvent[] = [
     id: "oneness-2026",
     name: "ONENESS Worship 2026",
     eyebrow: "Worship",
-    date: "2026. 06. 27. 토요일 13:00 - 21:00",
+    date: "2026. 06. 27. 토요일 13:00 -\u00A021:00",
     dateNote: "8시간 연속 예배",
     venue: "포천중앙침례교회",
     regularPrice: 30_000,
