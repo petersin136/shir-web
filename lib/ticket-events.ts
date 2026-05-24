@@ -156,7 +156,7 @@ export function formatEarlyBirdPeriodMobileLines(start: Date, end: Date) {
     const hour = pick("hour");
     const minute = pick("minute");
 
-    return `${year}. ${month}. ${day}. ${weekday} ${hour}:${minute}${suffix}`;
+    return `${year}. ${month}. ${day}. ${weekday} ${hour}:${minute}\u00A0${suffix}`;
   };
 
   return {

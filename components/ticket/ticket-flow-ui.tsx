@@ -59,6 +59,8 @@ export function TicketEventSummary({
   const rows: {
     label: string;
     content: React.ReactNode;
+    /** 모바일 — 라벨 위·값 아래(전체 너비) */
+    stackOnMobile?: boolean;
   }[] = [
     {
       label: "일시",
@@ -108,10 +110,15 @@ export function TicketEventSummary({
       ? [
           {
             label: "얼리버드 예매 기간",
+            stackOnMobile: true,
             content: (
               <div className={cn(summaryValueClass, "space-y-0.5")}>
-                <p>{earlyBirdLines.startLine}</p>
-                <p>{earlyBirdLines.endLine}</p>
+                <p className="ticket-early-bird-period-line whitespace-nowrap">
+                  {earlyBirdLines.startLine}
+                </p>
+                <p className="ticket-early-bird-period-line whitespace-nowrap">
+                  {earlyBirdLines.endLine}
+                </p>
               </div>
             ),
           },
@@ -135,7 +142,12 @@ export function TicketEventSummary({
       {rows.map((row) => (
         <div
           key={row.label}
-          className="ticket-event-summary-row grid grid-cols-[6.75rem_1fr] items-start gap-x-3 gap-y-1 border-b border-neutral-300 py-3 md:gap-x-4 md:py-3.5"
+          className={cn(
+            "ticket-event-summary-row grid items-start gap-y-1 border-b border-neutral-300 py-3 md:py-3.5",
+            row.stackOnMobile
+              ? "grid-cols-1 gap-x-0 md:grid-cols-[6.75rem_1fr] md:gap-x-4"
+              : "grid-cols-[6.75rem_1fr] gap-x-3 md:gap-x-4",
+          )}
         >
           <dt className={summaryLabelClass}>{row.label}</dt>
           <dd className="ticket-event-summary-value min-w-0 text-left">
