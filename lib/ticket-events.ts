@@ -44,8 +44,8 @@ export const TICKET_EVENTS: TicketEvent[] = [
     studentPrice: 15_000,
     earlyBird: {
       start: new Date("2026-05-18T11:00:00+09:00"),
-      end: new Date("2026-05-24T12:00:00+09:00"),
-      label: "2026년 5월 18일(월) 11:00부터 — 5월 24일(일) 12:00까지",
+      end: new Date("2026-05-24T23:59:59+09:00"),
+      label: "2026년 5월 18일(월) 11:00부터 — 5월 24일(일) 24:00까지",
     },
     refundDeadlineLabel: "2026년 6월 20일(토) 23:59까지",
     registrationOpen: true,
@@ -80,7 +80,7 @@ export function getTicketEvent(id: TicketEventId): TicketEvent | undefined {
   return TICKET_EVENTS.find((e) => e.id === id);
 }
 
-/** 얼리버드 전·중·후 자동 요금 (5/24 12:00 이후 정가 30,000원) */
+/** 얼리버드 전·중·후 자동 요금 (5/24 24:00 이후 정가 30,000원) */
 export function getTicketPricing(
   event: TicketEvent,
   now: Date = new Date(),
