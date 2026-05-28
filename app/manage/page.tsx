@@ -89,7 +89,20 @@ type ParsedContact = {
   expectedCount?: number;
   sessions?: string;
   extraMessage?: string;
+  unitPrice?: number;
+  paidAmount?: number;
 };
+
+function parseAmount(raw: string): number | undefined {
+  const digits = raw.replace(/[^\d]/g, "");
+  if (!digits) return undefined;
+  const value = Number(digits);
+  return Number.isNaN(value) ? undefined : value;
+}
+
+function formatKRW(amount: number): string {
+  return `${amount.toLocaleString("ko-KR")}원`;
+}
 
 // 메시지 본문을 분석해서 필드별로 분리
 function parseContactMessage(message: string | null): ParsedContact {
@@ -137,13 +150,25 @@ function parseContactMessage(message: string | null): ParsedContact {
       result.role = clean.replace("요금 구분:", "").trim();
       continue;
     }
+    if (clean.startsWith("1매 단가:")) {
+      const text = clean.replace("1매 단가:", "").trim();
+      const value = parseAmount(text);
+      if (value !== undefined) result.unitPrice = value;
+      extraMessageLines.push(clean);
+      continue;
+    }
+    if (clean.startsWith("입금 금액:")) {
+      const text = clean.replace("입금 금액:", "").trim();
+      const value = parseAmount(text);
+      if (value !== undefined) result.paidAmount = value;
+      extraMessageLines.push(clean);
+      continue;
+    }
     if (
       clean.startsWith("신청번호:") ||
       clean.startsWith("집회:") ||
       clean.startsWith("일시:") ||
       clean.startsWith("장소:") ||
-      clean.startsWith("1매 단가:") ||
-      clean.startsWith("입금 금액:") ||
       clean.startsWith("입금 계좌:") ||
       clean.startsWith("담당자:") ||
       clean.startsWith("입금자명:") ||
@@ -252,7 +277,16 @@ type ConferenceRow = ContactMessage & {
   index: number;
   parsed: ParsedContact;
   attendees: number;
+  amount: number;
 };
+
+function computeRowAmount(parsed: ParsedContact, attendees: number): number {
+  if (parsed.paidAmount !== undefined) return parsed.paidAmount;
+  if (parsed.unitPrice !== undefined && attendees > 0) {
+    return parsed.unitPrice * attendees;
+  }
+  return 0;
+}
 
 type DetailModalState =
   | { kind: "conference"; row: ConferenceRow }
@@ -498,28 +532,32 @@ export default function ManagePage() {
     load();
   }, [authed, refreshTrigger]);
 
-  const metanoiaRows = useMemo(() => {
+  const metanoiaRows = useMemo<ConferenceRow[]>(() => {
     const filtered = data.filter((r) => isMetanoiaMessage(r.message));
     return filtered.map((row, idx) => {
       const parsed = parseContactMessage(row.message);
+      const attendees = parsed.expectedCount ?? 0;
       return {
         ...row,
         index: idx + 1,
         parsed,
-        attendees: parsed.expectedCount ?? 0,
+        attendees,
+        amount: computeRowAmount(parsed, attendees),
       };
     });
   }, [data]);
 
-  const onenessRows = useMemo(() => {
+  const onenessRows = useMemo<ConferenceRow[]>(() => {
     const filtered = data.filter((r) => isOnenessMessage(r.message));
     return filtered.map((row, idx) => {
       const parsed = parseContactMessage(row.message);
+      const attendees = parsed.expectedCount ?? 0;
       return {
         ...row,
         index: idx + 1,
         parsed,
-        attendees: parsed.expectedCount ?? 0,
+        attendees,
+        amount: computeRowAmount(parsed, attendees),
       };
     });
   }, [data]);
@@ -580,6 +618,14 @@ export default function ManagePage() {
   );
   const totalAttendeesOneness = useMemo(
     () => onenessRows.reduce((sum, row) => sum + (row.attendees ?? 0), 0),
+    [onenessRows],
+  );
+  const totalAmountMetanoia = useMemo(
+    () => metanoiaRows.reduce((sum, row) => sum + (row.amount ?? 0), 0),
+    [metanoiaRows],
+  );
+  const totalAmountOneness = useMemo(
+    () => onenessRows.reduce((sum, row) => sum + (row.amount ?? 0), 0),
     [onenessRows],
   );
 
@@ -660,17 +706,34 @@ export default function ManagePage() {
         XLSX.writeFile(workbook, fileName);
       } else {
         const rows = activeTab === "metanoia" ? metanoiaRows : onenessRows;
-        const worksheetData = rows.map((row) => ({
+        const totalAttendees =
+          activeTab === "metanoia" ? totalAttendeesMetanoia : totalAttendeesOneness;
+        const totalAmount =
+          activeTab === "metanoia" ? totalAmountMetanoia : totalAmountOneness;
+        const worksheetData: Array<Record<string, string | number>> = rows.map((row) => ({
           No: row.index,
           이름: row.parsed.name || row.name || "-",
           연락처: row.parsed.phone || "-",
           소속교회: row.parsed.church || "-",
           직책역할: row.parsed.role || "-",
           참석예상인원: row.parsed.expectedText || (row.attendees > 0 ? `${row.attendees}명` : "-"),
+          금액: row.amount > 0 ? formatKRW(row.amount) : "-",
           참석세션: row.parsed.sessions || "-",
           추가메시지: row.parsed.extraMessage || "-",
           받은시간: row.created_at ? new Date(row.created_at).toLocaleString("ko-KR") : "-",
         }));
+        worksheetData.push({
+          No: "",
+          이름: "합계",
+          연락처: "",
+          소속교회: "",
+          직책역할: "",
+          참석예상인원: `${totalAttendees}명`,
+          금액: totalAmount > 0 ? formatKRW(totalAmount) : "무료",
+          참석세션: "",
+          추가메시지: "",
+          받은시간: "",
+        });
         const worksheet = XLSX.utils.json_to_sheet(worksheetData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "신청목록");
@@ -839,6 +902,9 @@ export default function ManagePage() {
             : [];
       const pdfTotal =
         activeTab === "metanoia" ? totalAttendeesMetanoia : totalAttendeesOneness;
+      const pdfAmountTotal =
+        activeTab === "metanoia" ? totalAmountMetanoia : totalAmountOneness;
+      const pdfAmountText = pdfAmountTotal > 0 ? formatKRW(pdfAmountTotal) : "무료";
       const pdfTitle =
         activeTab === "metanoia"
           ? "METANOIA 2026 신청 목록"
@@ -863,12 +929,17 @@ export default function ManagePage() {
       } else if (activeTab === "inquiry") {
         doc.text(`총 ${inquiryRows.length}건`, 14, 27);
       } else {
-        doc.text(`총 ${pdfRows.length}건, 총 예상 참석 인원: ${pdfTotal}명`, 14, 27);
+        doc.text(
+          `총 ${pdfRows.length}건  ·  총 예상 참석 인원: ${pdfTotal}명  ·  총 금액: ${pdfAmountText}`,
+          14,
+          27
+        );
       }
 
       // 테이블 데이터 준비
       let tableData: string[][];
       let tableHead: string[][];
+      let tableFoot: string[][] | undefined;
 
       if (activeTab === "applications") {
         tableHead = [["No.", "이름", "연락처", "소속교회", "사역초청내용", "받은 시간"]];
@@ -890,7 +961,18 @@ export default function ManagePage() {
         ]);
       } else {
         tableHead = [
-          ["No.", "이름", "연락처", "소속교회", "직책/역할", "참석 예상 인원", "참석 세션", "추가 메시지", "받은 시간"],
+          [
+            "No.",
+            "이름",
+            "연락처",
+            "소속교회",
+            "직책/역할",
+            "참석 예상 인원",
+            "금액",
+            "참석 세션",
+            "추가 메시지",
+            "받은 시간",
+          ],
         ];
         tableData = pdfRows.map((row) => {
           const extraMsg = row.parsed?.extraMessage || "-";
@@ -905,6 +987,7 @@ export default function ManagePage() {
               row.parsed?.expectedText ||
                 (row.attendees > 0 ? `${row.attendees}명` : "-")
             ),
+            row.amount > 0 ? formatKRW(row.amount) : "-",
             String(sessions.length > 50 ? sessions.substring(0, 50) + "..." : sessions),
             String(extraMsg.length > 30 ? extraMsg.substring(0, 30) + "..." : extraMsg),
             row.created_at
@@ -912,6 +995,20 @@ export default function ManagePage() {
               : "-",
           ];
         });
+        tableFoot = [
+          [
+            "합계",
+            "",
+            "",
+            "",
+            "",
+            `${pdfTotal}명`,
+            pdfAmountText,
+            "",
+            "",
+            `총 ${pdfRows.length}건`,
+          ],
+        ];
       }
 
       // 테이블 생성 - jspdf-autotable v5.x는 autoTable을 함수로 직접 호출
@@ -933,6 +1030,20 @@ export default function ManagePage() {
         },
         margin: { top: 32 },
       };
+
+      // 집회 신청 탭에서는 합계 행을 추가
+      if (tableFoot) {
+        tableOptions.foot = tableFoot;
+        tableOptions.footStyles = {
+          fillColor: [30, 41, 59],
+          textColor: 255,
+          fontStyle: "bold",
+          halign: "right",
+        };
+        tableOptions.columnStyles = {
+          6: { halign: "right" },
+        };
+      }
       
       // 폰트가 로드된 경우에만 폰트 설정 추가
       if (fontLoaded) {
@@ -956,6 +1067,15 @@ export default function ManagePage() {
           font: fontName,
           fontStyle: "normal",
         };
+
+        // 푸터 행 스타일에 폰트 설정
+        if (tableOptions.footStyles) {
+          tableOptions.footStyles = {
+            ...tableOptions.footStyles,
+            font: fontName,
+            fontStyle: "normal",
+          };
+        }
         
         // 모든 셀에 폰트를 강제로 적용하는 콜백
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1219,6 +1339,12 @@ export default function ManagePage() {
                   <span className="text-sm text-white/50">총 예상 참석 인원</span>{" "}
                   <span className="ml-2 font-mono font-semibold text-white">{totalAttendeesMetanoia}명</span>
                 </div>
+                <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                  <span className="text-sm text-white/50">총 금액</span>{" "}
+                  <span className="ml-2 font-mono font-semibold text-white">
+                    {totalAmountMetanoia > 0 ? formatKRW(totalAmountMetanoia) : "무료"}
+                  </span>
+                </div>
               </>
             )}
             {activeTab === "oneness" && (
@@ -1230,6 +1356,12 @@ export default function ManagePage() {
                 <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
                   <span className="text-sm text-white/50">총 예상 참석 인원</span>{" "}
                   <span className="ml-2 font-mono font-semibold text-white">{totalAttendeesOneness}명</span>
+                </div>
+                <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 transition-colors duration-150 sm:px-4">
+                  <span className="text-sm text-white/50">총 금액</span>{" "}
+                  <span className="ml-2 font-mono font-semibold text-white">
+                    {totalAmountOneness > 0 ? formatKRW(totalAmountOneness) : "무료"}
+                  </span>
                 </div>
               </>
             )}
@@ -1343,10 +1475,13 @@ export default function ManagePage() {
                     연락처: {row.parsed.phone}
                   </div>
                 )}
-                {(row.parsed.expectedText || row.parsed.church || row.parsed.role || row.parsed.sessions) && (
+                {(row.parsed.expectedText || row.parsed.church || row.parsed.role || row.parsed.sessions || row.amount > 0) && (
                   <div className="mt-1 space-y-0.5 text-sm text-white/60 transition-colors duration-150">
                     {row.parsed.expectedText && (
                       <div className="font-mono">참석: {row.parsed.expectedText}</div>
+                    )}
+                    {row.amount > 0 && (
+                      <div className="font-mono text-white/80">금액: {formatKRW(row.amount)}</div>
                     )}
                     {row.parsed.church && (
                       <div className="font-medium">교회: {row.parsed.church}</div>
@@ -1373,17 +1508,18 @@ export default function ManagePage() {
           {/* 데스크톱: 전체 정보 테이블 */}
           <div className="hidden sm:block">
             <div className="overflow-x-auto rounded-lg border border-white/10 bg-[#141414] transition-colors duration-150">
-              <table className="w-full min-w-[1040px] table-fixed border-collapse text-left text-base transition-colors duration-150">
+              <table className="w-full min-w-[1180px] table-fixed border-collapse text-left text-base transition-colors duration-150">
                 <colgroup>
                   <col className="w-14" />
-                  <col className="w-[11%]" />
-                  <col className="w-[11%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[13%]" />
+                  <col className="w-[7%]" />
+                  <col className="w-[7%]" />
+                  <col className="w-[10%]" />
+                  <col className="w-[6%]" />
+                  <col className="w-[6%]" />
                   <col className="w-[15%]" />
-                  <col className="w-[9%]" />
-                  <col className="w-[8%]" />
-                  <col className="w-[7%]" />
-                  <col className="w-[7%]" />
-                  <col className="w-[20%]" />
                   <col className="w-[88px]" />
                 </colgroup>
                 <thead className="bg-[#1C1C1C] transition-colors duration-150">
@@ -1405,6 +1541,9 @@ export default function ManagePage() {
                     </th>
                     <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Attendees
+                    </th>
+                    <th className="px-3 py-3 text-right text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
+                      Amount
                     </th>
                     <th className="px-3 py-3 text-left text-xs font-medium uppercase tracking-[0.15em] text-white/40 sm:px-4 sm:text-sm">
                       Sessions
@@ -1449,6 +1588,9 @@ export default function ManagePage() {
                             ? `${row.attendees}명`
                             : "-"}
                       </td>
+                      <td className="overflow-hidden truncate px-3 py-2 text-right align-middle font-mono text-sm text-white/85 sm:px-4">
+                        {row.amount > 0 ? formatKRW(row.amount) : "—"}
+                      </td>
                       <td className="overflow-hidden px-3 py-2 align-middle text-sm text-white/90 sm:px-4">
                         {row.parsed.sessions ? (
                           <span className="text-white/55 underline decoration-white/25 underline-offset-2">내용 보기</span>
@@ -1483,11 +1625,61 @@ export default function ManagePage() {
                       </td>
                     </tr>
                   ))}
-                  <AdminTablePadRows colSpan={10} padCount={PAGE_SIZE - currentPaginatedRows.length} />
+                  <AdminTablePadRows colSpan={11} padCount={PAGE_SIZE - currentPaginatedRows.length} />
                 </tbody>
+                <tfoot className="bg-[#1C1C1C] transition-colors duration-150">
+                  <tr className="border-t border-white/15">
+                    <td
+                      colSpan={5}
+                      className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-white/55 sm:px-4 sm:text-sm"
+                    >
+                      Total
+                    </td>
+                    <td className="px-3 py-3 text-left align-middle font-mono text-sm font-semibold text-white sm:px-4">
+                      {activeTab === "metanoia"
+                        ? `${totalAttendeesMetanoia}명`
+                        : `${totalAttendeesOneness}명`}
+                    </td>
+                    <td className="px-3 py-3 text-right align-middle font-mono text-sm font-semibold text-white sm:px-4">
+                      {(activeTab === "metanoia" ? totalAmountMetanoia : totalAmountOneness) > 0
+                        ? formatKRW(activeTab === "metanoia" ? totalAmountMetanoia : totalAmountOneness)
+                        : "무료"}
+                    </td>
+                    <td colSpan={4} className="px-3 py-3 sm:px-4">
+                      <span className="text-xs text-white/40 sm:text-sm">
+                        총 {activeTab === "metanoia" ? metanoiaRows.length : onenessRows.length}건
+                      </span>
+                    </td>
+                  </tr>
+                </tfoot>
               </table>
             </div>
           </div>
+
+          {/* 하단 합계 요약 */}
+          <div className="mt-4 flex flex-wrap gap-3 text-sm sm:text-base">
+            <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 sm:px-4">
+              <span className="text-sm text-white/50">총 신청 건수</span>{" "}
+              <span className="ml-2 font-mono font-semibold text-white">
+                {activeTab === "metanoia" ? metanoiaRows.length : onenessRows.length}건
+              </span>
+            </div>
+            <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 sm:px-4">
+              <span className="text-sm text-white/50">총 예상 참석 인원</span>{" "}
+              <span className="ml-2 font-mono font-semibold text-white">
+                {activeTab === "metanoia" ? totalAttendeesMetanoia : totalAttendeesOneness}명
+              </span>
+            </div>
+            <div className="rounded-md border border-white/10 bg-[#1C1C1C] px-3 py-2 sm:px-4">
+              <span className="text-sm text-white/50">총 금액</span>{" "}
+              <span className="ml-2 font-mono font-semibold text-white">
+                {(activeTab === "metanoia" ? totalAmountMetanoia : totalAmountOneness) > 0
+                  ? formatKRW(activeTab === "metanoia" ? totalAmountMetanoia : totalAmountOneness)
+                  : "무료"}
+              </span>
+            </div>
+          </div>
+
           <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
       )}
@@ -1813,6 +2005,14 @@ export default function ManagePage() {
                       : detailModal.row.attendees > 0
                         ? `${detailModal.row.attendees}명`
                         : "—"}
+                  </DetailBlock>
+                  <DetailBlock label="Amount">
+                    {detailModal.row.amount > 0 ? formatKRW(detailModal.row.amount) : "—"}
+                    {detailModal.row.parsed.unitPrice !== undefined && (
+                      <span className="ml-2 font-mono text-sm text-white/55">
+                        (단가 {formatKRW(detailModal.row.parsed.unitPrice)})
+                      </span>
+                    )}
                   </DetailBlock>
                   <DetailBlock label="Sessions">{detailModal.row.parsed.sessions || "—"}</DetailBlock>
                   <DetailBlock label="Additional message">{detailModal.row.parsed.extraMessage || "—"}</DetailBlock>
