@@ -173,6 +173,18 @@ footer .footer-copyright-symbol {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* 메인 배너(히어로) — 정적 고정. 스크롤·뷰포트 변동에 따른 transform/animation 일체 차단 */
+.background-hero-static,
+.background-hero-static > *,
+.background-hero-static img {
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+  will-change: auto !important;
+  backface-visibility: visible !important;
+  perspective: none !important;
+}
+
 /* 스플래시 애니메이션 */
 @keyframes gradient {
   0% {

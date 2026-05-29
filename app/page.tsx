@@ -36,7 +36,8 @@ const splitPanelClass = [
   splitHeadlineFont.variable,
   splitLatinFont.variable,
   splitSubtitleFont.variable,
-  "flex h-full min-h-0 w-full min-w-0 flex-col items-center justify-center bg-[#FAFAFA]",
+  // 모바일: TEXT 구간 1080×360(3:1) 비율 최소 높이, 내용 길면 확장 / md+: 기존 그리드 셀 채움
+  "flex min-h-[33.3333vw] md:min-h-0 md:h-full w-full min-w-0 flex-col items-center justify-center bg-[#FAFAFA]",
   "px-3 py-8 sm:px-5 sm:py-10 md:px-6 md:py-10 lg:px-10",
 ].join(" ");
 
@@ -48,37 +49,37 @@ const SPLIT_LAYOUT_IMG_2_PC =
 const SPLIT_LAYOUT_IMG_3_PC =
   "https://ewaqnqzivdceurhjxgpf.supabase.co/storage/v1/object/public/assets/SHIRBAND_SPLIT%20LAYOUT%20IMG%203_PC.jpg";
 
-const splitImageSizes = "(max-width: 768px) 30vw, 55vw";
+const splitImageSizes = "(max-width: 768px) 100vw, 55vw";
 
-/** 구간 사이 흰 띠 — 모바일 짧게, md+ 140px */
+/** 구간 사이 흰 띠 — 모바일 100px, md+ 140px */
 const sectionGapClass =
-  "h-12 w-full shrink-0 bg-white md:h-[140px] md:min-h-[140px]";
+  "h-[100px] w-full shrink-0 bg-white md:h-[140px] md:min-h-[140px]";
 
 export default function HomePage() {
   return (
     <>
       <Splash />
-      {/* 히어로 배경: 모바일은 헤더 아래부터 채워 상단 검정 여백 제거, contain + object-top */}
+      {/* 히어로 배경: 정적 고정 — 모바일 URL 바 변동에도 사이즈 락(100lvh) */}
       <BackgroundVideo
         overlayOpacity={0}
         mobileFit="contain"
         bgColor="#000000"
         mobileObjectClass="object-top"
-        className="fixed -z-10 left-0 right-0 top-12 bottom-0 sm:top-14 md:inset-0"
+        className="fixed -z-10 left-0 right-0 top-12 h-[calc(100lvh-3rem)] sm:top-14 sm:h-[calc(100lvh-3.5rem)] md:top-0 md:h-[100lvh] overflow-hidden"
       />
       <main className="relative z-10">
         {/* HERO 섹션 - 한 화면 가득 (배경만 노출) */}
-        <section className="relative h-[calc(100dvh-3rem)] sm:h-[calc(100dvh-3.5rem)]" />
+        <section className="relative h-[calc(100lvh-3rem)] sm:h-[calc(100lvh-3.5rem)]" />
 
         {/* 메인 배너 바로 아래 흰 띠 — 모바일 짧게, md+ 140px */}
         <div className={sectionGapClass} aria-hidden />
 
-        {/* SPLIT: 모바일 검 30% / 흰 70%, md+ 55/45 */}
+        {/* SPLIT: 모바일 세로 스택(IMG 3:2 ↑ / TEXT 3:1 ↓), md+ 55/45 */}
         <section className="relative w-full bg-white">
           <div
-            className="grid w-full grid-cols-[minmax(0,30fr)_minmax(0,70fr)] items-stretch min-h-0 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
+            className="flex flex-col w-full items-stretch min-h-0 md:grid md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
           >
-            <div className="relative min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
+            <div className="relative aspect-[3/2] md:aspect-auto md:h-auto min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
               <Image
                 src={SPLIT_LAYOUT_IMG_1_PC}
                 alt=""
@@ -96,17 +97,17 @@ export default function HomePage() {
         {/* 구간 사이 흰 띠 */}
         <div className={sectionGapClass} aria-hidden />
 
-        {/* SPLIT 2: 모바일 흰 70% / 검 30%, md+ 45/55 */}
+        {/* SPLIT 2: 모바일 세로 스택(IMG 3:2 ↑ / TEXT 3:1 ↓), md+ 45/55 */}
         <section className="relative w-full bg-white">
           <div
-            className="grid w-full grid-cols-[minmax(0,70fr)_minmax(0,30fr)] items-stretch min-h-0 md:grid-cols-[minmax(0,45fr)_minmax(0,55fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
+            className="flex flex-col-reverse w-full items-stretch min-h-0 md:grid md:grid-cols-[minmax(0,45fr)_minmax(0,55fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
           >
             <div
               className={splitPanelClass}
             >
               <HomeSplitPromoLeft />
             </div>
-            <div className="relative min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
+            <div className="relative aspect-[3/2] md:aspect-auto md:h-auto min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
               <Image
                 src={SPLIT_LAYOUT_IMG_2_PC}
                 alt=""
@@ -120,12 +121,12 @@ export default function HomePage() {
 
         <div className={sectionGapClass} aria-hidden />
 
-        {/* SPLIT 3: 모바일 검 30% / 흰 70%, md+ 55/45 */}
+        {/* SPLIT 3: 모바일 세로 스택(IMG 3:2 ↑ / TEXT 3:1 ↓), md+ 55/45 */}
         <section className="relative w-full bg-white">
           <div
-            className="grid w-full grid-cols-[minmax(0,30fr)_minmax(0,70fr)] items-stretch min-h-0 md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
+            className="flex flex-col w-full items-stretch min-h-0 md:grid md:grid-cols-[minmax(0,55fr)_minmax(0,45fr)] md:min-h-[700px] md:max-h-[800px] md:h-[clamp(700px,min(800px,calc(100vw*760/1920)),800px)]"
           >
-            <div className="relative min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
+            <div className="relative aspect-[3/2] md:aspect-auto md:h-auto min-h-0 w-full min-w-0 self-stretch overflow-hidden bg-black">
               <Image
                 src={SPLIT_LAYOUT_IMG_3_PC}
                 alt=""

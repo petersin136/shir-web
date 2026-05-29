@@ -67,7 +67,9 @@ export default function Footer() {
             </Link>
             <a
                 href="https://www.youtube.com/@SHIRBAND"
-                className={navLinkClass}
+                className={`${navLinkClass} hidden`}
+                aria-hidden
+                tabIndex={-1}
                 {...externalLinkProps}
               >
                 YouTube

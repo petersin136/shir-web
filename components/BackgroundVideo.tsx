@@ -31,8 +31,21 @@ export function BackgroundVideo({
   const mobileFitClass =
     mobileFit === 'contain' ? 'object-contain' : 'object-cover';
 
+  // 메인 배너는 정적·고정 — 스크롤/뷰포트 변화에 따른 transform·scale 일체 차단
+  const staticStyle = {
+    backgroundColor: bgColor,
+    transform: 'none',
+    transition: 'none',
+    willChange: 'auto' as const,
+  };
+
+  const staticImageStyle = {
+    transform: 'none',
+    transition: 'none',
+  };
+
   return (
-    <div className={className} style={{ backgroundColor: bgColor }}>
+    <div className={`background-hero-static ${className}`} style={staticStyle}>
       <Image
         src={HERO_BG_PC}
         alt=""
@@ -40,6 +53,7 @@ export function BackgroundVideo({
         priority
         sizes="(min-width: 768px) 100vw, 0px"
         className="hidden md:block object-cover"
+        style={staticImageStyle}
       />
       <Image
         src={HERO_BG_MOBILE}
@@ -48,6 +62,7 @@ export function BackgroundVideo({
         priority
         sizes="(max-width: 767px) 100vw, 0px"
         className={`block md:hidden ${mobileFitClass} ${mobileObjectClass}`}
+        style={staticImageStyle}
       />
       {overlayOpacity > 0 && (
         <div
