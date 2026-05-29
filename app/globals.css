@@ -113,37 +113,54 @@
   }
 }
 
-/* 푸터 상단 메뉴 — IBM Plex Mono (포토샵 스펙) */
+/* 푸터 상단 메뉴 — IBM Plex Mono, 미니멀 톤(작고 얇게) */
 footer .footer-nav-menu,
 footer .footer-nav-menu a,
 footer .footer-nav-menu button {
   font-family: var(--font-footer-nav), "IBM Plex Mono", monospace !important;
-  font-size: 20px !important;
-  font-weight: 450 !important;
-  letter-spacing: 0 !important;
+  font-size: 11px !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.04em !important;
   -webkit-font-feature-settings: normal;
   font-feature-settings: normal;
 }
 
 footer .footer-nav-menu {
-  gap: 4ch;
+  gap: 1.75ch 2.5ch;
 }
 
 /* 푸터 저작권 — IBM Plex Mono, © 만 Noto Sans KR */
 footer .footer-copyright {
   font-family: var(--font-footer-nav), "IBM Plex Mono", monospace !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  letter-spacing: 0 !important;
-  line-height: 1.6;
+  font-size: 10px !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.5;
 }
 
 footer .footer-copyright-symbol {
   font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕",
     sans-serif !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  letter-spacing: 0 !important;
+  font-size: 10px !important;
+  font-weight: 300 !important;
+  letter-spacing: 0.02em !important;
+}
+
+@media (min-width: 768px) {
+  footer .footer-nav-menu,
+  footer .footer-nav-menu a,
+  footer .footer-nav-menu button {
+    font-size: 13px !important;
+  }
+
+  footer .footer-nav-menu {
+    gap: 2ch 3ch;
+  }
+
+  footer .footer-copyright,
+  footer .footer-copyright-symbol {
+    font-size: 12px !important;
+  }
 }
 
 .split-about-panel .split-about-body,

@@ -50,7 +50,7 @@ export default function Footer() {
   return (
     <>
       <footer className={`bg-black text-white ${footerNavFont.variable}`}>
-        <div className="mx-auto w-full max-w-[1920px] px-4 pb-7 pt-7 sm:px-8 sm:pb-9 sm:pt-8 md:px-14 md:pb-14 md:pt-12 lg:pl-24 lg:pr-20">
+        <div className="mx-auto w-full max-w-[1920px] px-4 pb-6 pt-6 sm:px-8 sm:pb-7 sm:pt-6 md:px-14 md:pb-9 md:pt-8 lg:pl-24 lg:pr-20">
           <nav
             className="footer-nav-menu flex flex-wrap items-baseline uppercase leading-none"
             aria-label="푸터 링크"
@@ -90,7 +90,7 @@ export default function Footer() {
               </a>
           </nav>
 
-          <p className="mt-3 max-w-4xl text-[10px] font-normal leading-relaxed text-white/90 sm:mt-4 sm:text-[11px] md:mt-5 md:text-[13px] md:leading-[1.65]">
+          <p className="mt-3 max-w-4xl text-[10px] font-light leading-relaxed text-white/65 sm:mt-3.5 sm:text-[10px] md:mt-4 md:text-[11px] md:leading-[1.6]">
             쉬르밴드 | 이메일: shirband2025@gmail.com | 등록번호: 000-00-0000
           </p>
 
