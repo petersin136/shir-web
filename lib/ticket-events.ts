@@ -5,6 +5,8 @@ export type TicketPricingPhase =
   | "early-bird"
   | "regular";
 
+export type TicketAudience = "adult" | "student";
+
 export type TicketEvent = {
   id: TicketEventId;
   name: string;
@@ -75,6 +77,20 @@ export type TicketPricing = {
   /** 현재 요금 행에 붙는 보조 설명 */
   currentPriceDetail: string;
 };
+
+export function getTicketAudienceLabel(ticketAudience: TicketAudience) {
+  return ticketAudience === "adult" ? "성인" : "초·중·고(학생)";
+}
+
+export function getTicketAudienceUnitPrice(
+  event: TicketEvent,
+  ticketAudience: TicketAudience,
+) {
+  if (ticketAudience === "student" && event.studentPrice != null) {
+    return event.studentPrice;
+  }
+  return event.regularPrice;
+}
 
 export function getTicketEvent(id: TicketEventId): TicketEvent | undefined {
   return TICKET_EVENTS.find((e) => e.id === id);
@@ -165,15 +181,18 @@ export function formatEarlyBirdPeriodMobileLines(start: Date, end: Date) {
   };
 }
 
-/** 모바일 티켓 표 — 현재 요금 (레퍼런스: 얼리버드 특가 / 성인 N원) */
+/** 모바일·PC 티켓 표 — 현재 요금 */
 export function getMobileCurrentFeeDisplay(
   event: TicketEvent,
   pricing: TicketPricing,
 ) {
   if (pricing.phase === "regular") {
     return {
-      tier: "정가",
-      price: `${formatKrw(pricing.unitPrice)} / 1매`,
+      tier: `성인 정가 ${formatKrw(event.regularPrice)} / 1매`,
+      price:
+        event.studentPrice != null
+          ? `초·중·고 정가 ${formatKrw(event.studentPrice)} / 1매`
+          : undefined,
     };
   }
   return {
@@ -213,6 +232,6 @@ export function getTicketStep1Title(event: TicketEvent) {
 
 /** 모바일 2단계 폼 상단 집회명 */
 export function getMobileTicketFormTitle(event: TicketEvent) {
-  if (event.id === "oneness-2026") return "2026 ONENESS WORSHIP EARLY BIRD";
+  if (event.id === "oneness-2026") return "2026 ONENESS WORSHIP";
   return event.name.toUpperCase();
 }

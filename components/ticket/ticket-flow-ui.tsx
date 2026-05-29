@@ -103,7 +103,7 @@ export function TicketEventSummary({
       content: (
         <div className={cn(summaryValueClass, "space-y-0.5")}>
           <p>{fee.tier}</p>
-          <p>{fee.price}</p>
+          {fee.price && <p>{fee.price}</p>}
         </div>
       ),
     },
@@ -160,7 +160,7 @@ export function TicketEventSummary({
   );
 }
 
-/** 1단계 신청하기 — 기본 빨강, 호버·누름 시 검정 (PC 레퍼런스) */
+/** 1단계 신청하기 — 기본 딥그레이, 호버·누름 시 레드 */
 export function TicketStep1ApplyCta({
   label,
   onClick,
@@ -171,7 +171,7 @@ export function TicketStep1ApplyCta({
   disabled?: boolean;
 }) {
   const [active, setActive] = useState(false);
-  const showBlack = active && !disabled;
+  const showRed = active && !disabled;
 
   return (
     <button
@@ -186,7 +186,7 @@ export function TicketStep1ApplyCta({
       onMouseLeave={() => setActive(false)}
       className={cn(
         "ticket-mobile-cta ticket-desktop-step1-cta w-full py-4 text-[15px] font-medium tracking-[0.06em] md:py-[1.125rem] md:text-base",
-        showBlack ? "ticket-mobile-cta" : "ticket-mobile-cta-red",
+        showRed && "ticket-mobile-cta-red",
         disabled && "cursor-not-allowed opacity-45",
       )}
     >
@@ -203,9 +203,8 @@ export function TicketPaymentNotices({ event }: { event: TicketEvent }) {
       <li>
         <p className="m-0">- 계좌 입금 후 신청이 확정됩니다.</p>
         <p className="notice-line-indent m-0">
-          입금자명은 신청 시 입력하신 신청자 본인 이름과 동일하게
+          입금자명은 신청 시 입력하신 신청자 본인 이름과 동일하게 입금해 주세요.
         </p>
-        <p className="notice-line-indent m-0">입금해 주세요.</p>
       </li>
       <li>
         <p className="notice-nowrap m-0">
@@ -220,9 +219,8 @@ export function TicketPaymentNotices({ event }: { event: TicketEvent }) {
       </li>
       <li>
         <p className="m-0">
-          - 해당 기한 이후에는 취소 · 환불이 어려우니 신청 전에 일정을
+          - 해당 기한 이후에는 취소 · 환불이 어려우니 신청 전에 일정을 확인해 주세요.
         </p>
-        <p className="notice-line-indent m-0">확인해 주세요.</p>
       </li>
       <li>
         <p className="m-0">

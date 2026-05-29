@@ -18,6 +18,9 @@ import {
   type TicketEvent,
   type TicketPricing,
   type TicketEventId,
+  type TicketAudience,
+  getTicketAudienceLabel,
+  getTicketAudienceUnitPrice,
   getTicketEvent,
   getTicketPricing,
 } from "@/lib/ticket-events";
@@ -39,6 +42,7 @@ type FormState = {
   name: string;
   phone: string;
   church: string;
+  ticketType: TicketAudience;
   quantity: number;
 };
 
@@ -67,6 +71,7 @@ export default function TicketPage() {
     name: "",
     phone: "",
     church: "",
+    ticketType: "adult",
     quantity: 1,
   });
   const [privacyAgreed, setPrivacyAgreed] = useState(false);
@@ -85,7 +90,10 @@ export default function TicketPage() {
     () => (event ? getTicketPricing(event, now) : null),
     [event, now],
   );
-  const totalAmount = (pricing?.unitPrice ?? 0) * form.quantity;
+  const selectedUnitPrice = event
+    ? getTicketAudienceUnitPrice(event, form.ticketType)
+    : 0;
+  const totalAmount = selectedUnitPrice * form.quantity;
 
   const goStep = useCallback((n: number) => {
     setErr(null);
@@ -124,8 +132,9 @@ export default function TicketPage() {
       `일시: ${event.date}${event.dateNote ? ` (${event.dateNote})` : ""}`,
       `장소: ${event.venue}`,
       `티켓 매수: ${form.quantity}매`,
-      `요금 구분: ${pricing?.tierLabel ?? "-"}`,
-      `1매 단가: ${formatKrw(pricing?.unitPrice ?? 0)}`,
+      `티켓 구분: ${getTicketAudienceLabel(form.ticketType)}`,
+      `요금 구분: ${getTicketAudienceLabel(form.ticketType)}`,
+      `1매 단가: ${formatKrw(selectedUnitPrice)}`,
       `입금 금액: ${formatKrw(totalAmount)}`,
       "",
       `이름: ${name}`,
@@ -157,7 +166,7 @@ export default function TicketPage() {
 
   function resetFlow() {
     setStep(1);
-    setForm({ name: "", phone: "", church: "", quantity: 1 });
+    setForm({ name: "", phone: "", church: "", ticketType: "adult", quantity: 1 });
     setPrivacyAgreed(false);
     setOrderId("");
     setErr(null);

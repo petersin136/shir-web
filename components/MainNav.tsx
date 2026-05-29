@@ -12,7 +12,7 @@ const projectLinks = [
 
 const newsChildren = [
   { href: "/notice", label: "Notice" },
-  { href: "/events", label: "Event" },
+  { href: "/events", label: "Archive" },
 ] as const;
 
 const dropdownPanelClass =

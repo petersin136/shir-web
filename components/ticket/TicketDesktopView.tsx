@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { TicketEvent, TicketPricing } from "@/lib/ticket-events";
+import {
+  getTicketAudienceUnitPrice,
+  type TicketAudience,
+  type TicketEvent,
+  type TicketPricing,
+} from "@/lib/ticket-events";
 import {
   TICKET_BANK,
   TICKET_CONTACT_EMAIL,
@@ -24,6 +29,7 @@ export type TicketDesktopFormState = {
   name: string;
   phone: string;
   church: string;
+  ticketType: TicketAudience;
   quantity: number;
 };
 
@@ -83,6 +89,8 @@ function TicketDesktopStep2({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const selectedUnitPrice = getTicketAudienceUnitPrice(event, form.ticketType);
+
   return (
     <DesktopPanel
       footer={
@@ -142,11 +150,41 @@ function TicketDesktopStep2({
             />
           </TicketFormRow>
 
+          <TicketFormRow label="티켓 구분" htmlFor="pc-ticket-type-adult">
+            <div className="ticket-type-radio-group flex items-center gap-6">
+              <label className="ticket-type-radio-label inline-flex items-center gap-2 whitespace-nowrap text-[14px] font-medium text-neutral-900 md:text-[15px]">
+                <input
+                  id="pc-ticket-type-adult"
+                  type="radio"
+                  name="pc-ticket-type"
+                  value="adult"
+                  checked={form.ticketType === "adult"}
+                  onChange={() => onFormChange({ ...form, ticketType: "adult" })}
+                  className="ticket-type-radio-input h-3.5 w-3.5 shrink-0 accent-[#e02020]"
+                />
+                성인
+              </label>
+              {event.studentPrice != null && (
+                <label className="ticket-type-radio-label inline-flex items-center gap-2 whitespace-nowrap text-[14px] font-medium text-neutral-900 md:text-[15px]">
+                  <input
+                    type="radio"
+                    name="pc-ticket-type"
+                    value="student"
+                    checked={form.ticketType === "student"}
+                    onChange={() => onFormChange({ ...form, ticketType: "student" })}
+                    className="ticket-type-radio-input h-3.5 w-3.5 shrink-0 accent-[#e02020]"
+                  />
+                  초·중·고(학생)
+                </label>
+              )}
+            </div>
+          </TicketFormRow>
+
           <TicketFormRow label="티켓 매수" htmlFor="pc-ticket-qty">
             <TicketQtySelect
               id="pc-ticket-qty"
               value={form.quantity}
-              unitPrice={pricing.unitPrice}
+              unitPrice={selectedUnitPrice}
               onChange={(quantity) => onFormChange({ ...form, quantity })}
             />
           </TicketFormRow>
@@ -180,7 +218,8 @@ function TicketDesktopStep3({
   onComplete: () => void;
 }) {
   const [accountCopied, setAccountCopied] = useState(false);
-  const depositAmount = pricing.unitPrice * form.quantity;
+  const selectedUnitPrice = getTicketAudienceUnitPrice(event, form.ticketType);
+  const depositAmount = selectedUnitPrice * form.quantity;
 
   return (
     <DesktopPanel
@@ -278,7 +317,7 @@ function TicketDesktopStep4({
 
       <h2 className="ticket-mobile-subhead mt-8 md:mt-10">
         {event.id === "oneness-2026"
-          ? "2026 ONENESS WORSHIP EARLY BIRD"
+          ? "2026 ONENESS WORSHIP"
           : event.name.toUpperCase()}
       </h2>
 

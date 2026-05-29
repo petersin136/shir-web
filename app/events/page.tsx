@@ -51,7 +51,7 @@ export default function EventsPage() {
     <PageSplitLayout mainClassName="max-w-6xl">
         <header className="mb-16 sm:mb-20">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-light tracking-[0.2em] uppercase text-white">
-            Ministry
+            Archive
           </h1>
           <div className="w-10 h-px bg-white/30 mt-5 sm:mt-6" />
           <p className="text-[16px] sm:text-[17px] text-white/70 font-light leading-loose mt-6 sm:mt-8 max-w-2xl">
@@ -102,7 +102,7 @@ function MinistryColumn({ data }: { data: Ministry }) {
           <li key={archive.href}>
             <Link
               href={archive.href}
-              className="group flex items-baseline justify-between gap-4 py-4 sm:py-5 border-b border-white/10 transition-colors hover:bg-white/[0.02]"
+              className="group flex items-baseline justify-between gap-4 px-4 sm:px-5 py-4 sm:py-5 border-b border-white/10 transition-colors hover:bg-white/[0.02]"
             >
               <div className="flex items-baseline gap-5 sm:gap-6">
                 <span className="text-[13px] text-white/40 tracking-wider font-light tabular-nums">
@@ -112,7 +112,7 @@ function MinistryColumn({ data }: { data: Ministry }) {
                   {archive.label}
                 </span>
               </div>
-              <span className="text-white/30 group-hover:text-white/70 group-hover:translate-x-1 transition-all text-base font-light">
+              <span className="text-white/30 group-hover:text-white/70 group-hover:translate-x-1 transition-all text-base font-light pl-2">
                 →
               </span>
             </Link>

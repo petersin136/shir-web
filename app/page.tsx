@@ -23,10 +23,10 @@ const splitLatinFont = Inter({
   display: "swap",
 });
 
-/** About 서브타이틀 — [THE SOURCE] / WHERE THE SONG BURSTS FORTH */
+/** SPLIT 서브타이틀 — [THE SOURCE] / WHERE THE SONG BURSTS FORTH (PC: IBM Plex Mono Text 450) */
 const splitSubtitleFont = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["500"],
+  weight: ["400", "500"],
   variable: "--font-split-subtitle",
   display: "swap",
 });

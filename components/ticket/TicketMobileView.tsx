@@ -13,7 +13,9 @@ import {
   formatRefundDeadlineMobile,
   getMobileTicketFormTitle,
   getTicketStep1Title,
+  getTicketAudienceUnitPrice,
   ticketBankCopyText,
+  type TicketAudience,
   type TicketEvent,
   type TicketPricing,
   type TicketEventId,
@@ -24,6 +26,7 @@ type FormState = {
   name: string;
   phone: string;
   church: string;
+  ticketType: TicketAudience;
   quantity: number;
 };
 
@@ -43,24 +46,37 @@ function MobileFixedCTA({
   onClick,
   disabled,
   variant,
+  className,
+  pressRed = false,
   type = "button",
 }: {
   label: string;
   onClick?: () => void;
   disabled?: boolean;
   variant: "black" | "red";
+  className?: string;
+  pressRed?: boolean;
   type?: "button" | "submit";
 }) {
+  const [pressed, setPressed] = useState(false);
+  const showRed = (variant === "red" || (pressRed && pressed)) && !disabled;
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 md:hidden pb-[env(safe-area-inset-bottom)]">
       <button
         type={type}
         onClick={onClick}
         disabled={disabled}
+        onPointerDown={() => pressRed && !disabled && setPressed(true)}
+        onPointerUp={() => setPressed(false)}
+        onPointerLeave={() => setPressed(false)}
+        onPointerCancel={() => setPressed(false)}
+        onBlur={() => setPressed(false)}
         className={cn(
           "ticket-mobile-cta w-full py-4 text-[15px] font-medium tracking-[0.06em]",
-          variant === "red" && "ticket-mobile-cta-red",
+          showRed && "ticket-mobile-cta-red",
           disabled && "cursor-not-allowed",
+          className,
         )}
       >
         {label}
@@ -92,38 +108,42 @@ const mobileFormSelectClass =
   "ticket-mobile-form-value w-full min-w-0 border-0 bg-transparent text-left focus:outline-none cursor-pointer appearance-none pr-5";
 
 function MobileTicketStep2Notices({ event }: { event: TicketEvent }) {
-  const refundUntil = formatRefundDeadlineMobile(event.refundDeadlineLabel);
+  const refundUntilFull = formatRefundDeadlineMobile(event.refundDeadlineLabel);
+  // 모바일에서는 연도 제거 → "06. 20. 토 23:59까지"
+  const refundUntilMobile = refundUntilFull.replace(/^\d{4}\.\s*/, "");
 
   return (
     <ul className="ticket-mobile-notices mt-4 w-full list-none p-0">
       <li>
         <p className="m-0">- 계좌 입금 후 신청이 확정됩니다.</p>
         <p className="notice-line-indent m-0">
-          입금자명은 신청 시 입력하신 신청자 본인 이름과 동일하게
+          입금자명은 신청 시 입력하신 신청자 본인 이름과
         </p>
-        <p className="notice-line-indent m-0">입금해 주세요.</p>
+        <p className="notice-line-indent m-0">동일하게 입금해 주세요.</p>
       </li>
       <li>
-        <p className="notice-nowrap m-0">
-          - 신청 후, 3일 이내 미입금 시 자동 취소될 수 있으니 유의해 주세요.
+        <p className="m-0">
+          - 신청 후, 3일 이내 미입금 시 자동 취소될 수 있으니
         </p>
+        <p className="notice-line-indent m-0">유의해 주세요.</p>
       </li>
       <li>
-        <p className="m-0">- 입금 확인 후, 집회 시작 7일 전까지({refundUntil})</p>
+        <p className="m-0">
+          - 입금 확인 후, 집회 시작 7일 전까지({refundUntilMobile})
+        </p>
         <p className="notice-line-indent m-0">
           신청 취소 및 전액 환불이 가능합니다.
         </p>
       </li>
       <li>
         <p className="m-0">
-          - 해당 기한 이후에는 취소 · 환불이 어려우니 신청 전에 일정을
+          - 해당 기한 이후에는 취소 · 환불이 어려우니 신청 전에
         </p>
-        <p className="notice-line-indent m-0">확인해 주세요.</p>
+        <p className="notice-line-indent m-0">일정을 확인해 주세요.</p>
       </li>
       <li>
-        <p className="m-0">
-          - 입금이 확인되면 정식 예약이 확정되며, 문자로 안내드립니다.
-        </p>
+        <p className="m-0">- 입금이 확인되면 정식 예약이 확정되며,</p>
+        <p className="notice-line-indent m-0">문자로 안내드립니다.</p>
       </li>
     </ul>
   );
@@ -313,7 +333,7 @@ function MobileStep3DualNav({
         onPointerCancel={clearPress}
         className={cn(
           "ticket-mobile-cta py-4 text-[15px] font-medium tracking-[0.04em]",
-          accountCopied ? "ticket-mobile-cta-red" : "ticket-mobile-cta",
+          (accountCopied || nextEnabled) && "ticket-mobile-cta-red",
           loading && "cursor-not-allowed",
         )}
       >
@@ -367,8 +387,7 @@ function MobileStep2DualNav({
         onPointerCancel={clearPress}
         className={cn(
           "ticket-mobile-cta py-4 text-[15px] font-medium tracking-[0.04em]",
-          privacyAgreed && "ticket-mobile-cta-red",
-          !privacyAgreed && "ticket-mobile-cta-next-idle",
+          "ticket-mobile-cta-red",
           loading && "cursor-not-allowed",
         )}
       >
@@ -401,6 +420,8 @@ function TicketMobileStep2({
   onBack: () => void;
   onNext: () => void;
 }) {
+  const selectedUnitPrice = getTicketAudienceUnitPrice(event, form.ticketType);
+
   return (
     <div className="md:hidden relative z-10 w-full bg-white pb-[3.25rem]">
       <div className="px-5 pt-5">
@@ -453,10 +474,40 @@ function TicketMobileStep2({
             />
           </MobileFormRow>
 
+          <MobileFormRow label="티켓 구분" htmlFor="m-ticket-type-adult">
+            <div className="ticket-type-radio-group flex items-center gap-5">
+              <label className="ticket-type-radio-label inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-neutral-900">
+                <input
+                  id="m-ticket-type-adult"
+                  type="radio"
+                  name="m-ticket-type"
+                  value="adult"
+                  checked={form.ticketType === "adult"}
+                  onChange={() => onFormChange({ ...form, ticketType: "adult" })}
+                  className="ticket-type-radio-input h-3.5 w-3.5 shrink-0 accent-[#e02020]"
+                />
+                성인
+              </label>
+              {event.studentPrice != null && (
+                <label className="ticket-type-radio-label inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium text-neutral-900">
+                  <input
+                    type="radio"
+                    name="m-ticket-type"
+                    value="student"
+                    checked={form.ticketType === "student"}
+                    onChange={() => onFormChange({ ...form, ticketType: "student" })}
+                    className="ticket-type-radio-input h-3.5 w-3.5 shrink-0 accent-[#e02020]"
+                  />
+                  초·중·고(학생)
+                </label>
+              )}
+            </div>
+          </MobileFormRow>
+
           <MobileFormRow label="티켓 매수" htmlFor="m-ticket-qty">
             <MobileTicketQtySelect
               value={form.quantity}
-              unitPrice={pricing.unitPrice}
+              unitPrice={selectedUnitPrice}
               onChange={(quantity) => onFormChange({ ...form, quantity })}
             />
           </MobileFormRow>
@@ -498,7 +549,8 @@ function TicketMobileStep3({
   onComplete: () => void;
 }) {
   const [accountCopied, setAccountCopied] = useState(false);
-  const depositAmount = pricing.unitPrice * form.quantity;
+  const selectedUnitPrice = getTicketAudienceUnitPrice(event, form.ticketType);
+  const depositAmount = selectedUnitPrice * form.quantity;
 
   return (
     <div className="md:hidden relative z-10 w-full bg-white pb-[3.25rem]">

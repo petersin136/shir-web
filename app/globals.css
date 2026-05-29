@@ -97,6 +97,22 @@
   font-family: var(--font-split-latin), ui-sans-serif, system-ui, sans-serif !important;
 }
 
+/* SPLIT LAYOUT BANNER 서브타이틀 — PC: IBM Plex Mono Text (15pt / 24pt / 자간 100 / 두께 Text≈450) */
+@media (min-width: 768px) {
+  .split-about-panel .split-about-subtitle {
+    font-family: var(--font-split-subtitle), "IBM Plex Mono", ui-monospace, monospace !important;
+    font-size: 20px !important; /* 15pt */
+    line-height: 32px !important; /* 24pt */
+    letter-spacing: 0.1em !important; /* 디자인 자간 100 */
+    font-weight: 450 !important; /* Text (Regular와 Medium 사이) */
+    font-stretch: normal;
+  }
+
+  .split-about-panel .split-about-subtitle-bracket {
+    color: #e63525 !important;
+  }
+}
+
 /* 푸터 상단 메뉴 — IBM Plex Mono (포토샵 스펙) */
 footer .footer-nav-menu,
 footer .footer-nav-menu a,
@@ -465,6 +481,8 @@ footer .footer-copyright-symbol {
 .page-content-light .ticket-mobile-notices {
   font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif !important;
   font-size: 0.8125rem !important;
+  word-break: keep-all !important;
+  overflow-wrap: break-word !important;
   font-weight: 500 !important;
   line-height: 1.42 !important;
   color: #1a1a1a !important;
@@ -482,7 +500,13 @@ footer .footer-copyright-symbol {
 }
 
 .page-content-light .ticket-mobile-notices .notice-nowrap {
-  white-space: nowrap !important;
+  white-space: normal !important;
+}
+
+@media (min-width: 768px) {
+  .page-content-light .ticket-mobile-notices .notice-nowrap {
+    white-space: nowrap !important;
+  }
 }
 
 .page-content-light .ticket-mobile-form-section {
@@ -519,6 +543,26 @@ footer .footer-copyright-symbol {
   -webkit-text-fill-color: #171717 !important;
   max-width: none !important;
   width: 100% !important;
+}
+
+.page-content-light .ticket-mobile-form-row .ticket-type-radio-group {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: max-content !important;
+}
+
+.page-content-light .ticket-mobile-form-row .ticket-type-radio-label {
+  width: auto !important;
+  min-width: max-content !important;
+  white-space: nowrap !important;
+}
+
+.page-content-light .ticket-mobile-form-row .ticket-type-radio-input {
+  width: 0.875rem !important;
+  min-width: 0.875rem !important;
+  max-width: 0.875rem !important;
+  height: 0.875rem !important;
+  flex: 0 0 0.875rem !important;
 }
 
 .page-content-light .ticket-mobile-form-row input::placeholder {
@@ -696,8 +740,11 @@ footer .footer-copyright-symbol {
   }
 }
 
-.page-content-light .ticket-desktop-step1-cta:not(:disabled):hover {
-  background-color: #171717 !important;
+.page-content-light .ticket-desktop-step1-cta:not(:disabled):hover,
+.page-content-light .ticket-desktop-step1-cta:not(:disabled):active,
+.page-content-light .ticket-step1-apply-cta:not(:disabled):hover,
+.page-content-light .ticket-step1-apply-cta:not(:disabled):active {
+  background-color: #e02020 !important;
   color: #ffffff !important;
   -webkit-text-fill-color: #ffffff !important;
 }
