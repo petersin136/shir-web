@@ -91,7 +91,7 @@ export default function Footer() {
           </nav>
 
           <p className="mt-3 max-w-4xl text-[10px] font-light leading-relaxed text-white/65 sm:mt-3.5 sm:text-[10px] md:mt-4 md:text-[11px] md:leading-[1.6]">
-            쉬르밴드 | 이메일: shirband2025@gmail.com | 등록번호: 000-00-0000
+            쉬르밴드 | 이메일: shirband2025@gmail.com | 고유번호: 614-82-76116
           </p>
 
           <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 md:mt-2 md:gap-x-6 md:gap-y-2">

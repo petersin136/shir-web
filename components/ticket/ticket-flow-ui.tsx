@@ -129,10 +129,10 @@ export function TicketEventSummary({
       label: "입금계좌",
       content: (
         <div className={cn(summaryValueClass, "space-y-0.5")}>
-          <p>{TICKET_BANK.bankName}</p>
           <p className="tabular-nums">
-            {TICKET_BANK.accountNumber} {TICKET_BANK.manager}
+            {TICKET_BANK.bankName} {TICKET_BANK.accountNumber}
           </p>
+          <p>예금주 {TICKET_BANK.manager}</p>
         </div>
       ),
     },
