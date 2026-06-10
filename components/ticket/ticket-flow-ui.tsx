@@ -132,7 +132,7 @@ export function TicketEventSummary({
           <p className="tabular-nums">
             {TICKET_BANK.bankName} {TICKET_BANK.accountNumber}
           </p>
-          <p>예금주 {TICKET_BANK.manager}</p>
+          <p>{TICKET_BANK.manager}</p>
         </div>
       ),
     },
