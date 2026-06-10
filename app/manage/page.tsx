@@ -170,6 +170,7 @@ function parseContactMessage(message: string | null): ParsedContact {
       clean.startsWith("일시:") ||
       clean.startsWith("장소:") ||
       clean.startsWith("입금 계좌:") ||
+      clean.startsWith("예금주:") ||
       clean.startsWith("담당자:") ||
       clean.startsWith("입금자명:") ||
       clean.includes("[SHIR BAND 티켓 신청]")

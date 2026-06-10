@@ -142,7 +142,7 @@ export default function TicketPage() {
       `소속교회: ${church}`,
       "",
       `입금 계좌: ${TICKET_BANK.bankName} ${TICKET_BANK.accountNumber}`,
-      `담당자: ${TICKET_BANK.manager}`,
+      `예금주: ${TICKET_BANK.manager}`,
       `입금자명: ${name}`,
     ].join("\n");
 
@@ -708,7 +708,7 @@ function EventCard({
               className="!px-3 !py-1.5 !text-[10px]"
             />
           </div>
-            <p className="text-[13px] text-neutral-600">담당자 · {TICKET_BANK.manager}</p>
+            <p className="text-[13px] text-neutral-600">예금주 · {TICKET_BANK.manager}</p>
         </div>
       ),
     },

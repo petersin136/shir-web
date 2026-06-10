@@ -202,14 +202,15 @@ export function getMobileCurrentFeeDisplay(
 }
 
 export const TICKET_BANK = {
-  bankName: process.env.NEXT_PUBLIC_TICKET_BANK_NAME ?? "IBK기업은행",
+  bankName: process.env.NEXT_PUBLIC_TICKET_BANK_NAME ?? "신협",
   accountNumber:
-    process.env.NEXT_PUBLIC_TICKET_ACCOUNT_NUMBER ?? "015-082585-02-011",
-  manager: process.env.NEXT_PUBLIC_TICKET_BANK_MANAGER ?? "최연주",
+    process.env.NEXT_PUBLIC_TICKET_ACCOUNT_NUMBER ?? "131-022-991995",
+  manager:
+    process.env.NEXT_PUBLIC_TICKET_BANK_MANAGER ?? "그날 미니스트리 앤 쉬르밴드",
 };
 
 export function ticketBankCopyText() {
-  return `${TICKET_BANK.bankName} ${TICKET_BANK.accountNumber} (담당자 ${TICKET_BANK.manager})`;
+  return `${TICKET_BANK.bankName} ${TICKET_BANK.accountNumber} (예금주 ${TICKET_BANK.manager})`;
 }
 
 export const TICKET_CONTACT_EMAIL = "shirband2025@gmail.com";

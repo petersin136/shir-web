@@ -26,7 +26,7 @@ export function TicketBankInfo({
           {TICKET_BANK.bankName} {TICKET_BANK.accountNumber}
         </p>
         <p className="text-white/60 text-[13px]">
-          담당자 · {TICKET_BANK.manager}
+          예금주 · {TICKET_BANK.manager}
         </p>
         <CopyTextButton text={ticketBankCopyText()} />
       </div>
@@ -48,7 +48,7 @@ export function TicketBankInfo({
         {TICKET_BANK.accountNumber}
       </p>
       <p className="text-[14px] text-white/60 font-light">
-        담당자 · {TICKET_BANK.manager}
+        예금주 · {TICKET_BANK.manager}
       </p>
       <CopyTextButton text={ticketBankCopyText()} label="계좌 정보 복사하기" />
     </div>
